@@ -1,8 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Briefcase, Landmark } from 'lucide-react';
+import { Landmark } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import api, { BASE_URL } from '../services/api';
+
+// Animation variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 25 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
 
 const Bearers = () => {
   const [bearers, setBearers] = useState([]);
@@ -99,14 +120,19 @@ const Bearers = () => {
   return (
     <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10">
+      <motion.section 
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10"
+      >
         <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Our Leadership</span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Office Bearers</h1>
         <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
         <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
           Meet the executive committee directing the programs, academic committees, and corporate relationships of Udupi Management Association.
         </p>
-      </section>
+      </motion.section>
 
       {loading ? (
         <div className="flex justify-center items-center py-24">
@@ -120,47 +146,60 @@ const Bearers = () => {
 
             return (
               <div key={category} className="flex flex-col gap-6">
-                <div className="flex items-center gap-3">
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="flex items-center gap-3"
+                >
                   <h3 className="text-lg font-bold text-white uppercase tracking-wider font-sans">
                     {categoryLabels[category]}
                   </h3>
                   <div className="flex-grow h-px bg-white/5" />
-                </div>
+                </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div 
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: '-80px' }}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
                   {list.map((bearer, idx) => (
-                    <GlassCard 
-                      key={bearer.id || idx} 
-                      className="p-5 flex items-center gap-4 hover:scale-[1.01] duration-300"
-                      hoverEffect={true}
-                    >
-                      <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-white/5 border border-white/10 flex items-center justify-center">
-                        <img 
-                          src={bearer.image_url.startsWith('http') 
-                            ? bearer.image_url 
-                            : bearer.image_url.startsWith('/uploads')
-                              ? `${BASE_URL}${bearer.image_url}`
-                              : bearer.image_url
-                          } 
-                          alt={bearer.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%2327272a"><circle cx="50" cy="35" r="20" fill="%2352525b"/><path d="M20 80c0-15 15-20 30-20s30 5 30 20z" fill="%2352525b"/></svg>';
-                          }}
-                        />
-                      </div>
-                      
-                      <div className="flex flex-col truncate">
-                        <h4 className="text-white font-bold text-base truncate">{bearer.name}</h4>
-                        <span className="text-brand-secondary text-xs font-medium truncate mt-0.5">{bearer.designation}</span>
-                        <span className="text-gray-500 text-xs truncate flex items-center gap-1 mt-1">
-                          <Landmark size={12} className="shrink-0" />
-                          {bearer.organization}
-                        </span>
-                      </div>
-                    </GlassCard>
+                    <motion.div key={bearer.id || idx} variants={revealItem}>
+                      <GlassCard 
+                        className="p-5 flex items-center gap-4"
+                        hoverEffect={true}
+                      >
+                        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-white/5 border border-white/10 flex items-center justify-center">
+                          <img 
+                            src={bearer.image_url.startsWith('http') 
+                              ? bearer.image_url 
+                              : bearer.image_url.startsWith('/uploads')
+                                ? `${BASE_URL}${bearer.image_url}`
+                                : bearer.image_url
+                            } 
+                            alt={bearer.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            onError={(e) => {
+                              e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%2327272a"><circle cx="50" cy="35" r="20" fill="%2352525b"/><path d="M20 80c0-15 15-20 30-20s30 5 30 20z" fill="%2352525b"/></svg>';
+                            }}
+                          />
+                        </div>
+                        
+                        <div className="flex flex-col truncate">
+                          <h4 className="text-white font-bold text-base truncate">{bearer.name}</h4>
+                          <span className="text-brand-secondary text-xs font-medium truncate mt-0.5">{bearer.designation}</span>
+                          <span className="text-gray-500 text-xs truncate flex items-center gap-1 mt-1">
+                            <Landmark size={12} className="shrink-0" />
+                            {bearer.organization}
+                          </span>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </div>
             );
           })}
