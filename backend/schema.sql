@@ -218,3 +218,40 @@ INSERT IGNORE INTO committees (id, name, description, icon, image_url, display_o
 (4, 'Industry Collaboration Committee', 'Bridging the gap between regional business leaders and academics through internships, guest talks, and consultancies.', 'Briefcase', '/uploads/committees/industry_collab.png', 4),
 (5, 'Commerce & Business Students Committee', 'Fostering leadership qualities in students by conducting inter-collegiate quizzes, case studies, and business simulations.', 'Users', '/uploads/committees/students_committee.png', 5),
 (6, 'Working Professionals Committee', 'Creating a platform for young executives, managers, and entrepreneurs to network, share ideas, and attend evening executive lectures.', 'TrendingUp', '/uploads/committees/professionals_committee.png', 6);
+
+-- Seed Events
+INSERT IGNORE INTO events (id, title, description, content, date, time, location, image_url, type) VALUES
+(1, 'Annual National Management Conference 2026', 'A national panel discussion highlighting AI governance and startup development structures in coastal Karnataka.', 'The Annual National Management Conference focuses on building resilient business frameworks under the shift of automated intelligence. Keynote speakers include directors of leading technological firms, bank administrators, and startup founders. Register to lock in your certification.', '2026-07-15', '10:00:00', 'Poornaprajna Auditorium, Udupi', NULL, 'conference'),
+(2, 'Outstanding Manager Award Ceremony 2026', 'Honoring regional business executives showing exemplary corporate stewardship and ethical administration.', 'Join the Udupi Management Association as we honor regional executive directors and supervisors showing significant success in their organizations. High-tea networking will follow the ceremony.', '2026-08-01', '17:30:00', 'MGM College Hall, Udupi', NULL, 'event'),
+(3, 'Management Lectures on Coastal Trade History', 'A historical audit of the trade networks, port logistics, and banking structures of coastal Karnataka.', 'Conducted by the PG Commerce Teachers Committee, this session outlines the historical developments of commerce in Udupi and Mangalore, analyzing how cooperative banking evolved.', '2026-05-10', '14:00:00', 'Vaikunta Baliga Auditorium, Udupi', NULL, 'event');
+
+-- Seed Training Programs
+INSERT IGNORE INTO training_programs (id, title, description, type, content, date, duration) VALUES
+(1, 'Executive Leadership & Strategic Management', 'Advanced certification course designed for mid-level managers targeting corporate strategy, digital adaptation, and dispute resolution.', 'certification', 'Detailed coursework on modern executive leadership principles, strategy canvas modeling, conflict navigation, and leading digital adaptation cycles.', '2026-09-05', '6 Weeks (Saturdays)'),
+(2, 'Taxation & Modern Financial Audit Workshop', 'Intense 2-day seminar for university commerce lecturers to align with recent updates in GST filing and international accounting standards.', 'workshop', 'Hands-on filing updates, audit guidelines, international accounting standards alignment, and teaching methodologies for university lecturers.', '2026-07-20', '2 Days'),
+(3, 'Business Analytics & Data-Driven Decision Making', 'Hands-on training session covering basics of Excel dashboards, PowerBI, and data analytics tools for managerial operations.', 'training', 'Data visualisations using Excel charts, dashboard setups, PowerBI connections, data cleanings, and statistics modeling for business decisions.', '2026-08-12', '4 Sessions'),
+(4, 'Coastal Karnataka Industrial Growth Summit', 'Industry-academic roundtable discussing regional export logistics, marine trade channels, and local employment growth models.', 'industry_session', 'Roundtable discussions with port authorities, local banking leaders, logistics experts, and business university directors.', '2026-08-30', '1 Day');
+
+-- Seed Publications
+INSERT IGNORE INTO publications (id, title, type, description, link_url, image_url) VALUES
+(1, 'Poornaprajna Journals', 'journal', 'Double-blind peer-reviewed journal publishing quarterly research papers in accounting, corporate governance, and regional commerce developments.', '#', NULL),
+(2, 'UMA Digital Library', 'digital_library', 'Online archive containing reference materials, previous lecture slides, AGM reports, and student thesis digests.', '#', NULL),
+(3, 'SME Consultancy Services', 'consultancy', 'Advisory panel comprising retired managers and academic professors providing free structural audits and market consultancies to Udupi start-ups.', '#', NULL),
+(4, 'Incubation Center', 'incubator', 'Fostering local student entrepreneurship through prototyping grants, co-working office shares, and mentorship matching panels.', '#', NULL),
+(5, 'Science & Technology Centre', 'science_tech', 'Facilitating business analytics training, digital spreadsheet workshops, and software engineering basics for commerce educators.', '#', NULL),
+(6, 'Environmental Awareness Center', 'environmental', 'Anchor for local CSR events, waste auditing workshops, and promoting green auditing benchmarks for coastal business setups.', '#', NULL),
+(7, 'Career Counselling Centre', 'career', 'Offering mock interview panels, CV audits, resume templates, and corporate internship listings for commerce and MBA students.', '#', NULL);
+
+-- Seed Gallery
+INSERT IGNORE INTO gallery (id, title, type, media_url, thumbnail_url) VALUES
+(1, 'Inaugural Meeting 2026', 'photo', 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60', NULL),
+(2, 'Outstanding Manager Jury Panel', 'photo', 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=60', NULL),
+(3, 'Commerce Teachers Seminar', 'photo', 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&auto=format&fit=crop&q=60', NULL),
+(4, 'Auditorium Audience Session', 'photo', 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=60', NULL),
+(5, 'UMA Annual Day Highlights', 'video', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=60'),
+(6, 'Discussion on AI in Coastal Trade', 'video', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=60');
+
+-- Seed News
+INSERT IGNORE INTO news (id, title, content, type, image_url) VALUES
+(1, 'UMA Partners with MAHE for Regional Incubation', 'Udupi Management Association has signed an MoU with Manipal Academy of Higher Education to expand research funding for startup models in coastal Karnataka. The incubator will offer co-working office shares at Poornaprajna Campus.', 'news', NULL),
+(2, 'Official Statement on Annual Commerce Workshop Outcomes', 'The executive council has released summaries of the 2-day lecturers workshop on taxation. Over 120 pre-university teachers attended, finalizing standard classroom spreadsheets.', 'press_release', NULL);
