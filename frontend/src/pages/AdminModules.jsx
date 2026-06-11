@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, Check, X, Search, FileText, 
-  Upload, Download, ShieldCheck, Mail, MapPin, Eye, ExternalLink
+  Upload, Download, ShieldCheck, Mail, MapPin, Eye, ExternalLink, Users, Settings
 } from 'lucide-react';
 import api, { BASE_URL } from '../services/api';
 
@@ -1742,6 +1742,12 @@ export const AdminTraining = () => {
     duration: ''
   });
 
+  // Booking seat registrations states
+  const [registrationsModalOpen, setRegistrationsModalOpen] = useState(false);
+  const [activeProgramForRegistrations, setActiveProgramForRegistrations] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+
   useEffect(() => {
     fetchPrograms();
   }, []);
@@ -1802,6 +1808,36 @@ export const AdminTraining = () => {
     }
   };
 
+  const handleOpenRegistrations = (prog) => {
+    setActiveProgramForRegistrations(prog);
+    setRegistrationsModalOpen(true);
+    fetchRegistrations(prog.id);
+  };
+
+  const fetchRegistrations = async (programId) => {
+    setRegistrationsLoading(true);
+    try {
+      const res = await api.get(`/training/registrations?programId=${programId}`);
+      setRegistrations(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRegistrationsLoading(false);
+    }
+  };
+
+  const handleDeleteRegistration = async (regId) => {
+    if (!window.confirm('Delete this booking registration?')) return;
+    try {
+      await api.delete(`/training/registrations/${regId}`);
+      if (activeProgramForRegistrations) {
+        fetchRegistrations(activeProgramForRegistrations.id);
+      }
+    } catch (err) {
+      alert('Error deleting registration');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -1834,6 +1870,13 @@ export const AdminTraining = () => {
                     <td className="px-6 py-4 capitalize font-semibold text-xxs text-brand-secondary">{prog.type.replace('_', ' ')}</td>
                     <td className="px-6 py-4 font-mono">{prog.duration || 'N/A'}</td>
                     <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button 
+                        onClick={() => handleOpenRegistrations(prog)} 
+                        className="p-1.5 bg-white/5 text-gray-400 hover:text-brand-primary hover:bg-white/10 rounded-lg"
+                        title="View Bookings"
+                      >
+                        <Users size={14} />
+                      </button>
                       <button onClick={() => handleOpenEdit(prog)} className="p-1.5 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg">
                         <Edit2 size={14} />
                       </button>
@@ -1848,6 +1891,66 @@ export const AdminTraining = () => {
           </div>
         )}
       </div>
+
+      {/* Bookings registrations modal */}
+      {registrationsModalOpen && activeProgramForRegistrations && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+          <div className="absolute inset-0" onClick={() => setRegistrationsModalOpen(false)} />
+          <div className="glass-card max-w-3xl w-full p-8 rounded-3xl relative z-10 border border-white/10 max-h-[90vh] overflow-y-auto bg-dark-card">
+            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
+              <div>
+                <span className="text-brand-primary font-bold text-xxs font-mono uppercase tracking-widest block mb-0.5">Seat Enrollments</span>
+                <h3 className="text-white font-extrabold text-base truncate max-w-xl">{activeProgramForRegistrations.title}</h3>
+              </div>
+              <button onClick={() => setRegistrationsModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
+            </div>
+
+            {registrationsLoading ? (
+              <div className="py-12 flex justify-center"><div className="w-8 h-8 rounded-full border-t-2 border-brand-primary animate-spin" /></div>
+            ) : registrations.length === 0 ? (
+              <div className="py-12 text-center text-gray-500 text-sm">No seat bookings registered yet for this program.</div>
+            ) : (
+              <div className="overflow-x-auto border border-white/5 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-white/5 text-gray-400 font-mono text-[10px] uppercase tracking-wider">
+                    <tr>
+                      <th className="px-4 py-3">Enrollee</th>
+                      <th className="px-4 py-3">Contact</th>
+                      <th className="px-4 py-3">Organization</th>
+                      <th className="px-4 py-3 font-mono">Date</th>
+                      <th className="px-4 py-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-gray-400">
+                    {registrations.map((reg) => (
+                      <tr key={reg.id} className="hover:bg-white/2 transition-colors">
+                        <td className="px-4 py-3 font-bold text-white">{reg.name}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-col">
+                            <span>{reg.email}</span>
+                            <span className="text-gray-500 text-[10px] mt-0.5">{reg.phone}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 truncate max-w-[150px]">{reg.organization || 'N/A'}</td>
+                        <td className="px-4 py-3 font-mono">{new Date(reg.created_at).toLocaleDateString('en-IN')}</td>
+                        <td className="px-4 py-3 text-right">
+                          <button 
+                            onClick={() => handleDeleteRegistration(reg.id)}
+                            className="p-1.5 bg-white/5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
+                            title="Remove Booking"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {modalOpen && (

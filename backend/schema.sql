@@ -255,3 +255,15 @@ INSERT IGNORE INTO gallery (id, title, type, media_url, thumbnail_url) VALUES
 INSERT IGNORE INTO news (id, title, content, type, image_url) VALUES
 (1, 'UMA Partners with MAHE for Regional Incubation', 'Udupi Management Association has signed an MoU with Manipal Academy of Higher Education to expand research funding for startup models in coastal Karnataka. The incubator will offer co-working office shares at Poornaprajna Campus.', 'news', NULL),
 (2, 'Official Statement on Annual Commerce Workshop Outcomes', 'The executive council has released summaries of the 2-day lecturers workshop on taxation. Over 120 pre-university teachers attended, finalizing standard classroom spreadsheets.', 'press_release', NULL);
+
+-- 16. Training Registrations Table (Upskilling Bookings)
+CREATE TABLE IF NOT EXISTS training_registrations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    program_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    organization VARCHAR(150),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (program_id) REFERENCES training_programs(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
