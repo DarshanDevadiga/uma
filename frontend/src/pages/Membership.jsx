@@ -97,17 +97,35 @@ const Membership = () => {
           </h3>
           
           <div className="flex flex-col gap-4">
-            {types.map((type) => (
-              <GlassCard key={type.id} hoverEffect={false} className="p-4">
-                <div className="flex justify-between items-start">
-                  <span className="font-bold text-white text-base font-sans">{type.name}</span>
-                  <span className="text-brand-secondary text-sm font-semibold font-mono">
-                    ₹{parseInt(type.fee).toLocaleString('en-IN')}
-                  </span>
-                </div>
-                <p className="text-gray-400 text-xs mt-1.5 leading-relaxed">{type.description}</p>
-              </GlassCard>
-            ))}
+            {types.map((type) => {
+              const isSelected = parseInt(formData.membershipTypeId) === type.id;
+              return (
+                <GlassCard 
+                  key={type.id} 
+                  hoverEffect={true} 
+                  onClick={() => setFormData({ ...formData, membershipTypeId: type.id.toString() })}
+                  className={`p-4 transition-all duration-300 cursor-pointer border ${
+                    isSelected 
+                      ? 'border-brand-primary/50 bg-brand-primary/5 shadow-md shadow-brand-primary/10 scale-[1.02]' 
+                      : 'border-white/5'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="font-bold text-white text-base font-sans">{type.name}</span>
+                    <span className="text-brand-secondary text-sm font-semibold font-mono">
+                      ₹{parseInt(type.fee).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                  <p className="text-gray-400 text-xs mt-1.5 leading-relaxed">{type.description}</p>
+                  {isSelected && (
+                    <div className="mt-3 text-xxs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-1.5 select-none">
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-ping" />
+                      Selected Tier
+                    </div>
+                  )}
+                </GlassCard>
+              );
+            })}
           </div>
         </div>
 
@@ -235,13 +253,32 @@ const Membership = () => {
                   />
                 </div>
 
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="btn-primary w-full py-4.5 rounded-xl text-sm font-bold mt-2 shadow-lg"
-                >
-                  {loading ? 'Submitting Application...' : 'Submit Application'}
-                </button>
+                <div className="flex gap-4 mt-2">
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="btn-primary flex-grow py-4 rounded-xl text-sm font-bold shadow-lg text-white"
+                  >
+                    {loading ? 'Submitting Application...' : 'Submit Application'}
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        name: '',
+                        email: '',
+                        phone: '',
+                        address: '',
+                        occupation: '',
+                        membershipTypeId: ''
+                      });
+                      setError('');
+                    }}
+                    className="btn-secondary px-6 py-4 rounded-xl text-sm font-semibold border-white/10 text-gray-400 hover:text-white"
+                  >
+                    Clear Form
+                  </button>
+                </div>
               </form>
             )}
           </GlassCard>
