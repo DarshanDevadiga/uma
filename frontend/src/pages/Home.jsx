@@ -65,16 +65,16 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-24 relative overflow-hidden">
+    <div className="flex flex-col gap-10 relative overflow-hidden">
       {/* 1. HERO SECTION */}
-      <section className="min-h-[90vh] flex items-center justify-center relative px-6 md:px-12 max-w-7xl mx-auto w-full pt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
-          {/* Left Column: Heading and CTAs */}
+      <section className="min-h-screen pt-20 pb-10 flex items-center justify-center relative px-6 md:px-12 w-full max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 w-full">
+          {/* Left Column: Text Content (45%) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="flex flex-col gap-6"
+            className="flex flex-col gap-6 lg:w-[45%] w-full"
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs font-semibold tracking-wider uppercase w-fit">
               <Zap size={12} className="animate-pulse" />
@@ -103,12 +103,12 @@ const Home = () => {
             </div>
           </motion.div>
 
-          {/* Right Column: 3D Globe */}
+          {/* Right Column: Large 3D Globe (55%) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
-            className="w-full"
+            className="lg:w-[55%] w-full flex justify-center items-center relative"
           >
             <ThreeGlobe />
           </motion.div>
