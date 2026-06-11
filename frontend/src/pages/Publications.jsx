@@ -1,7 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { BookOpen, Library, Landmark, Scale, Cpu, TreePine, Lightbulb, UserCheck, ArrowUpRight } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import api from '../services/api';
+
+// Animation variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 25 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
 
 const Publications = () => {
   const [publications, setPublications] = useState([]);
@@ -88,16 +110,21 @@ const Publications = () => {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10">
+      <motion.section 
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16"
+      >
         <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Academic outreach</span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Publications & Centres</h1>
         <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
         <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
           Access our research publications, enter the digital library, or explore our consulting, incubator, and career mentoring centers.
         </p>
-      </section>
+      </motion.section>
 
       {/* Grid */}
       {loading ? (
@@ -105,41 +132,49 @@ const Publications = () => {
           <div className="w-10 h-10 rounded-full border-t-2 border-brand-primary animate-spin" />
         </div>
       ) : (
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+        <motion.section 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 py-16 border-t border-white/5"
+        >
           {publications.map((pub, idx) => {
             const IconComponent = getIcon(pub.type);
             return (
-              <GlassCard 
-                key={pub.id || idx}
-                hoverEffect={true}
-                className="p-6 flex flex-col justify-between h-full hover:-translate-y-2 duration-300"
-              >
-                <div className="flex flex-col gap-4">
-                  {/* Icon */}
-                  <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary border border-brand-primary/25">
-                    <IconComponent size={18} />
+              <motion.div key={pub.id || idx} variants={revealItem}>
+                <GlassCard 
+                  hoverEffect={true}
+                  className="p-6 flex flex-col justify-between h-full"
+                >
+                  <div className="flex flex-col gap-4">
+                    {/* Icon */}
+                    <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary border border-brand-primary/25">
+                      <IconComponent size={18} />
+                    </div>
+                    
+                    <div className="flex flex-col gap-2">
+                      <h3 className="text-white font-bold text-lg leading-snug font-sans">{pub.title}</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">{pub.description}</p>
+                    </div>
                   </div>
-                  
-                  <div className="flex flex-col gap-2">
-                    <h3 className="text-white font-bold text-lg leading-snug font-sans">{pub.title}</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">{pub.description}</p>
-                  </div>
-                </div>
 
-                {/* Bottom link */}
-                <div className="mt-8 pt-4 border-t border-white/5 flex justify-end">
-                  <a 
-                    href={pub.link_url} 
-                    className="flex items-center gap-1 text-xs font-semibold text-brand-secondary hover:text-white transition-colors group"
-                  >
-                    Open Portal
-                    <ArrowUpRight size={14} className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
-                  </a>
-                </div>
-              </GlassCard>
+                  {/* Bottom link */}
+                  <div className="mt-8 pt-4 border-t border-white/5 flex justify-end">
+                    <motion.a 
+                      href={pub.link_url} 
+                      whileHover={{ x: 2, y: -2 }}
+                      className="flex items-center gap-1 text-xs font-semibold text-brand-secondary hover:text-white transition-colors group"
+                    >
+                      Open Portal
+                      <ArrowUpRight size={14} className="transition-transform" />
+                    </motion.a>
+                  </div>
+                </GlassCard>
+              </motion.div>
             );
           })}
-        </section>
+        </motion.section>
       )}
     </div>
   );

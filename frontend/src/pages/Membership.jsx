@@ -4,6 +4,27 @@ import { Users, FileText, CheckCircle, ShieldAlert } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import api from '../services/api';
 
+// Animation variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 25 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
+
 const Membership = () => {
   const [types, setTypes] = useState([]);
   const [formData, setFormData] = useState({
@@ -76,61 +97,81 @@ const Membership = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10">
-        <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Join UMA Portal</span>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Association Membership</h1>
-        <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
-        <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
-          Review membership tiers and submit your registration details. Your application will be reviewed by the board.
-        </p>
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
+        <motion.div
+          initial={{ opacity: 0, y: -25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col gap-4"
+        >
+          <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Join UMA Portal</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Association Membership</h1>
+          <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
+          <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
+            Review membership tiers and submit your registration details. Your application will be reviewed by the board.
+          </p>
+        </motion.div>
       </section>
 
       {/* Main Grid: Info on Left, Form on Right */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 py-16 border-t border-white/5">
         {/* Left Tiers Overview */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          <h3 className="text-xl font-bold text-white font-sans flex items-center gap-2">
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-100px' }}
+          className="lg:col-span-5 flex flex-col gap-6"
+        >
+          <motion.h3 variants={revealItem} className="text-xl font-bold text-white font-sans flex items-center gap-2">
             <Users className="text-brand-primary" size={20} />
             Membership Categories
-          </h3>
+          </motion.h3>
           
           <div className="flex flex-col gap-4">
             {types.map((type) => {
               const isSelected = parseInt(formData.membershipTypeId) === type.id;
               return (
-                <GlassCard 
-                  key={type.id} 
-                  hoverEffect={true} 
-                  onClick={() => setFormData({ ...formData, membershipTypeId: type.id.toString() })}
-                  className={`p-4 transition-all duration-300 cursor-pointer border ${
-                    isSelected 
-                      ? 'border-brand-primary/50 bg-brand-primary/5 shadow-md shadow-brand-primary/10 scale-[1.02]' 
-                      : 'border-white/5'
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <span className="font-bold text-white text-base font-sans">{type.name}</span>
-                    <span className="text-brand-secondary text-sm font-semibold font-mono">
-                      ₹{parseInt(type.fee).toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                  <p className="text-gray-400 text-xs mt-1.5 leading-relaxed">{type.description}</p>
-                  {isSelected && (
-                    <div className="mt-3 text-xxs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-1.5 select-none">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-ping" />
-                      Selected Tier
+                <motion.div key={type.id} variants={revealItem}>
+                  <GlassCard 
+                    hoverEffect={true} 
+                    onClick={() => setFormData({ ...formData, membershipTypeId: type.id.toString() })}
+                    className={`p-4 transition-all duration-300 cursor-pointer border ${
+                      isSelected 
+                        ? 'border-brand-primary/50 bg-brand-primary/5 shadow-md shadow-brand-primary/10 scale-[1.02]' 
+                        : 'border-white/5'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-white text-base font-sans">{type.name}</span>
+                      <span className="text-brand-secondary text-sm font-semibold font-mono">
+                        ₹{parseInt(type.fee).toLocaleString('en-IN')}
+                      </span>
                     </div>
-                  )}
-                </GlassCard>
+                    <p className="text-gray-400 text-xs mt-1.5 leading-relaxed">{type.description}</p>
+                    {isSelected && (
+                      <div className="mt-3 text-xxs font-bold text-brand-primary uppercase tracking-widest flex items-center gap-1.5 select-none">
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-ping" />
+                        Selected Tier
+                      </div>
+                    )}
+                  </GlassCard>
+                </motion.div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Form */}
-        <div className="lg:col-span-7">
+        <motion.div 
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+          className="lg:col-span-7"
+        >
           <GlassCard className="p-8 relative overflow-hidden" hoverEffect={false}>
             <div className="flex items-center gap-3 pb-4 border-b border-white/5 mb-6">
               <FileText className="text-brand-primary" size={22} />
@@ -150,12 +191,14 @@ const Membership = () => {
                 <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
                   Thank you for applying. A confirmation email has been dispatched. Our administrative panel will review your application soon.
                 </p>
-                <button 
+                <motion.button 
                   onClick={() => setSuccess(false)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   className="btn-secondary px-6 py-2.5 rounded-xl text-sm font-medium mt-4 border-white/10 text-white"
                 >
                   Apply for Another Tier
-                </button>
+                </motion.button>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -254,14 +297,16 @@ const Membership = () => {
                 </div>
 
                 <div className="flex gap-4 mt-2">
-                  <button 
+                  <motion.button 
                     type="submit" 
                     disabled={loading}
+                    whileHover={{ scale: 1.02, boxShadow: '0 0 15px rgba(212, 175, 55, 0.35)' }}
+                    whileTap={{ scale: 0.98 }}
                     className="btn-primary flex-grow py-4 rounded-xl text-sm font-bold shadow-lg text-white"
                   >
                     {loading ? 'Submitting Application...' : 'Submit Application'}
-                  </button>
-                  <button 
+                  </motion.button>
+                  <motion.button 
                     type="button"
                     onClick={() => {
                       setFormData({
@@ -274,15 +319,17 @@ const Membership = () => {
                       });
                       setError('');
                     }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     className="btn-secondary px-6 py-4 rounded-xl text-sm font-semibold border-white/10 text-gray-400 hover:text-white"
                   >
                     Clear Form
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             )}
           </GlassCard>
-        </div>
+        </motion.div>
       </section>
     </div>
   );

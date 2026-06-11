@@ -1,7 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import * as Icons from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import api from '../services/api';
+
+// Animation variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 25 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
 
 const Committees = () => {
   const [committees, setCommittees] = useState([]);
@@ -72,49 +94,61 @@ const Committees = () => {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10">
+      <motion.section 
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16"
+      >
         <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Specialized Councils</span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Committees</h1>
         <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
         <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
           Explore UMA's distinct committees directing research papers, commerce curriculum structures, and industry-academic interactions.
         </p>
-      </section>
+      </motion.section>
 
       {loading ? (
         <div className="flex justify-center items-center py-24">
           <div className="w-10 h-10 rounded-full border-t-2 border-brand-primary animate-spin" />
         </div>
       ) : (
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+        <motion.section 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 py-16 border-t border-white/5"
+        >
           {committees.map((committee, idx) => (
-            <GlassCard 
-              key={committee.id || idx}
-              hoverEffect={true} 
-              className="p-8 flex flex-col justify-between h-full hover:-translate-y-2 duration-300"
-            >
-              <div className="flex flex-col gap-5">
-                {/* Icon wrapper */}
-                <div className="w-12 h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/25 shadow-md shadow-brand-primary/5">
-                  {renderIcon(committee.icon, 22)}
+            <motion.div key={committee.id || idx} variants={revealItem}>
+              <GlassCard 
+                hoverEffect={true} 
+                className="p-8 flex flex-col justify-between h-full"
+              >
+                <div className="flex flex-col gap-5">
+                  {/* Icon wrapper */}
+                  <div className="w-12 h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/25 shadow-md shadow-brand-primary/5">
+                    {renderIcon(committee.icon, 22)}
+                  </div>
+
+                  <div className="flex flex-col gap-2.5">
+                    <h3 className="text-white font-bold text-lg leading-snug font-sans">{committee.name}</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">{committee.description}</p>
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-2.5">
-                  <h3 className="text-white font-bold text-lg leading-snug font-sans">{committee.name}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{committee.description}</p>
+                {/* Banner graphic indicator */}
+                <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-gray-500 font-medium font-mono">
+                  <span>COMMITTEE CODE: UMA-0{committee.id || idx + 1}</span>
+                  <span className="text-brand-secondary font-bold select-none">&bull; ACTIVE</span>
                 </div>
-              </div>
-
-              {/* Banner graphic indicator */}
-              <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-gray-500 font-medium font-mono">
-                <span>COMMITTEE CODE: UMA-0{committee.id || idx + 1}</span>
-                <span className="text-brand-secondary font-bold select-none">&bull; ACTIVE</span>
-              </div>
-            </GlassCard>
+              </GlassCard>
+            </motion.div>
           ))}
-        </section>
+        </motion.section>
       )}
     </div>
   );

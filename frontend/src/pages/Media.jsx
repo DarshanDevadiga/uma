@@ -9,6 +9,27 @@ import GlassCard from '../components/GlassCard';
 import Lightbox from '../components/Lightbox';
 import api, { BASE_URL } from '../services/api';
 
+// Animation variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 25 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
+
 const Media = () => {
   const [activeTab, setActiveTab] = useState('news'); // news, photos, videos
   
@@ -369,13 +390,20 @@ const Media = () => {
       </AnimatePresence>
 
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10">
-        <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Press & Galleries</span>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Media Centre</h1>
-        <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
-        <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
-          Browse our photo archives, stream video highlights, and read recently issued UMA news feeds and press releases.
-        </p>
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
+        <motion.div
+          initial={{ opacity: 0, y: -25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col gap-4"
+        >
+          <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Press & Galleries</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Media Centre</h1>
+          <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
+          <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
+            Browse our photo archives, stream video highlights, and read recently issued UMA news feeds and press releases.
+          </p>
+        </motion.div>
       </section>
 
       {/* Tabs Menu */}
@@ -468,7 +496,7 @@ const Media = () => {
           <div className="w-10 h-10 rounded-full border-t-2 border-brand-primary animate-spin" />
         </div>
       ) : (
-        <section className="mb-10 min-h-[40vh]">
+        <section className="py-16 mb-10 min-h-[40vh] border-t border-white/5">
           {/* A. NEWS BLOG TAB */}
           {activeTab === 'news' && (
             <div className="flex flex-col gap-8">
@@ -495,11 +523,17 @@ const Media = () => {
                     <>
                       {/* 1. Featured Article (Hero Layout) - Only visible on Page 1 */}
                       {featuredArticle && (
-                        <GlassCard 
-                          onClick={() => setSelectedArticle(featuredArticle)}
-                          className="p-6 md:p-8 hover:-translate-y-1 transition-all duration-300 border border-white/10 group cursor-pointer overflow-hidden relative"
-                          hoverEffect={true}
+                        <motion.div
+                          initial={{ opacity: 0, y: 25 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: '-80px' }}
+                          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                         >
+                          <GlassCard 
+                            onClick={() => setSelectedArticle(featuredArticle)}
+                            className="p-6 md:p-8 hover:-translate-y-1 transition-all duration-300 border border-white/10 group cursor-pointer overflow-hidden relative"
+                            hoverEffect={true}
+                          >
                           {/* Top-Right Tag Badge */}
                           <div className="absolute top-4 right-4 z-20">
                             <span className={`px-3 py-1 rounded-full border text-xxs font-extrabold uppercase tracking-wider backdrop-blur-md ${getCategoryBadgeColor(featuredArticle.type)}`}>
@@ -555,74 +589,82 @@ const Media = () => {
                               </div>
                             </div>
                           </div>
-                        </GlassCard>
+                          </GlassCard>
+                        </motion.div>
                       )}
 
                       {/* 2. Regular Articles Grid */}
                       {gridNews.length > 0 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <motion.div 
+                          variants={staggerContainer}
+                          initial="hidden"
+                          whileInView="show"
+                          viewport={{ once: true, margin: '-60px' }}
+                          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                        >
                           {gridNews.map((item, idx) => {
                             const readTime = getReadTime(item.content);
                             const badgeStyle = getCategoryBadgeColor(item.type);
                             
                             return (
-                              <GlassCard 
-                                key={item.id || idx} 
-                                onClick={() => setSelectedArticle(item)}
-                                className="flex flex-col justify-between h-full p-5 border border-white/5 hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
-                                hoverEffect={true}
-                              >
-                                <div className="flex flex-col gap-4">
-                                  {/* Article Card Image */}
-                                  <div className="w-full h-44 rounded-xl overflow-hidden border border-white/5 relative bg-black/30">
-                                    <img 
-                                      src={getNewsImage(item)} 
-                                      alt={item.title} 
-                                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" 
-                                    />
-                                    <div className="absolute top-3 right-3">
-                                      <span className={`px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${badgeStyle}`}>
-                                        {item.type.replace('_', ' ')}
+                              <motion.div variants={revealItem} key={item.id || idx}>
+                                <GlassCard 
+                                  onClick={() => setSelectedArticle(item)}
+                                  className="flex flex-col justify-between h-full p-5 border border-white/5 hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
+                                  hoverEffect={true}
+                                >
+                                  <div className="flex flex-col gap-4">
+                                    {/* Article Card Image */}
+                                    <div className="w-full h-44 rounded-xl overflow-hidden border border-white/5 relative bg-black/30">
+                                      <img 
+                                        src={getNewsImage(item)} 
+                                        alt={item.title} 
+                                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" 
+                                      />
+                                      <div className="absolute top-3 right-3">
+                                        <span className={`px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${badgeStyle}`}>
+                                          {item.type.replace('_', ' ')}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 text-xs text-gray-500 font-mono">
+                                      <span className="flex items-center gap-1.5">
+                                        <Calendar size={13} />
+                                        {new Date(item.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                      </span>
+                                      <span>&bull;</span>
+                                      <span className="flex items-center gap-1.5">
+                                        <Clock size={13} />
+                                        {readTime}
                                       </span>
                                     </div>
+                                    
+                                    <h3 className="text-white font-bold text-base md:text-lg leading-snug font-sans group-hover:text-brand-primary transition-colors line-clamp-2">
+                                      {item.title}
+                                    </h3>
+                                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 font-light">
+                                      {item.content}
+                                    </p>
                                   </div>
 
-                                  <div className="flex items-center gap-3 text-xs text-gray-500 font-mono">
-                                    <span className="flex items-center gap-1.5">
-                                      <Calendar size={13} />
-                                      {new Date(item.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                    </span>
-                                    <span>&bull;</span>
-                                    <span className="flex items-center gap-1.5">
-                                      <Clock size={13} />
-                                      {readTime}
-                                    </span>
-                                  </div>
-                                  
-                                  <h3 className="text-white font-bold text-base md:text-lg leading-snug font-sans group-hover:text-brand-primary transition-colors line-clamp-2">
-                                    {item.title}
-                                  </h3>
-                                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 font-light">
-                                    {item.content}
-                                  </p>
-                                </div>
-
-                                <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center text-brand-primary text-[9px] font-bold">
-                                      PO
+                                  <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-5 h-5 rounded-full bg-brand-primary/20 flex items-center justify-center text-brand-primary text-[9px] font-bold">
+                                        PO
+                                      </div>
+                                      <span className="text-[10px] text-gray-500 font-mono uppercase">Press Office</span>
                                     </div>
-                                    <span className="text-[10px] text-gray-500 font-mono uppercase">Press Office</span>
+                                    <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-secondary group-hover:text-white transition-colors">
+                                      Read More
+                                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                    </span>
                                   </div>
-                                  <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-secondary group-hover:text-white transition-colors">
-                                    Read More
-                                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                  </span>
-                                </div>
-                              </GlassCard>
+                                </GlassCard>
+                              </motion.div>
                             );
                           })}
-                        </div>
+                        </motion.div>
                       )}
 
                       {/* Pagination controls for News Blog */}
@@ -636,10 +678,17 @@ const Media = () => {
                 </div>
 
                 {/* Right Column (Editorial Sidebar) */}
-                <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
+                <motion.div 
+                  variants={staggerContainer}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: '-60px' }}
+                  className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24"
+                >
                   
                   {/* Widget 1: Announcements/Live Bulletins */}
-                  <GlassCard className="p-5 border border-white/5">
+                  <motion.div variants={revealItem}>
+                    <GlassCard className="p-5 border border-white/5">
                     <div className="flex items-center gap-2 mb-4">
                       <div className="w-7 h-7 rounded-lg bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center text-brand-primary">
                         <Bell size={14} className="animate-pulse" />
@@ -664,10 +713,12 @@ const Media = () => {
                         );
                       })}
                     </div>
-                  </GlassCard>
+                    </GlassCard>
+                  </motion.div>
 
                   {/* Widget 2: Premium Newsletter Form */}
-                  <GlassCard className="p-5 border border-white/10 relative overflow-hidden bg-luxury-gradient">
+                  <motion.div variants={revealItem}>
+                    <GlassCard className="p-5 border border-white/10 relative overflow-hidden bg-luxury-gradient">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl pointer-events-none" />
                     
                     <div className="flex items-center gap-2 mb-3">
@@ -715,10 +766,12 @@ const Media = () => {
                       </button>
                     </form>
                   </GlassCard>
+                  </motion.div>
 
                   {/* Widget 3: Resources/Downloads */}
-                  <GlassCard className="p-5 border border-white/5">
-                    <div className="flex items-center gap-2 mb-4">
+                  <motion.div variants={revealItem}>
+                    <GlassCard className="p-5 border border-white/5">
+                      <div className="flex items-center gap-2 mb-4">
                       <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
                         <BookOpen size={14} />
                       </div>
@@ -744,9 +797,11 @@ const Media = () => {
                       ))}
                     </div>
                   </GlassCard>
+                  </motion.div>
 
                   {/* Widget 4: Media Contact details */}
-                  <GlassCard className="p-5 border border-white/5 text-xs">
+                  <motion.div variants={revealItem}>
+                    <GlassCard className="p-5 border border-white/5 text-xs">
                     <h4 className="text-white font-bold text-sm mb-3 uppercase tracking-wider font-mono">Press Contact</h4>
                     <div className="flex flex-col gap-2 text-gray-400 font-light leading-relaxed">
                       <div className="flex items-center gap-2">
@@ -762,8 +817,9 @@ const Media = () => {
                       </div>
                     </div>
                   </GlassCard>
+                  </motion.div>
 
-                </div>
+                </motion.div>
 
               </div>
 
@@ -780,34 +836,45 @@ const Media = () => {
                 </div>
               ) : (
                 <>
-                  <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+                  <motion.div 
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: '-60px' }}
+                    className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6"
+                  >
                     {paginatedPhotos.map((photo, idx) => {
                       const finalUrl = photo.media_url.startsWith('http') 
                         ? photo.media_url 
                         : `${BASE_URL}${photo.media_url}`;
 
                       return (
-                        <div 
+                        <motion.div 
                           key={photo.id || idx} 
-                          className="break-inside-avoid glass-card rounded-2xl overflow-hidden border border-white/5 cursor-pointer relative group"
-                          onClick={() => handleOpenLightbox(photo.media_url, photo.title)}
+                          variants={revealItem}
+                          className="break-inside-avoid"
                         >
-                          <img 
-                            src={finalUrl} 
-                            alt={photo.title}
-                            className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] duration-350"
-                          />
-                          {/* Hover Overlay */}
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                            <span className="text-white font-bold text-sm truncate">{photo.title}</span>
-                            <span className="text-gray-400 text-xxs font-mono mt-1 flex items-center gap-1">
-                              <Eye size={12} /> Click to Expand
-                            </span>
+                          <div 
+                            className="glass-card rounded-2xl overflow-hidden border border-white/5 cursor-pointer relative group"
+                            onClick={() => handleOpenLightbox(photo.media_url, photo.title)}
+                          >
+                            <img 
+                              src={finalUrl} 
+                              alt={photo.title}
+                              className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] duration-350"
+                            />
+                            {/* Hover Overlay */}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                              <span className="text-white font-bold text-sm truncate">{photo.title}</span>
+                              <span className="text-gray-400 text-xxs font-mono mt-1 flex items-center gap-1">
+                                <Eye size={12} /> Click to Expand
+                              </span>
+                            </div>
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })}
-                  </div>
+                  </motion.div>
 
                   {/* Photo Gallery Pagination */}
                   <PaginationControls 
@@ -830,32 +897,40 @@ const Media = () => {
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <motion.div 
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: '-60px' }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                  >
                     {paginatedVideos.map((vid, idx) => (
-                      <GlassCard key={vid.id || idx} hoverEffect={true} className="p-4 flex flex-col justify-between h-full border border-white/5">
-                        <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/5 bg-black/40 flex items-center justify-center group">
-                          <img 
-                            src={vid.thumbnail_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=60'} 
-                            alt={vid.title} 
-                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 duration-500" 
-                          />
-                          <a 
-                            href={vid.media_url} 
-                            target="_blank" 
-                            rel="noreferrer"
-                            className="relative z-10 w-12 h-12 rounded-full bg-brand-primary flex items-center justify-center text-white shadow-lg shadow-brand-primary/30 group-hover:scale-110 duration-200"
-                          >
-                            <Play size={20} className="fill-white ml-0.5" />
-                          </a>
-                        </div>
-                        
-                        <div className="pt-4 px-2">
-                          <h4 className="text-white font-bold text-sm truncate">{vid.title}</h4>
-                          <span className="text-xxs text-gray-500 font-mono block mt-1 uppercase">Video Link</span>
-                        </div>
-                      </GlassCard>
+                      <motion.div key={vid.id || idx} variants={revealItem}>
+                        <GlassCard hoverEffect={true} className="p-4 flex flex-col justify-between h-full border border-white/5">
+                          <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/5 bg-black/40 flex items-center justify-center group">
+                            <img 
+                              src={vid.thumbnail_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=60'} 
+                              alt={vid.title} 
+                              className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 duration-500" 
+                            />
+                            <a 
+                              href={vid.media_url} 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className="relative z-10 w-12 h-12 rounded-full bg-brand-primary flex items-center justify-center text-white shadow-lg shadow-brand-primary/30 group-hover:scale-110 duration-200"
+                            >
+                              <Play size={20} className="fill-white ml-0.5" />
+                            </a>
+                          </div>
+                          
+                          <div className="pt-4 px-2">
+                            <h4 className="text-white font-bold text-sm truncate">{vid.title}</h4>
+                            <span className="text-xxs text-gray-500 font-mono block mt-1 uppercase">Video Link</span>
+                          </div>
+                        </GlassCard>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
 
                   {/* Video Stream Pagination */}
                   <PaginationControls 

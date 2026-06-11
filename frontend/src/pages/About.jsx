@@ -3,6 +3,27 @@ import { motion } from 'framer-motion';
 import { Shield, Target, Calendar, Award, BookOpen, Landmark, Sparkles } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 
+// Animation variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 30 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
+
 const About = () => {
   const aspects = [
     {
@@ -28,13 +49,13 @@ const About = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-20">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
       {/* Hero Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-6 pt-10">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-6 py-12 pt-16">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -25 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col gap-4"
         >
           <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Who We Are</span>
@@ -49,8 +70,14 @@ const About = () => {
       </section>
 
       {/* Overview & Core History */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        <div className="lg:col-span-6 flex flex-col gap-6">
+      <motion.section 
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-100px' }}
+        className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-16 border-t border-white/5"
+      >
+        <motion.div variants={revealItem} className="lg:col-span-6 flex flex-col gap-6">
           <h2 className="text-2xl md:text-3xl font-bold text-white font-sans flex items-center gap-2">
             <Landmark className="text-brand-primary" size={24} />
             Our Legacy & Foundation
@@ -61,8 +88,8 @@ const About = () => {
           <p className="text-gray-400 leading-relaxed">
             Over the years, UMA has evolved into a regional management association, incorporating executive board members from leading companies, organizing national-level conferences, and certifying professional training courses.
           </p>
-        </div>
-        <div className="lg:col-span-6 relative">
+        </motion.div>
+        <motion.div variants={revealItem} className="lg:col-span-6 relative">
           {/* Decorative glass banner */}
           <div className="glass-card p-8 rounded-3xl relative overflow-hidden border border-white/5">
             <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/10 to-brand-secondary/5 opacity-40 pointer-events-none" />
@@ -72,62 +99,80 @@ const About = () => {
               "To combine absolute scientific management methods with a deep ethical framework, guiding coastal Karnataka's commerce curriculum and executive ecosystem towards sustainable global standards."
             </p>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* Vision & Mission Deep-Dive */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <GlassCard className="p-8 relative overflow-hidden" hoverEffect={false}>
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-6 bg-brand-primary rounded-full" />
-            Vision Statement
-          </h3>
-          <ul className="flex flex-col gap-3.5 text-gray-400 text-sm leading-relaxed">
-            <li>• Serving as the primary interface for industry-academic collaborations in management.</li>
-            <li>• Supporting commerce and management research initiatives targeting coastal commerce networks.</li>
-            <li>• Fostering continuous educational upskilling for pre-university and degree college lecturers.</li>
-            <li>• Building sustainable leadership models that emphasize environmental and community welfare.</li>
-          </ul>
-        </GlassCard>
+      <motion.section 
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-100px' }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 py-16 border-t border-white/5"
+      >
+        <motion.div variants={revealItem}>
+          <GlassCard className="p-8 relative overflow-hidden h-full" hoverEffect={true}>
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-brand-primary rounded-full" />
+              Vision Statement
+            </h3>
+            <ul className="flex flex-col gap-3.5 text-gray-400 text-sm leading-relaxed">
+              <li>• Serving as the primary interface for industry-academic collaborations in management.</li>
+              <li>• Supporting commerce and management research initiatives targeting coastal commerce networks.</li>
+              <li>• Fostering continuous educational upskilling for pre-university and degree college lecturers.</li>
+              <li>• Building sustainable leadership models that emphasize environmental and community welfare.</li>
+            </ul>
+          </GlassCard>
+        </motion.div>
 
-        <GlassCard className="p-8 relative overflow-hidden" hoverEffect={false}>
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-6 bg-brand-secondary rounded-full" />
-            Mission Statement
-          </h3>
-          <ul className="flex flex-col gap-3.5 text-gray-400 text-sm leading-relaxed">
-            <li>• Conducting executive seminars, lecture series, and national conferences annually.</li>
-            <li>• Publishing peer-reviewed commerce research journals (Poornaprajna Journals).</li>
-            <li>• Promoting startup incubators and digital literacy workshops for local commerce students.</li>
-            <li>• Offering consultancy services to small and medium enterprises (SMEs) in Udupi.</li>
-          </ul>
-        </GlassCard>
-      </section>
+        <motion.div variants={revealItem}>
+          <GlassCard className="p-8 relative overflow-hidden h-full" hoverEffect={true}>
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-brand-secondary rounded-full" />
+              Mission Statement
+            </h3>
+            <ul className="flex flex-col gap-3.5 text-gray-400 text-sm leading-relaxed">
+              <li>• Conducting executive seminars, lecture series, and national conferences annually.</li>
+              <li>• Publishing peer-reviewed commerce research journals (Poornaprajna Journals).</li>
+              <li>• Promoting startup incubators and digital literacy workshops for local commerce students.</li>
+              <li>• Offering consultancy services to small and medium enterprises (SMEs) in Udupi.</li>
+            </ul>
+          </GlassCard>
+        </motion.div>
+      </motion.section>
 
       {/* Key Aspects Grid */}
-      <section className="flex flex-col gap-8">
-        <div className="text-center">
+      <motion.section 
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-100px' }}
+        className="flex flex-col gap-8 py-16 border-t border-white/5 mb-10"
+      >
+        <motion.div variants={revealItem} className="text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white font-sans">Core Aspects of UMA</h2>
           <p className="text-gray-500 text-xs uppercase tracking-widest mt-1">Our operations and programs</p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {aspects.map((aspect, idx) => {
             const Icon = aspect.icon;
             return (
-              <GlassCard key={idx} hoverEffect={true} className="flex gap-5 p-6 items-start">
-                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
-                  <Icon size={18} />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <h4 className="text-white font-bold text-base">{aspect.title}</h4>
-                  <p className="text-gray-400 text-sm leading-relaxed">{aspect.description}</p>
-                </div>
-              </GlassCard>
+              <motion.div key={idx} variants={revealItem}>
+                <GlassCard hoverEffect={true} className="flex gap-5 p-6 items-start h-full">
+                  <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
+                    <Icon size={18} />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <h4 className="text-white font-bold text-base">{aspect.title}</h4>
+                    <p className="text-gray-400 text-sm leading-relaxed">{aspect.description}</p>
+                  </div>
+                </GlassCard>
+              </motion.div>
             );
           })}
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 };

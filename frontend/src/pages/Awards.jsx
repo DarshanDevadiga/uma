@@ -4,6 +4,27 @@ import { Award, FileText, Upload, CheckCircle, ShieldAlert } from 'lucide-react'
 import GlassCard from '../components/GlassCard';
 import api from '../services/api';
 
+// Animation variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 25 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
+  }
+};
+
 const Awards = () => {
   const [awards, setAwards] = useState([]);
   const [formData, setFormData] = useState({
@@ -96,41 +117,62 @@ const Awards = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10">
-        <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono font-sans">Recognitions</span>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Awards & Accolades</h1>
-        <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
-        <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
-          Nominate outstanding business managers, local business enterprises, or university lecturers for the annual UMA achievements awards.
-        </p>
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
+        <motion.div
+          initial={{ opacity: 0, y: -25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col gap-4"
+        >
+          <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Recognitions</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Awards & Accolades</h1>
+          <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
+          <p className="text-gray-400 leading-relaxed text-sm md:text-base font-light">
+            Nominate outstanding business managers, local business enterprises, or university lecturers for the annual UMA achievements awards.
+          </p>
+        </motion.div>
       </section>
 
       {/* Grid: Categories info left, form right */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 py-16 border-t border-white/5">
         {/* Categories Details */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          <h3 className="text-xl font-bold text-white font-sans flex items-center gap-2">
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-100px' }}
+          className="lg:col-span-5 flex flex-col gap-6"
+        >
+          <motion.h3 variants={revealItem} className="text-xl font-bold text-white font-sans flex items-center gap-2">
             <Award className="text-brand-primary" size={20} />
             Accolade Categories
-          </h3>
+          </motion.h3>
 
           <div className="flex flex-col gap-4">
             {awards.map((award) => (
-              <GlassCard key={award.id} hoverEffect={false} className="p-5 relative border border-white/5">
-                <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary mb-3">
-                  <Award size={15} />
-                </div>
-                <h4 className="text-white font-bold text-base font-sans">{award.name}</h4>
-                <p className="text-gray-400 text-xs mt-2 leading-relaxed">{award.description}</p>
-              </GlassCard>
+              <motion.div key={award.id} variants={revealItem}>
+                <GlassCard hoverEffect={true} className="p-5 relative border border-white/5 h-full">
+                  <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary mb-3">
+                    <Award size={15} />
+                  </div>
+                  <h4 className="text-white font-bold text-base font-sans">{award.name}</h4>
+                  <p className="text-gray-400 text-xs mt-2 leading-relaxed">{award.description}</p>
+                </GlassCard>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Nomination Form */}
-        <div className="lg:col-span-7">
+        <motion.div 
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          className="lg:col-span-7"
+        >
           <GlassCard className="p-8" hoverEffect={false}>
             <div className="flex items-center gap-3 pb-4 border-b border-white/5 mb-6">
               <FileText className="text-brand-primary" size={22} />
@@ -150,12 +192,14 @@ const Awards = () => {
                 <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
                   Thank you for submitting your nomination. The review committee will evaluate the documents. A confirmation receipt has been sent via email.
                 </p>
-                <button 
+                <motion.button 
                   onClick={() => setSuccess(false)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   className="btn-secondary px-6 py-2.5 rounded-xl text-sm font-medium mt-4 text-white border-white/10"
                 >
                   Submit Another Nomination
-                </button>
+                </motion.button>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -265,17 +309,19 @@ const Awards = () => {
                   </div>
                 </div>
 
-                <button 
+                <motion.button 
                   type="submit" 
                   disabled={loading}
-                  className="btn-primary w-full py-4 rounded-xl text-sm font-bold mt-2 shadow-lg"
+                  whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(212, 175, 55, 0.35)' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="btn-primary w-full py-4 rounded-xl text-sm font-bold mt-2 shadow-lg text-white"
                 >
                   {loading ? 'Submitting Nomination...' : 'Submit Nomination Documents'}
-                </button>
+                </motion.button>
               </form>
             )}
           </GlassCard>
-        </div>
+        </motion.div>
       </section>
     </div>
   );

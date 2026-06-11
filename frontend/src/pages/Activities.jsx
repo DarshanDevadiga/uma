@@ -64,9 +64,9 @@ const Activities = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
         <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Our Calendar</span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Activities Timeline</h1>
         <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
@@ -76,7 +76,7 @@ const Activities = () => {
       </section>
 
       {/* Timeline Layout */}
-      <section className="relative max-w-4xl mx-auto w-full mb-10 pb-10">
+      <section className="relative max-w-4xl mx-auto w-full mb-10 py-16 border-t border-white/5">
         {/* Center line for larger screens */}
         <div className="absolute left-4 md:left-1/2 top-4 bottom-4 w-0.5 bg-gradient-to-b from-brand-primary via-brand-secondary to-brand-accent opacity-25" />
 
@@ -84,6 +84,8 @@ const Activities = () => {
           {activities.map((activity, idx) => {
             const Icon = activity.icon;
             const isLeft = idx % 2 === 0;
+            // Modulo delay to prevent compounding delays deep down the page
+            const staggerDelay = (idx % 3) * 0.12;
 
             return (
               <div 
@@ -93,16 +95,22 @@ const Activities = () => {
                 }`}
               >
                 {/* Timeline Node Icon */}
-                <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 z-10 w-9 h-9 rounded-full bg-dark-card border-2 border-brand-primary flex items-center justify-center shadow-lg shadow-brand-primary/10">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.5, delay: staggerDelay }}
+                  className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 z-10 w-9 h-9 rounded-full bg-dark-card border-2 border-brand-primary flex items-center justify-center shadow-lg shadow-brand-primary/10"
+                >
                   <Icon size={14} className={activity.color} />
-                </div>
+                </motion.div>
 
                 {/* Timeline Panel Card */}
                 <motion.div
-                  initial={{ opacity: 0, x: isLeft ? -40 : 40 }}
+                  initial={{ opacity: 0, x: isLeft ? -35 : 35 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: '-100px' }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: staggerDelay }}
                   className={`w-full md:w-[45%] pl-10 md:pl-0 ${
                     isLeft ? 'md:text-right' : 'md:text-left'
                   }`}
