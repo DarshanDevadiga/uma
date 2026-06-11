@@ -67,7 +67,7 @@ const Home = () => {
   return (
     <div className="flex flex-col gap-10 relative overflow-hidden">
       {/* 1. HERO SECTION */}
-      <section className="min-h-screen pt-20 pb-10 flex items-center justify-center relative px-6 md:px-12 w-full max-w-7xl mx-auto">
+      <section className="min-h-[90vh] pt-12 pb-10 flex items-center justify-center relative px-6 md:px-12 w-full max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 w-full">
           {/* Left Column: Text Content (45%) */}
           <motion.div
