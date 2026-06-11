@@ -70,7 +70,7 @@ const Home = () => {
       <section className="relative w-full h-screen min-h-[600px] overflow-hidden flex items-center bg-[#0a0a0c]">
         {/* Layer 1 (Background): Animated Globe */}
         <div 
-          className="absolute z-[1] pointer-events-none lg:pointer-events-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:translate-x-0 lg:-translate-y-1/2 lg:left-auto lg:right-[-10%] w-[580px] h-[580px] md:w-[720px] md:h-[720px] md:left-[60%] lg:w-[900px] lg:h-[900px] opacity-30 md:opacity-40 lg:opacity-100"
+          className="absolute z-[1] pointer-events-none lg:pointer-events-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:translate-x-0 lg:-translate-y-1/2 lg:left-auto lg:right-[-10%] w-[500px] h-[500px] md:w-[640px] md:h-[640px] md:left-[60%] lg:w-[800px] lg:h-[800px] opacity-30 md:opacity-40 lg:opacity-100"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
