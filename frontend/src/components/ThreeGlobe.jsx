@@ -173,9 +173,9 @@ const FloatingDots = () => {
 // Canvas wrapper for Globe
 const ThreeGlobe = () => {
   return (
-    <div className="w-full h-full flex items-center justify-center relative select-none">
+    <div className="w-full h-[350px] sm:h-[450px] md:h-[550px] lg:h-[650px] flex items-center justify-center relative select-none">
       <Canvas
-        camera={{ position: [0, 0, 7.0], fov: 45 }}
+        camera={{ position: [0, 0, 7.6], fov: 45 }}
         gl={{ antialias: true }}
       >
         <ambientLight intensity={0.4} />
