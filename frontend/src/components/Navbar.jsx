@@ -172,7 +172,7 @@ const Navbar = () => {
 
         {/* Portal CTAs */}
         <div className="hidden lg:flex items-center gap-4">
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <div className="flex items-center gap-3">
               {user?.role === 'admin' ? (
                 <Link to="/admin/dashboard" className="btn-secondary px-4 py-2 rounded-xl text-sm flex items-center gap-1.5 border-brand-primary/20 text-brand-primary hover:border-brand-primary/40">
@@ -189,10 +189,6 @@ const Navbar = () => {
                 Log Out
               </button>
             </div>
-          ) : (
-            <Link to="/admin/login" className="btn-secondary px-4 py-2 rounded-xl text-sm border-white/5 hover:bg-white/5">
-              Admin Login
-            </Link>
           )}
           <Link to="/membership" className="btn-primary px-4 py-2 rounded-xl text-sm font-medium">
             Join UMA
@@ -278,7 +274,7 @@ const Navbar = () => {
 
             {/* Mobile Actions */}
             <div className="flex flex-col gap-3 pt-6 border-t border-white/5">
-              {isAuthenticated ? (
+              {isAuthenticated && (
                 <>
                   <Link 
                     to={user?.role === 'admin' ? '/admin/dashboard' : '/'} 
@@ -290,10 +286,6 @@ const Navbar = () => {
                     Log Out
                   </button>
                 </>
-              ) : (
-                <Link to="/admin/login" className="btn-secondary py-2.5 rounded-xl text-center text-sm border-white/5 hover:bg-white/5">
-                  Admin Login
-                </Link>
               )}
               <Link to="/membership" className="btn-primary py-2.5 rounded-xl text-center text-sm font-medium">
                 Join UMA
