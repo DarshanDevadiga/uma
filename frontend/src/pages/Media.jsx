@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Newspaper, Image as ImageIcon, Video, Calendar, ArrowRight, Play, Eye, Clock, X, 
   BookOpen, Search, Share2, Twitter, Linkedin, Facebook, Link as LinkIcon, Mail, Phone, 
-  FileText, Download, Bell, Send, Check, ChevronRight
+  FileText, Download, Bell, Send, Check
 } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import Lightbox from '../components/Lightbox';
@@ -18,9 +18,18 @@ const Media = () => {
   
   const [loading, setLoading] = useState(true);
 
-  // Search & Filtering for news
+  // Search & Filtering states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all'); // all, news, press_release
+
+  // Pagination states
+  const [newsPage, setNewsPage] = useState(1);
+  const [photoPage, setPhotoPage] = useState(1);
+  const [videoPage, setVideoPage] = useState(1);
+
+  const NEWS_PER_PAGE = 2;   // Small size to demonstrate pagination with mock data
+  const PHOTOS_PER_PAGE = 4; // Small size to demonstrate pagination
+  const VIDEOS_PER_PAGE = 3; // Small size to demonstrate pagination
 
   // Live bulletin list
   const bulletins = [
@@ -136,6 +145,13 @@ const Media = () => {
     fetchMediaData();
   }, [activeTab]);
 
+  // Reset pagination indexes when filters or search queries change
+  useEffect(() => {
+    setNewsPage(1);
+    setPhotoPage(1);
+    setVideoPage(1);
+  }, [searchQuery, selectedCategory]);
+
   useEffect(() => {
     if (selectedArticle) {
       setScrollProgress(0);
@@ -203,12 +219,22 @@ const Media = () => {
           { id: 1, title: 'Inaugural Meeting 2026', media_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60' },
           { id: 2, title: 'Outstanding Manager Jury Panel', media_url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=60' },
           { id: 3, title: 'Commerce Teachers Seminar', media_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&auto=format&fit=crop&q=60' },
-          { id: 4, title: 'Auditorium Audience Session', media_url: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=60' }
+          { id: 4, title: 'Auditorium Audience Session', media_url: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=60' },
+          { id: 5, title: 'Executive Board Review Panel', media_url: 'https://images.unsplash.com/photo-1542744173-8e0ee26d22dd?w=800&auto=format&fit=crop&q=60' },
+          { id: 6, title: 'Regional Startups Incubator', media_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&auto=format&fit=crop&q=60' },
+          { id: 7, title: 'Annual High-Tea Networking', media_url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=60' },
+          { id: 8, title: 'Commerce PU Spreadsheet Training', media_url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=60' },
+          { id: 9, title: 'Coastal Trade History Seminar', media_url: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800&auto=format&fit=crop&q=60' },
+          { id: 10, title: 'Post-Graduate Board Session', media_url: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&auto=format&fit=crop&q=60' }
         ]);
       } else if (activeTab === 'videos') {
         setVideos([
           { id: 1, title: 'UMA Annual Day Highlights', media_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=60' },
-          { id: 2, title: 'Discussion on AI in Coastal Trade', media_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail_url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=60' }
+          { id: 2, title: 'Discussion on AI in Coastal Trade', media_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail_url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=60' },
+          { id: 3, title: 'Corporate Governance and Ethics Session', media_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail_url: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=60' },
+          { id: 4, title: 'Excel Dashboards for Managers Tutorial', media_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60' },
+          { id: 5, title: 'Coastal Logistics and Ports Roundtable', media_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&auto=format&fit=crop&q=60' },
+          { id: 6, title: 'Young Manager Award Interview Highlights', media_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', thumbnail_url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&auto=format&fit=crop&q=60' }
         ]);
       }
     } finally {
@@ -231,7 +257,7 @@ const Media = () => {
     }
   };
 
-  // Filter and search computation for news feed
+  // 1. News Filtering and Pagination calculations
   const filteredNews = news.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           item.content.toLowerCase().includes(searchQuery.toLowerCase());
@@ -239,14 +265,86 @@ const Media = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // Split news into Featured and Regular
-  const featuredArticle = filteredNews.length > 0 ? filteredNews[0] : null;
-  const regularNews = filteredNews.length > 1 ? filteredNews.slice(1) : [];
+  const featuredArticle = (newsPage === 1 && filteredNews.length > 0) ? filteredNews[0] : null;
+
+  const gridNews = (() => {
+    if (filteredNews.length === 0) return [];
+    if (newsPage === 1) {
+      // Page 1 skips the featured article (index 0) and gets up to NEWS_PER_PAGE items
+      return filteredNews.slice(1, 1 + NEWS_PER_PAGE);
+    } else {
+      // Subsequent pages skip the first page items
+      const start = 1 + (newsPage - 1) * NEWS_PER_PAGE;
+      const end = start + NEWS_PER_PAGE;
+      return filteredNews.slice(start, end);
+    }
+  })();
+
+  const totalNewsPages = (() => {
+    if (filteredNews.length <= 1) return 1;
+    const remainingCount = filteredNews.length - 1 - NEWS_PER_PAGE;
+    if (remainingCount <= 0) return 1;
+    return 1 + Math.ceil(remainingCount / NEWS_PER_PAGE);
+  })();
+
+  // 2. Photos Filtering and Pagination calculations
+  const filteredPhotos = photos.filter(photo => 
+    photo.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const paginatedPhotos = filteredPhotos.slice((photoPage - 1) * PHOTOS_PER_PAGE, photoPage * PHOTOS_PER_PAGE);
+  const totalPhotoPages = Math.ceil(filteredPhotos.length / PHOTOS_PER_PAGE);
+
+  // 3. Videos Filtering and Pagination calculations
+  const filteredVideos = videos.filter(vid => 
+    vid.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedVideos = filteredVideos.slice((videoPage - 1) * VIDEOS_PER_PAGE, videoPage * VIDEOS_PER_PAGE);
+  const totalVideoPages = Math.ceil(filteredVideos.length / VIDEOS_PER_PAGE);
 
   // Get related articles for detail view recommendations
   const getRelatedArticles = (article) => {
     if (!article) return [];
     return news.filter(item => item.id !== article.id).slice(0, 2);
+  };
+
+  // Reusable Pagination Component
+  const PaginationControls = ({ currentPage, totalPages, onPageChange }) => {
+    if (totalPages <= 1) return null;
+    return (
+      <div className="flex justify-center items-center gap-2 mt-8">
+        <button
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 rounded-xl text-xs font-semibold border border-white/5 bg-white/5 text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:bg-white/5 transition-all duration-200"
+        >
+          Prev
+        </button>
+        
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-250 border ${
+              currentPage === page
+                ? 'bg-brand-primary border-brand-primary text-white shadow-md shadow-brand-primary/25'
+                : 'border-white/5 bg-white/2 text-gray-400 hover:text-white'
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+        
+        <button
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 rounded-xl text-xs font-semibold border border-white/5 bg-white/5 text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:bg-white/5 transition-all duration-200"
+        >
+          Next
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -310,6 +408,59 @@ const Media = () => {
         </div>
       </section>
 
+      {/* Global Search and Filtering Row */}
+      <section className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+        {/* Search Input */}
+        <div className="relative w-full md:w-80">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={`Search ${activeTab === 'news' ? 'news & statements' : activeTab === 'photos' ? 'photo galleries' : 'videos'}...`}
+            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 focus:border-brand-primary/50 text-white rounded-xl text-sm focus:outline-none transition-all placeholder-gray-500"
+          />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
+        {/* Category filters (Specific to News tab) */}
+        {activeTab === 'news' && (
+          <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar py-1">
+            {[
+              { id: 'all', label: 'All Feeds' },
+              { id: 'news', label: 'Association News' },
+              { id: 'press_release', label: 'Press Releases' }
+            ].map((chip) => (
+              <button
+                key={chip.id}
+                onClick={() => setSelectedCategory(chip.id)}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all ${
+                  selectedCategory === chip.id
+                    ? 'bg-brand-primary/10 border-brand-primary text-brand-primary shadow-sm shadow-brand-primary/5'
+                    : 'bg-white/5 border-white/5 text-gray-400 hover:text-white'
+                }`}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Mini stats label for Photos/Videos search */}
+        {activeTab !== 'news' && (
+          <span className="text-xs text-gray-500 font-mono">
+            {activeTab === 'photos' ? `${filteredPhotos.length} Photos` : `${filteredVideos.length} Videos`} found
+          </span>
+        )}
+      </section>
+
       {/* Content Rendering */}
       {loading ? (
         <div className="flex justify-center items-center py-24">
@@ -321,50 +472,6 @@ const Media = () => {
           {activeTab === 'news' && (
             <div className="flex flex-col gap-8">
               
-              {/* Blog Sub-filters and Search Row */}
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
-                {/* Search Bar */}
-                <div className="relative w-full md:w-80">
-                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search news & statements..."
-                    className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 focus:border-brand-primary/50 text-white rounded-xl text-sm focus:outline-none transition-all placeholder-gray-500"
-                  />
-                  {searchQuery && (
-                    <button 
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-
-                {/* Filter Chips */}
-                <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar py-1">
-                  {[
-                    { id: 'all', label: 'All Feeds' },
-                    { id: 'news', label: 'Association News' },
-                    { id: 'press_release', label: 'Press Releases' }
-                  ].map((chip) => (
-                    <button
-                      key={chip.id}
-                      onClick={() => setSelectedCategory(chip.id)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all ${
-                        selectedCategory === chip.id
-                          ? 'bg-brand-primary/10 border-brand-primary text-brand-primary shadow-sm shadow-brand-primary/5'
-                          : 'bg-white/5 border-white/5 text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      {chip.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* News Layout Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
@@ -385,7 +492,7 @@ const Media = () => {
                     </div>
                   ) : (
                     <>
-                      {/* 1. Featured Article (Hero Layout) */}
+                      {/* 1. Featured Article (Hero Layout) - Only visible on Page 1 */}
                       {featuredArticle && (
                         <GlassCard 
                           onClick={() => setSelectedArticle(featuredArticle)}
@@ -408,7 +515,7 @@ const Media = () => {
                                 className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out" 
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent" />
-                              <div className="absolute bottom-4 left-4 px-3 py-1 rounded-full text-xxs font-bold uppercase tracking-wider border backdrop-blur-md bg-brand-primary/25 border-brand-primary/40 text-brand-primary">
+                              <div className="absolute bottom-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md bg-brand-primary/25 border-brand-primary/40 text-brand-primary">
                                 Featured Story
                               </div>
                             </div>
@@ -451,9 +558,9 @@ const Media = () => {
                       )}
 
                       {/* 2. Regular Articles Grid */}
-                      {regularNews.length > 0 && (
+                      {gridNews.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {regularNews.map((item, idx) => {
+                          {gridNews.map((item, idx) => {
                             const readTime = getReadTime(item.content);
                             const badgeStyle = getCategoryBadgeColor(item.type);
                             
@@ -516,6 +623,13 @@ const Media = () => {
                           })}
                         </div>
                       )}
+
+                      {/* Pagination controls for News Blog */}
+                      <PaginationControls 
+                        currentPage={newsPage} 
+                        totalPages={totalNewsPages} 
+                        onPageChange={setNewsPage} 
+                      />
                     </>
                   )}
                 </div>
@@ -657,72 +771,98 @@ const Media = () => {
 
           {/* B. PHOTO GALLERY */}
           {activeTab === 'photos' && (
-            <div>
-              {photos.length === 0 ? (
-                <div className="text-center py-16 text-gray-500 text-sm bg-white/[0.01] border border-dashed border-white/10 rounded-2xl">No photo records.</div>
-              ) : (
-                <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
-                  {photos.map((photo, idx) => {
-                    const finalUrl = photo.media_url.startsWith('http') 
-                      ? photo.media_url 
-                      : `${BASE_URL}${photo.media_url}`;
-
-                    return (
-                      <div 
-                        key={photo.id || idx} 
-                        className="break-inside-avoid glass-card rounded-2xl overflow-hidden border border-white/5 cursor-pointer relative group"
-                        onClick={() => handleOpenLightbox(photo.media_url, photo.title)}
-                      >
-                        <img 
-                          src={finalUrl} 
-                          alt={photo.title}
-                          className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] duration-300"
-                        />
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                          <span className="text-white font-bold text-sm truncate">{photo.title}</span>
-                          <span className="text-gray-400 text-xxs font-mono mt-1 flex items-center gap-1">
-                            <Eye size={12} /> Click to Expand
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+            <div className="flex flex-col gap-8">
+              {filteredPhotos.length === 0 ? (
+                <div className="text-center py-24 text-gray-500 text-sm bg-white/[0.01] border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3">
+                  <ImageIcon size={36} className="text-gray-600" />
+                  <div>No photo records matching current search.</div>
                 </div>
+              ) : (
+                <>
+                  <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+                    {paginatedPhotos.map((photo, idx) => {
+                      const finalUrl = photo.media_url.startsWith('http') 
+                        ? photo.media_url 
+                        : `${BASE_URL}${photo.media_url}`;
+
+                      return (
+                        <div 
+                          key={photo.id || idx} 
+                          className="break-inside-avoid glass-card rounded-2xl overflow-hidden border border-white/5 cursor-pointer relative group"
+                          onClick={() => handleOpenLightbox(photo.media_url, photo.title)}
+                        >
+                          <img 
+                            src={finalUrl} 
+                            alt={photo.title}
+                            className="w-full h-auto object-cover rounded-2xl group-hover:scale-[1.02] duration-350"
+                          />
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                            <span className="text-white font-bold text-sm truncate">{photo.title}</span>
+                            <span className="text-gray-400 text-xxs font-mono mt-1 flex items-center gap-1">
+                              <Eye size={12} /> Click to Expand
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Photo Gallery Pagination */}
+                  <PaginationControls 
+                    currentPage={photoPage} 
+                    totalPages={totalPhotoPages} 
+                    onPageChange={setPhotoPage} 
+                  />
+                </>
               )}
             </div>
           )}
 
           {/* C. VIDEO STREAM TAB */}
           {activeTab === 'videos' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {videos.length === 0 ? (
-                <div className="col-span-full py-16 text-center text-gray-500 text-sm bg-white/[0.01] border border-dashed border-white/10 rounded-2xl">No video streams.</div>
+            <div className="flex flex-col gap-8">
+              {filteredVideos.length === 0 ? (
+                <div className="col-span-full py-24 text-center text-gray-500 text-sm bg-white/[0.01] border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3">
+                  <Video size={36} className="text-gray-600" />
+                  <div>No video streams matching current search.</div>
+                </div>
               ) : (
-                videos.map((vid, idx) => (
-                  <GlassCard key={vid.id || idx} hoverEffect={true} className="p-4 flex flex-col justify-between h-full border border-white/5">
-                    <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/5 bg-black/40 flex items-center justify-center group">
-                      <img 
-                        src={vid.thumbnail_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=60'} 
-                        alt={vid.title} 
-                        className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 duration-500" 
-                      />
-                      <a 
-                        href={vid.media_url} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="relative z-10 w-12 h-12 rounded-full bg-brand-primary flex items-center justify-center text-white shadow-lg shadow-brand-primary/30 group-hover:scale-110 duration-200"
-                      >
-                        <Play size={20} className="fill-white ml-0.5" />
-                      </a>
-                    </div>
-                    
-                    <div className="pt-4 px-2">
-                      <h4 className="text-white font-bold text-sm truncate">{vid.title}</h4>
-                      <span className="text-xxs text-gray-500 font-mono block mt-1 uppercase">Video Link</span>
-                    </div>
-                  </GlassCard>
-                ))
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {paginatedVideos.map((vid, idx) => (
+                      <GlassCard key={vid.id || idx} hoverEffect={true} className="p-4 flex flex-col justify-between h-full border border-white/5">
+                        <div className="relative w-full h-44 rounded-xl overflow-hidden border border-white/5 bg-black/40 flex items-center justify-center group">
+                          <img 
+                            src={vid.thumbnail_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=60'} 
+                            alt={vid.title} 
+                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 duration-500" 
+                          />
+                          <a 
+                            href={vid.media_url} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="relative z-10 w-12 h-12 rounded-full bg-brand-primary flex items-center justify-center text-white shadow-lg shadow-brand-primary/30 group-hover:scale-110 duration-200"
+                          >
+                            <Play size={20} className="fill-white ml-0.5" />
+                          </a>
+                        </div>
+                        
+                        <div className="pt-4 px-2">
+                          <h4 className="text-white font-bold text-sm truncate">{vid.title}</h4>
+                          <span className="text-xxs text-gray-500 font-mono block mt-1 uppercase">Video Link</span>
+                        </div>
+                      </GlassCard>
+                    ))}
+                  </div>
+
+                  {/* Video Stream Pagination */}
+                  <PaginationControls 
+                    currentPage={videoPage} 
+                    totalPages={totalVideoPages} 
+                    onPageChange={setVideoPage} 
+                  />
+                </>
               )}
             </div>
           )}
