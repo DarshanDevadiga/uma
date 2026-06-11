@@ -84,7 +84,7 @@ const Navbar = () => {
           <img 
             src={logoImg} 
             alt="UMA Logo" 
-            className="w-10 h-10 rounded-xl object-cover shadow-md shadow-brand-primary/20 group-hover:scale-105 transition-transform" 
+            className="w-14 h-14 rounded-xl object-cover shadow-md shadow-brand-primary/20 group-hover:scale-105 transition-transform" 
           />
           <span className="font-semibold text-lg tracking-wider bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent group-hover:text-white transition-colors">
             UDUPI MANAGEMENT ASSOCIATION

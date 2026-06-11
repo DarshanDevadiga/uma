@@ -44,7 +44,7 @@ const Footer = () => {
             <img 
               src={logoImg} 
               alt="UMA Logo" 
-              className="w-9 h-9 rounded-lg object-cover shadow-sm" 
+              className="w-12 h-12 rounded-lg object-cover shadow-sm" 
             />
             <span className="font-semibold text-base tracking-wider text-white">
               UDUPI MANAGEMENT ASSOCIATION

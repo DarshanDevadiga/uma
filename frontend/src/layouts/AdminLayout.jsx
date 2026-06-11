@@ -74,7 +74,7 @@ const AdminLayout = ({ children }) => {
               <img 
                 src={logoImg} 
                 alt="UMA Logo" 
-                className="w-8 h-8 rounded-lg object-cover shadow-sm" 
+                className="w-11 h-11 rounded-lg object-cover shadow-sm" 
               />
               <span className="font-bold text-xs tracking-widest text-white uppercase">
                 UMA Admin Portal
