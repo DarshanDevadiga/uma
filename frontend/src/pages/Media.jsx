@@ -113,11 +113,12 @@ const Media = () => {
   };
 
   const getNewsImage = (item) => {
+    if (!item) return 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&auto=format&fit=crop&q=60';
     if (item.image_url) {
       return `${BASE_URL}${item.image_url}`;
     }
     
-    const title = item.title.toLowerCase();
+    const title = (item.title || '').toLowerCase();
     if (title.includes('incubation') || title.includes('mahe') || title.includes('startup') || title.includes('mou')) {
       return 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=60';
     }
@@ -918,7 +919,7 @@ const Media = () => {
                 {/* Article badge overlay inside header */}
                 <div className="absolute bottom-5 left-6 md:left-8 flex gap-2">
                   <span className={`px-3 py-1 rounded-full border text-xxs font-extrabold uppercase tracking-wider backdrop-blur-md ${getCategoryBadgeColor(selectedArticle.type)}`}>
-                    {selectedArticle.type.replace('_', ' ')}
+                    {(selectedArticle.type || '').replace('_', ' ')}
                   </span>
                 </div>
               </div>
@@ -959,7 +960,7 @@ const Media = () => {
 
                 {/* Paragraph Content */}
                 <div className="text-gray-300 text-sm md:text-base leading-relaxed font-light space-y-4 pt-2">
-                  {selectedArticle.content.split('\n').map((para, i) => (
+                  {(selectedArticle.content || '').split('\n').map((para, i) => (
                     <p key={i}>{para}</p>
                   ))}
                 </div>

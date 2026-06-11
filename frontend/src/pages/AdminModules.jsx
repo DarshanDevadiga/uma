@@ -236,7 +236,7 @@ export const AdminEvents = () => {
       title: event.title,
       description: event.description,
       content: event.content || '',
-      date: event.date.split('T')[0],
+      date: event.date ? event.date.split('T')[0] : '',
       time: event.time,
       location: event.location,
       type: event.type
