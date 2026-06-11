@@ -67,10 +67,10 @@ const Home = () => {
   return (
     <div className="flex flex-col gap-10 relative overflow-hidden">
       {/* 1. HERO SECTION */}
-      <section className="relative w-full min-h-screen overflow-hidden flex items-center bg-[#0a0a0c]">
+      <section className="relative w-full h-screen min-h-[600px] overflow-hidden flex items-center bg-[#0a0a0c]">
         {/* Layer 1 (Background): Animated Globe */}
         <div 
-          className="absolute z-[5] pointer-events-none lg:pointer-events-auto top-1/2 left-1/2 lg:left-auto lg:right-[-100px] lg:top-1/2 -translate-x-1/2 -translate-y-1/2 lg:translate-x-0 lg:-translate-y-1/2 w-[85vw] h-[85vw] max-w-[500px] max-h-[500px] lg:w-[48vw] lg:h-[800px] lg:max-w-[900px] lg:max-h-[800px] opacity-30 lg:opacity-100"
+          className="absolute z-[1] pointer-events-none lg:pointer-events-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:translate-x-0 lg:-translate-y-1/2 lg:left-auto lg:right-[-10%] w-[580px] h-[580px] md:w-[720px] md:h-[720px] md:left-[60%] lg:w-[900px] lg:h-[900px] opacity-30 md:opacity-40 lg:opacity-100"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -84,12 +84,12 @@ const Home = () => {
 
         {/* Layer 2 (Foreground): Hero Content */}
         <div className="max-w-7xl mx-auto w-full relative z-[20] px-6 md:px-12 flex items-center justify-center lg:justify-start">
-          {/* Left Column: Text Content (45% on desktop, centered on mobile) */}
+          {/* Left Column: Text Content (max-w-[650px], ml-[8%] on desktop, centered on mobile) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="flex flex-col gap-6 lg:w-[45%] w-full text-center lg:text-left items-center lg:items-start relative z-[20]"
+            className="flex flex-col gap-6 w-full max-w-[650px] text-center lg:text-left items-center lg:items-start relative z-[20] lg:ml-[8%]"
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs font-semibold tracking-wider uppercase w-fit">
               <Zap size={12} className="animate-pulse" />
