@@ -175,7 +175,7 @@ const ThreeGlobe = () => {
   return (
     <div className="w-full h-[350px] sm:h-[450px] md:h-[550px] lg:h-[650px] flex items-center justify-center relative select-none">
       <Canvas
-        camera={{ position: [0, 0, 6.8], fov: 45 }}
+        camera={{ position: [0, 0, 7.6], fov: 45 }}
         gl={{ antialias: true }}
       >
         <ambientLight intensity={0.4} />
