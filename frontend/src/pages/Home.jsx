@@ -1,0 +1,287 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowRight, Award, Calendar, Users, Briefcase, ChevronRight, Eye, ShieldCheck, Zap } from 'lucide-react';
+import ThreeGlobe from '../components/ThreeGlobe';
+import GlassCard from '../components/GlassCard';
+import api from '../services/api';
+
+const Counter = ({ target, duration = 2 }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = parseInt(target);
+    if (start === end) return;
+
+    const totalMiliseconds = duration * 1000;
+    const incrementTime = Math.max(Math.floor(totalMiliseconds / end), 20);
+    
+    const timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [target, duration]);
+
+  return <span>{count}</span>;
+};
+
+const Home = () => {
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+  useEffect(() => {
+    const fetchHomeEvents = async () => {
+      try {
+        const res = await api.get('/events?timeFilter=upcoming&limit=3');
+        setUpcomingEvents(res.data.data);
+      } catch (err) {
+        console.warn('Could not fetch upcoming events, using static seed fallback.');
+        setUpcomingEvents([
+          {
+            id: 1,
+            title: 'Annual Management Conference 2026',
+            date: '2026-07-15',
+            location: 'Poornaprajna Auditorium, Udupi',
+            description: 'A national panel discussion highlighting AI governance and startup development structures in coastal Karnataka.',
+            image_url: null,
+            type: 'conference'
+          },
+          {
+            id: 2,
+            title: 'Outstanding Manager Award Ceremony',
+            date: '2026-08-01',
+            location: 'MGM College Hall, Udupi',
+            description: 'Honoring regional business executives showing exemplary corporate stewardship and ethical administration.',
+            image_url: null,
+            type: 'event'
+          }
+        ]);
+      }
+    };
+    fetchHomeEvents();
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-24 relative overflow-hidden">
+      {/* 1. HERO SECTION */}
+      <section className="min-h-[90vh] flex items-center justify-center relative px-6 md:px-12 max-w-7xl mx-auto w-full pt-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+          {/* Left Column: Heading and CTAs */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="flex flex-col gap-6"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs font-semibold tracking-wider uppercase w-fit">
+              <Zap size={12} className="animate-pulse" />
+              Fostering Excellence in Management
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight font-sans">
+              Shaping Tomorrow's{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-accent">
+                Leaders & Educators
+              </span>
+            </h1>
+            
+            <p className="text-gray-400 text-lg md:text-xl leading-relaxed max-w-xl font-light">
+              Udupi Management Association (UMA) merges academic scholarship with industrial expertise, creating professional platforms across coastal Karnataka.
+            </p>
+
+            <div className="flex flex-wrap gap-4 mt-4">
+              <Link to="/membership" className="btn-primary px-8 py-4 rounded-2xl font-semibold text-white flex items-center gap-2 group shadow-xl">
+                Join Membership
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link to="/events" className="btn-secondary px-8 py-4 rounded-2xl font-semibold text-gray-300 hover:text-white flex items-center gap-2">
+                Explore Events
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Right Column: 3D Globe */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+            className="w-full"
+          >
+            <ThreeGlobe />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 2. STATISTICS SECTION */}
+      <section className="px-6 max-w-7xl mx-auto w-full relative">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
+          {[
+            { value: '500', suffix: '+', label: 'Total Members', icon: Users },
+            { value: '150', suffix: '+', label: 'Events Conducted', icon: Calendar },
+            { value: '12', suffix: '+', label: 'Annual Awards', icon: Award },
+            { value: '25', suffix: '+', label: 'Collaborations', icon: Briefcase }
+          ].map((stat, idx) => {
+            const Icon = stat.icon;
+            return (
+              <GlassCard key={idx} hoverEffect={true} className="p-6 md:p-8 flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary mb-3">
+                  <Icon size={18} />
+                </div>
+                <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-1">
+                  <Counter target={stat.value} />
+                  {stat.suffix}
+                </h3>
+                <p className="text-gray-500 text-xs md:text-sm font-medium uppercase tracking-wider">{stat.label}</p>
+              </GlassCard>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 3. ABOUT PREVIEW */}
+      <section className="px-6 max-w-7xl mx-auto w-full relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Overview</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white font-sans">
+              Originating from the Educational Capital
+            </h2>
+            <div className="w-16 h-1 bg-brand-primary rounded" />
+            <p className="text-gray-400 mt-2 leading-relaxed">
+              Established and headquartered within the prestigious Poornaprajna College Campus, UMA has spent years guiding executive management development and fostering standard guidelines for commerce education in coastal Karnataka.
+            </p>
+            <Link to="/about" className="text-brand-secondary hover:text-white flex items-center gap-1.5 mt-2 font-medium text-sm transition-colors group">
+              Read More About UMA
+              <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+          
+          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <GlassCard hoverEffect={false}>
+              <h4 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
+                <ShieldCheck className="text-brand-primary" size={20} />
+                Affiliation
+              </h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Affiliated with state-level federations and working closely with local universities (Mangalore University, MAHE) to accredit seminars and professional programs.
+              </p>
+            </GlassCard>
+            <GlassCard hoverEffect={false}>
+              <h4 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
+                <Users className="text-brand-secondary" size={20} />
+                Community
+              </h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Unifying six major sub-committees coordinating pre-university, undergraduate, and post-graduate business teachers alongside corporate executives and students.
+              </p>
+            </GlassCard>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. VISION & MISSION */}
+      <section className="px-6 max-w-7xl mx-auto w-full relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <GlassCard className="p-8 md:p-12 relative overflow-hidden" hoverEffect={true}>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/10 rounded-bl-full pointer-events-none" />
+            <div className="w-12 h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary mb-6">
+              <Eye size={24} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Our Vision</h3>
+            <p className="text-gray-400 leading-relaxed text-base">
+              To be the premier catalyst in regional transformation, developing a network of socially conscious, technologically proficient, and ethically sound administrators who drive sustainable economic and corporate growth.
+            </p>
+          </GlassCard>
+
+          <GlassCard className="p-8 md:p-12 relative overflow-hidden" hoverEffect={true}>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-brand-secondary/10 rounded-bl-full pointer-events-none" />
+            <div className="w-12 h-12 rounded-xl bg-brand-secondary/10 flex items-center justify-center text-brand-secondary mb-6">
+              <Zap size={24} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Our Mission</h3>
+            <p className="text-gray-400 leading-relaxed text-base">
+              To conduct state-of-the-art training initiatives, foster deep industry-academic research partnerships, provide career mentorship portals, and establish benchmarks for business education excellence.
+            </p>
+          </GlassCard>
+        </div>
+      </section>
+
+      {/* 5. UPCOMING EVENTS */}
+      <section className="px-6 max-w-7xl mx-auto w-full relative">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-10">
+          <div className="flex flex-col gap-2">
+            <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Join Us</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Upcoming Events & Conferences</h2>
+            <div className="w-16 h-1 bg-brand-primary rounded mt-1" />
+          </div>
+          <Link to="/events" className="text-gray-400 hover:text-white transition-colors flex items-center gap-1 text-sm font-medium">
+            See All Events
+            <ChevronRight size={16} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {upcomingEvents.map((event, idx) => (
+            <GlassCard key={idx} className="flex flex-col justify-between h-full p-6 glass-card-hover" hoverEffect={true}>
+              <div>
+                <span className="text-brand-secondary text-xs font-semibold tracking-wider uppercase">{event.type}</span>
+                <h4 className="text-white font-bold text-lg mt-1.5 mb-2 line-clamp-1">{event.title}</h4>
+                <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-6">{event.description}</p>
+              </div>
+              <div className="pt-4 border-t border-white/5 flex flex-col gap-1.5 text-xs text-gray-500 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Calendar size={13} className="text-brand-primary" />
+                  {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+                <span className="truncate">{event.location}</span>
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. AWARDS BRIEF */}
+      <section className="px-6 max-w-7xl mx-auto w-full relative">
+        <div className="p-8 md:p-12 rounded-3xl bg-luxury-gradient border border-white/5 relative overflow-hidden flex flex-col lg:flex-row gap-12 justify-between items-center">
+          <div className="absolute inset-0 bg-glow-gradient pointer-events-none" />
+          <div className="relative z-10 max-w-xl flex flex-col gap-4">
+            <div className="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center text-brand-gold">
+              <Award size={24} />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-white">Outstanding Manager Award</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              UMA’s signature award recognizes executive managers who have made outstanding contributions to commercial development, local job creation, and professional training in Udupi. Nominations are open for the current cycle.
+            </p>
+          </div>
+          <div className="relative z-10 shrink-0">
+            <Link to="/awards" className="btn-primary bg-none bg-brand-gold text-dark px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-brand-gold/15 hover:scale-105 transition-transform">
+              Submit Nomination
+              <ArrowRight size={18} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. CONTACT CTA */}
+      <section className="px-6 max-w-5xl mx-auto w-full text-center py-10 relative">
+        <div className="flex flex-col items-center gap-6">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
+            Ready to Accelerate Your <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Management Journey?</span>
+          </h2>
+          <p className="text-gray-400 text-base md:text-lg max-w-2xl leading-relaxed">
+            Get in touch with our administrators to consult on affiliations, request student lectures, or coordinate collaborative seminars.
+          </p>
+          <Link to="/contact" className="btn-primary px-8 py-4 rounded-2xl font-bold text-white shadow-xl shadow-brand-primary/20">
+            Contact UMA Office
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Home;
