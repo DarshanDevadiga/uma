@@ -67,7 +67,7 @@ const Home = () => {
   return (
     <div className="flex flex-col gap-10 relative overflow-hidden">
       {/* 1. HERO SECTION */}
-      <section className="relative w-full h-screen min-h-[600px] overflow-hidden flex items-center bg-[#0a0a0c]">
+      <section className="relative w-full min-h-screen lg:h-screen overflow-hidden flex items-center bg-[#0a0a0c] pt-20 pb-10 lg:pb-0">
         {/* Layer 1 (Background): Animated Globe */}
         <div 
           className="absolute z-[1] pointer-events-none lg:pointer-events-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:translate-x-0 lg:-translate-y-1/2 lg:left-auto lg:right-[-10%] w-[500px] h-[500px] md:w-[640px] md:h-[640px] md:left-[60%] lg:w-[800px] lg:h-[800px] opacity-30 md:opacity-40 lg:opacity-100"
