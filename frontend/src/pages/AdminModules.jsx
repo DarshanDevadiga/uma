@@ -3,7 +3,7 @@ import {
   Plus, Edit2, Trash2, Check, X, Search, FileText, 
   Upload, Download, ShieldCheck, Mail, MapPin, Eye, ExternalLink
 } from 'lucide-react';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 
 // ==========================================
 // 1. MANAGE MEMBERS
@@ -550,7 +550,7 @@ export const AdminBearers = () => {
                     <td className="px-6 py-4 flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-white/5 border border-white/10 flex items-center justify-center">
                         <img 
-                          src={bearer.image_url.startsWith('http') ? bearer.image_url : `http://localhost:5000${bearer.image_url}`} 
+                          src={bearer.image_url.startsWith('http') ? bearer.image_url : `${BASE_URL}${bearer.image_url}`} 
                           alt={bearer.name} 
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -946,7 +946,7 @@ export const AdminAwards = () => {
                     <td className="px-6 py-4 font-semibold text-white truncate max-w-[200px]">{nom.award_name}</td>
                     <td className="px-6 py-4">
                       <a 
-                        href={`http://localhost:5000${nom.document_url}`} 
+                        href={`${BASE_URL}${nom.document_url}`} 
                         download
                         target="_blank"
                         rel="noreferrer"

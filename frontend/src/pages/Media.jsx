@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Newspaper, Image as ImageIcon, Video, Calendar, ArrowRight, Play, Eye } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import Lightbox from '../components/Lightbox';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 
 const Media = () => {
   const [activeTab, setActiveTab] = useState('news'); // news, photos, videos
@@ -152,7 +152,7 @@ const Media = () => {
 
                     {item.image_url && (
                       <div className="w-full h-48 rounded-xl overflow-hidden mt-6 border border-white/5">
-                        <img src={`http://localhost:5000${item.image_url}`} alt={item.title} className="w-full h-full object-cover" />
+                        <img src={`${BASE_URL}${item.image_url}`} alt={item.title} className="w-full h-full object-cover" />
                       </div>
                     )}
                   </GlassCard>
@@ -171,7 +171,7 @@ const Media = () => {
                   {photos.map((photo, idx) => {
                     const finalUrl = photo.media_url.startsWith('http') 
                       ? photo.media_url 
-                      : `http://localhost:5000${photo.media_url}`;
+                      : `${BASE_URL}${photo.media_url}`;
 
                     return (
                       <div 

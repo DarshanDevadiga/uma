@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn, ZoomOut } from 'lucide-react';
+import { BASE_URL } from '../services/api';
 
 const Lightbox = ({ isOpen, imageSrc, onClose, title = 'Media Preview' }) => {
   const [isZoomed, setIsZoomed] = useState(false);
@@ -43,7 +44,7 @@ const Lightbox = ({ isOpen, imageSrc, onClose, title = 'Media Preview' }) => {
           className="relative max-w-[90vw] max-h-[85vh] z-10 overflow-hidden flex items-center justify-center"
         >
           <img
-            src={imageSrc.startsWith('http') ? imageSrc : `http://localhost:5000${imageSrc}`}
+            src={imageSrc.startsWith('http') ? imageSrc : `${BASE_URL}${imageSrc}`}
             alt={title}
             className={`max-w-full max-h-full rounded-lg object-contain transition-transform duration-300 ${
               isZoomed ? 'scale-150 cursor-zoom-out' : 'scale-100 cursor-zoom-in'

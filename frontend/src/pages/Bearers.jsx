@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Briefcase, Landmark } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 
 const Bearers = () => {
   const [bearers, setBearers] = useState([]);
@@ -139,7 +139,7 @@ const Bearers = () => {
                           src={bearer.image_url.startsWith('http') 
                             ? bearer.image_url 
                             : bearer.image_url.startsWith('/uploads')
-                              ? `http://localhost:5000${bearer.image_url}`
+                              ? `${BASE_URL}${bearer.image_url}`
                               : bearer.image_url
                           } 
                           alt={bearer.name}

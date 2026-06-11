@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Clock, Tag, X, FileText, CheckCircle, ShieldAlert } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import api from '../services/api';
+import api, { BASE_URL } from '../services/api';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -216,7 +216,7 @@ const Events = () => {
                   {event.image_url ? (
                     <div className="w-full h-40 rounded-xl overflow-hidden mb-4 border border-white/5">
                       <img 
-                        src={`http://localhost:5000${event.image_url}`} 
+                        src={`${BASE_URL}${event.image_url}`} 
                         alt={event.title}
                         className="w-full h-full object-cover" 
                       />
