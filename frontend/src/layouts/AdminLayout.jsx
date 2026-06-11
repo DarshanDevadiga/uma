@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, Navigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, Users, Calendar, Award, UserCheck, 
   Layers, BookOpen, Image, Newspaper, Mail, GraduationCap, 
@@ -83,7 +84,7 @@ const AdminLayout = ({ children }) => {
 
           {/* User info */}
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
-            <div className="w-8 h-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-brand-primary">
+            <div className="w-8 h-8 rounded-full bg-brand-primary/25 flex items-center justify-center text-brand-primary">
               <ShieldAlert size={16} />
             </div>
             <div className="flex flex-col truncate">
@@ -151,7 +152,14 @@ const AdminLayout = ({ children }) => {
 
         {/* Content body */}
         <main className="flex-grow p-6 md:p-8 relative z-10 max-w-7xl w-full mx-auto">
-          {children}
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
     </div>
