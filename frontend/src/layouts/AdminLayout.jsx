@@ -7,6 +7,7 @@ import {
   Settings, LogOut, Menu, X, ShieldAlert 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import logoImg from '../assets/logo.png';
 
 const AdminLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -70,9 +71,11 @@ const AdminLayout = ({ children }) => {
           {/* Header */}
           <div className="flex justify-between items-center pb-4 border-b border-white/5">
             <Link to="/" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center font-bold text-white text-xs">
-                UMA
-              </div>
+              <img 
+                src={logoImg} 
+                alt="UMA Logo" 
+                className="w-8 h-8 rounded-lg object-cover shadow-sm" 
+              />
               <span className="font-bold text-xs tracking-widest text-white uppercase">
                 UMA Admin Portal
               </span>

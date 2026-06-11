@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook } from 'lucide-react';
 import api from '../services/api';
+import logoImg from '../assets/logo.png';
 
 const Footer = () => {
   const [settings, setSettings] = useState({
@@ -40,9 +41,11 @@ const Footer = () => {
         {/* Column 1: Brand details */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center font-bold text-white text-sm">
-              UMA
-            </div>
+            <img 
+              src={logoImg} 
+              alt="UMA Logo" 
+              className="w-9 h-9 rounded-lg object-cover shadow-sm" 
+            />
             <span className="font-semibold text-base tracking-wider text-white">
               UDUPI MANAGEMENT ASSOCIATION
             </span>

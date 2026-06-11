@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, User, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import logoImg from '../assets/logo.png';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,9 +81,11 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center font-bold text-white shadow-md shadow-brand-primary/20 group-hover:scale-105 transition-transform">
-            UMA
-          </div>
+          <img 
+            src={logoImg} 
+            alt="UMA Logo" 
+            className="w-10 h-10 rounded-xl object-cover shadow-md shadow-brand-primary/20 group-hover:scale-105 transition-transform" 
+          />
           <span className="font-semibold text-lg tracking-wider bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent group-hover:text-white transition-colors">
             UDUPI MANAGEMENT ASSOCIATION
           </span>
