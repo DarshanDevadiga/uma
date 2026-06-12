@@ -64,9 +64,9 @@ const Activities = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10 pb-4">
         <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Our Calendar</span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Activities Timeline</h1>
         <div className="w-20 h-1 bg-brand-primary rounded mx-auto mt-1" />
@@ -76,7 +76,7 @@ const Activities = () => {
       </section>
 
       {/* Timeline Layout */}
-      <section className="relative max-w-4xl mx-auto w-full mb-10 py-16 border-t border-white/5">
+      <section className="relative max-w-4xl mx-auto w-full mb-10 py-8 border-t border-white/5">
         {/* Center line for larger screens */}
         <div className="absolute left-4 md:left-1/2 top-4 bottom-4 w-0.5 bg-gradient-to-b from-brand-primary via-brand-secondary to-brand-accent opacity-25" />
 

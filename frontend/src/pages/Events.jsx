@@ -159,9 +159,9 @@ const Events = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10 pb-4">
         <motion.div
           initial={{ opacity: 0, y: -25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -178,7 +178,7 @@ const Events = () => {
       </section>
 
       {/* Filters Control Toolbar */}
-      <section className="flex flex-col md:flex-row md:justify-between items-center gap-6 border-b border-white/5 py-8">
+      <section className="flex flex-col md:flex-row md:justify-between items-center gap-6 border-b border-white/5 py-4">
         {/* Time filters tabs */}
         <div className="flex bg-white/5 border border-white/10 p-1.5 rounded-2xl shrink-0">
           <button 
@@ -232,7 +232,7 @@ const Events = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-80px' }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 py-16"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 py-8"
         >
           {filteredEvents.length === 0 ? (
             <div className="col-span-full py-16 text-center text-gray-500 text-sm">

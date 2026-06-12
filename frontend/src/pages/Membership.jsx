@@ -97,9 +97,9 @@ const Membership = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10 pb-4">
         <motion.div
           initial={{ opacity: 0, y: -25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -116,7 +116,7 @@ const Membership = () => {
       </section>
 
       {/* Main Grid: Info on Left, Form on Right */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 py-16 border-t border-white/5">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 py-8 border-t border-white/5">
         {/* Left Tiers Overview */}
         <motion.div 
           variants={staggerContainer}

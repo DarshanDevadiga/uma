@@ -370,7 +370,7 @@ const Media = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12 relative">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col relative">
       
       {/* Toast Notification Container */}
       <AnimatePresence>
@@ -390,7 +390,7 @@ const Media = () => {
       </AnimatePresence>
 
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10 pb-4">
         <motion.div
           initial={{ opacity: 0, y: -25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -407,7 +407,7 @@ const Media = () => {
       </section>
 
       {/* Tabs Menu */}
-      <section className="flex justify-center border-b border-white/5 pb-4">
+      <section className="flex justify-center border-b border-white/5 py-2">
         <div className="flex bg-white/5 border border-white/10 p-1.5 rounded-2xl">
           {[
             { id: 'news', label: 'News Blog', icon: Newspaper },
@@ -496,7 +496,7 @@ const Media = () => {
           <div className="w-10 h-10 rounded-full border-t-2 border-brand-primary animate-spin" />
         </div>
       ) : (
-        <section className="py-16 mb-10 min-h-[40vh] border-t border-white/5">
+        <section className="py-8 min-h-[40vh] border-t border-white/5">
           {/* A. NEWS BLOG TAB */}
           {activeTab === 'news' && (
             <div className="flex flex-col gap-8">

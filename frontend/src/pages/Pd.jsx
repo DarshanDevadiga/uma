@@ -142,7 +142,7 @@ const Pd = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col">
       
       {/* Toast Alert */}
       <AnimatePresence>
@@ -166,7 +166,7 @@ const Pd = () => {
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-12 pt-16"
+        className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10 pb-4"
       >
         <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Upskilling portals</span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Professional Development</h1>
@@ -187,7 +187,7 @@ const Pd = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-80px' }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 py-16 border-t border-white/5"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6 py-8 border-t border-white/5"
         >
           {programs.map((prog, idx) => {
             const Icon = getTypeIcon(prog.type);

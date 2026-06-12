@@ -97,7 +97,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-10 relative overflow-hidden">
+    <div className="flex flex-col relative overflow-hidden">
       {/* 1. HERO SECTION */}
       <section className="relative w-full h-screen min-h-[600px] overflow-hidden flex items-center bg-[#0a0a0c] pt-20 pb-10 lg:pb-0">
         {/* Layer 1 (Background): Animated Globe */}
@@ -166,7 +166,7 @@ const Home = () => {
       </section>
 
       {/* 2. STATISTICS SECTION */}
-      <section className="px-6 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 py-8 max-w-7xl mx-auto w-full relative border-t border-white/5">
         <motion.div 
           variants={staggerContainer}
           initial="hidden"
@@ -200,7 +200,7 @@ const Home = () => {
       </section>
 
       {/* 3. ABOUT PREVIEW */}
-      <section className="px-6 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 py-8 max-w-7xl mx-auto w-full relative border-t border-white/5">
         <motion.div 
           variants={staggerContainer}
           initial="hidden"
@@ -256,7 +256,7 @@ const Home = () => {
       </section>
 
       {/* 4. VISION & MISSION */}
-      <section className="px-6 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 py-8 max-w-7xl mx-auto w-full relative border-t border-white/5">
         <motion.div 
           variants={staggerContainer}
           initial="hidden"
@@ -293,7 +293,7 @@ const Home = () => {
       </section>
 
       {/* 5. UPCOMING EVENTS */}
-      <section className="px-6 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 py-8 max-w-7xl mx-auto w-full relative border-t border-white/5">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -341,7 +341,7 @@ const Home = () => {
       </section>
 
       {/* 6. AWARDS BRIEF */}
-      <section className="px-6 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 py-8 max-w-7xl mx-auto w-full relative border-t border-white/5">
         <motion.div 
           variants={scrollRevealItem}
           initial="hidden"
@@ -375,7 +375,7 @@ const Home = () => {
       </section>
 
       {/* 7. CONTACT CTA */}
-      <section className="px-6 max-w-5xl mx-auto w-full text-center py-10 relative">
+      <section className="px-6 py-8 max-w-5xl mx-auto w-full text-center relative border-t border-white/5">
         <motion.div 
           variants={scrollRevealItem}
           initial="hidden"

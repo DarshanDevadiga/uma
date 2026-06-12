@@ -118,13 +118,13 @@ const Bearers = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col">
       {/* Header */}
       <motion.section 
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10"
+        className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10 pb-4"
       >
         <span className="text-brand-primary font-bold text-xs uppercase tracking-widest font-mono">Our Leadership</span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-white font-sans">Office Bearers</h1>
@@ -139,7 +139,7 @@ const Bearers = () => {
           <div className="w-10 h-10 rounded-full border-t-2 border-brand-primary animate-spin" />
         </div>
       ) : (
-        <div className="flex flex-col gap-14">
+        <div className="flex flex-col gap-8 py-8 border-t border-white/5 mb-6">
           {categoryOrder.map((category) => {
             const list = getBearersByCategory(category);
             if (list.length === 0) return null;

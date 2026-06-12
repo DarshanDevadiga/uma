@@ -49,9 +49,9 @@ const About = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col">
       {/* Hero Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-6 py-12 pt-16">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-6 pt-10 pb-4">
         <motion.div
           initial={{ opacity: 0, y: -25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -75,7 +75,7 @@ const About = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: '-100px' }}
-        className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-16 border-t border-white/5"
+        className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-8 border-t border-white/5"
       >
         <motion.div variants={revealItem} className="lg:col-span-6 flex flex-col gap-6">
           <h2 className="text-2xl md:text-3xl font-bold text-white font-sans flex items-center gap-2">
@@ -108,7 +108,7 @@ const About = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: '-100px' }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-8 py-16 border-t border-white/5"
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-t border-white/5"
       >
         <motion.div variants={revealItem}>
           <GlassCard className="p-8 relative overflow-hidden h-full" hoverEffect={true}>
@@ -147,7 +147,7 @@ const About = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: '-100px' }}
-        className="flex flex-col gap-8 py-16 border-t border-white/5 mb-10"
+        className="flex flex-col gap-8 py-8 border-t border-white/5 mb-6"
       >
         <motion.div variants={revealItem} className="text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white font-sans">Core Aspects of UMA</h2>
