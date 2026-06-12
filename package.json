@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "UMA Web App Workspace",
   "scripts": {
-    "dev:backend": "cd backend && npm run start",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev": "npx concurrently --kill-others-on-fail \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "build:prod": "node build-prod.js",
-    "postinstall": "cd backend && npm install"
+    "dev:backend": "cd backend && pnpm run start",
+    "dev:frontend": "cd frontend && pnpm run dev",
+    "dev": "npx concurrently --kill-others-on-fail \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "build:prod": "node build-prod.js"
   }
 }
