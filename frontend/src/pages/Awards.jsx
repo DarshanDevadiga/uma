@@ -43,7 +43,11 @@ const Awards = () => {
     const fetchAwards = async () => {
       try {
         const res = await api.get('/awards');
-        setAwards(res.data);
+        if (res.data && res.data.length > 0) {
+          setAwards(res.data);
+        } else {
+          throw new Error('Empty awards returned');
+        }
       } catch (err) {
         console.warn('Could not fetch awards list, using fallback.');
         setAwards([

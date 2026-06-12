@@ -110,4 +110,14 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Uploads directory mapping: http://localhost:${PORT}/uploads`);
+
+  // Auto-run DB Setup to ensure tables and seed data exist
+  const { exec } = require('child_process');
+  exec('node setup-db.js', { cwd: __dirname }, (err, stdout, stderr) => {
+    if (err) {
+      console.error('Database auto-initialization check failed:', err);
+    } else {
+      console.log('Database auto-initialization check passed/executed successfully.');
+    }
+  });
 });

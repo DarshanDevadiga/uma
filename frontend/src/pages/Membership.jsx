@@ -43,7 +43,11 @@ const Membership = () => {
     const fetchMembershipTypes = async () => {
       try {
         const res = await api.get('/memberships/types');
-        setTypes(res.data);
+        if (res.data && res.data.length > 0) {
+          setTypes(res.data);
+        } else {
+          throw new Error('Empty membership types returned');
+        }
       } catch (err) {
         console.warn('Could not fetch membership types, using fallback.');
         setTypes([

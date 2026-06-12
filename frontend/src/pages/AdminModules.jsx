@@ -49,9 +49,20 @@ export const AdminMembers = () => {
   const fetchTypes = async () => {
     try {
       const res = await api.get('/memberships/types');
-      setTypes(res.data);
+      if (res.data && res.data.length > 0) {
+        setTypes(res.data);
+      } else {
+        throw new Error('No membership types returned');
+      }
     } catch (err) {
-      console.error(err);
+      console.warn('Could not fetch membership types, using fallback.', err);
+      setTypes([
+        { id: 1, name: 'Executive Member', fee: 5000.00, description: 'Access to governance meetings and executive board voting privileges.' },
+        { id: 2, name: 'Life Member', fee: 10000.00, description: 'Lifetime association membership status and all general meeting benefits.' },
+        { id: 3, name: 'Industry Member', fee: 15000.00, description: 'Tailored for corporate representatives and corporate collaborations.' },
+        { id: 4, name: 'Academic Member', fee: 2000.00, description: 'Specially designed for educators, professors, and academic leaders.' },
+        { id: 5, name: 'Student Member', fee: 500.00, description: 'For students seeking career mentorship and management networking.' }
+      ]);
     }
   };
 
@@ -162,7 +173,7 @@ export const AdminMembers = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className="px-2.5 py-1 rounded-md bg-brand-primary/10 text-brand-primary text-xxs font-semibold uppercase">
-                        {member.membership_type_name}
+                        {member.membership_type_name || 'N/A'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -1087,7 +1098,7 @@ export const AdminAwards = () => {
                       <span className="text-gray-500 text-xxs mt-0.5">{nom.organization}</span>
                       <span className="text-gray-600 text-xxs mt-0.5">{nom.email} | {nom.phone}</span>
                     </td>
-                    <td className="px-6 py-4 font-semibold text-white truncate max-w-[200px]">{nom.award_name}</td>
+                    <td className="px-6 py-4 font-semibold text-white truncate max-w-[200px]">{nom.award_name || 'N/A'}</td>
                     <td className="px-6 py-4">
                       <a 
                         href={`${BASE_URL}${nom.document_url}`} 
