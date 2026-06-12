@@ -10,6 +10,7 @@ const getDashboardStats = async (req, res) => {
     const galleryCount = await query('SELECT COUNT(*) as total FROM gallery');
     const newsCount = await query('SELECT COUNT(*) as total FROM news');
     const contactsCount = await query('SELECT COUNT(*) as total FROM contacts');
+    const nominationsCount = await query('SELECT COUNT(*) as total FROM award_nominations');
 
     // 2. Fetch monthly registration data for chart
     const monthlyRegistrations = await query(`
@@ -35,6 +36,7 @@ const getDashboardStats = async (req, res) => {
         totalMembers: membersCount[0].total,
         totalEvents: eventsCount[0].total,
         totalRegistrations: registrationsCount[0].total,
+        totalNominations: nominationsCount[0].total,
         totalGallery: galleryCount[0].total,
         totalNews: newsCount[0].total,
         totalMessages: contactsCount[0].total

@@ -18,6 +18,15 @@ export const AdminMembers = () => {
 
   const [editMember, setEditMember] = useState(null);
   const [types, setTypes] = useState([]);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    occupation: '',
+    membership_type_id: ''
+  });
 
   useEffect(() => {
     fetchMembers();
@@ -64,6 +73,32 @@ export const AdminMembers = () => {
       fetchMembers();
     } catch (err) {
       alert('Error deleting membership');
+    }
+  };
+
+  const handleOpenEdit = (member) => {
+    setEditMember(member);
+    setEditFormData({
+      name: member.name,
+      email: member.email,
+      phone: member.phone,
+      address: member.address,
+      occupation: member.occupation,
+      membership_type_id: member.membership_type_id
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put(`/memberships/${editMember.id}`, editFormData);
+      alert('Membership details updated successfully');
+      setEditModalOpen(false);
+      setEditMember(null);
+      fetchMembers();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error updating membership details');
     }
   };
 
@@ -159,6 +194,13 @@ export const AdminMembers = () => {
                         </>
                       )}
                       <button 
+                        onClick={() => handleOpenEdit(member)}
+                        className="p-1.5 bg-white/5 text-gray-400 hover:bg-brand-primary/20 hover:text-brand-primary rounded-lg transition-colors"
+                        title="Edit Details"
+                      >
+                        <Edit2 size={15} />
+                      </button>
+                      <button 
                         onClick={() => handleDelete(member.id)}
                         className="p-1.5 bg-white/5 text-gray-400 hover:bg-red-500/20 hover:text-red-400 rounded-lg transition-colors"
                         title="Delete"
@@ -180,6 +222,108 @@ export const AdminMembers = () => {
           <button disabled={page === 1} onClick={() => setPage(page - 1)} className="btn-secondary px-3 py-1.5 rounded-lg text-xs disabled:opacity-50">Prev</button>
           <span className="text-gray-500 text-xs px-3 py-1.5 font-mono">Page {page} of {totalPages}</span>
           <button disabled={page === totalPages} onClick={() => setPage(page + 1)} className="btn-secondary px-3 py-1.5 rounded-lg text-xs disabled:opacity-50">Next</button>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModalOpen && editMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="absolute inset-0" onClick={() => { setEditModalOpen(false); setEditMember(null); }} />
+          
+          <div className="glass-card max-w-lg w-full p-8 rounded-3xl relative z-10 border border-white/10 overflow-hidden flex flex-col bg-dark-card">
+            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
+              <h3 className="text-white font-extrabold text-lg">Edit Membership Details</h3>
+              <button 
+                onClick={() => { setEditModalOpen(false); setEditMember(null); }}
+                className="p-1.5 bg-white/5 hover:bg-brand-primary text-gray-400 hover:text-white rounded-full transition-colors"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="flex flex-col gap-4 text-sm text-gray-400">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Full Name</label>
+                  <input 
+                    type="text" 
+                    value={editFormData.name} 
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    className="glass-input px-3 py-2 rounded-xl text-xs text-white" 
+                    required 
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={editFormData.email} 
+                    onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                    className="glass-input px-3 py-2 rounded-xl text-xs text-white" 
+                    required 
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Phone Number</label>
+                  <input 
+                    type="text" 
+                    value={editFormData.phone} 
+                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                    className="glass-input px-3 py-2 rounded-xl text-xs text-white" 
+                    required 
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Occupation</label>
+                  <input 
+                    type="text" 
+                    value={editFormData.occupation} 
+                    onChange={(e) => setEditFormData({ ...editFormData, occupation: e.target.value })}
+                    className="glass-input px-3 py-2 rounded-xl text-xs text-white" 
+                    required 
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Membership Category</label>
+                <select 
+                  value={editFormData.membership_type_id} 
+                  onChange={(e) => setEditFormData({ ...editFormData, membership_type_id: parseInt(e.target.value) })}
+                  className="glass-input px-3 py-2.5 rounded-xl text-xs text-white bg-dark-card" 
+                  required
+                >
+                  {types.map((type) => (
+                    <option key={type.id} value={type.id} className="bg-dark-card text-white">
+                      {type.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Address</label>
+                <textarea 
+                  value={editFormData.address} 
+                  onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+                  rows={3}
+                  className="glass-input px-3 py-2 rounded-xl text-xs text-white resize-none" 
+                  required
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                className="w-full py-3 bg-brand-primary hover:bg-brand-primary-light text-white text-xs font-bold uppercase tracking-wider rounded-xl mt-2 flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/10 transition-all duration-200"
+              >
+                Save Changes
+                <Check size={14} />
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>

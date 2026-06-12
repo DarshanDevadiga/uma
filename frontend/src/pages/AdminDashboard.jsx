@@ -9,6 +9,7 @@ const AdminDashboard = () => {
     totalMembers: 0,
     totalEvents: 0,
     totalRegistrations: 0,
+    totalNominations: 0,
     totalGallery: 0,
     totalNews: 0,
     totalMessages: 0
@@ -34,6 +35,7 @@ const AdminDashboard = () => {
           totalMembers: 145,
           totalEvents: 34,
           totalRegistrations: 382,
+          totalNominations: 24,
           totalGallery: 54,
           totalNews: 18,
           totalMessages: 47
@@ -68,7 +70,7 @@ const AdminDashboard = () => {
     { label: 'Total Memberships', value: stats.totalMembers, icon: Users, color: 'text-indigo-400' },
     { label: 'Events Published', value: stats.totalEvents, icon: Calendar, color: 'text-sky-400' },
     { label: 'Event Registrants', value: stats.totalRegistrations, icon: BarChart3, color: 'text-emerald-400' },
-    { label: 'Awards Nominated', value: stats.totalGallery, icon: Award, color: 'text-amber-400' }, // Mapping dummy count for display simplicity
+    { label: 'Awards Nominated', value: stats.totalNominations, icon: Award, color: 'text-amber-400' },
     { label: 'Media Gallery Assets', value: stats.totalGallery, icon: Image, color: 'text-purple-400' },
     { label: 'Contact Messages', value: stats.totalMessages, icon: Mail, color: 'text-rose-400' }
   ];

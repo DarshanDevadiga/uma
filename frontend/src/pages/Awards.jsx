@@ -151,17 +151,35 @@ const Awards = () => {
           </motion.h3>
 
           <div className="flex flex-col gap-4">
-            {awards.map((award) => (
-              <motion.div key={award.id} variants={revealItem}>
-                <GlassCard hoverEffect={true} className="p-5 relative border border-white/5 h-full">
-                  <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary mb-3">
-                    <Award size={15} />
-                  </div>
-                  <h4 className="text-white font-bold text-base font-sans">{award.name}</h4>
-                  <p className="text-gray-400 text-xs mt-2 leading-relaxed">{award.description}</p>
-                </GlassCard>
-              </motion.div>
-            ))}
+            {awards.map((award) => {
+              const isSelected = parseInt(formData.award_id) === award.id;
+              return (
+                <motion.div key={award.id} variants={revealItem}>
+                  <GlassCard 
+                    hoverEffect={true} 
+                    onClick={() => setFormData({ ...formData, award_id: award.id.toString() })}
+                    className={`p-5 relative cursor-pointer border transition-all duration-300 h-full ${
+                      isSelected 
+                        ? 'border-brand-primary/50 bg-brand-primary/5 shadow-md shadow-brand-primary/10 scale-[1.02]' 
+                        : 'border-white/5'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                        <Award size={15} />
+                      </div>
+                      {isSelected && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-brand-primary/15 border border-brand-primary/30 text-brand-primary text-[9px] font-bold uppercase tracking-wider select-none animate-pulse">
+                          Selected
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="text-white font-bold text-base font-sans">{award.name}</h4>
+                    <p className="text-gray-400 text-xs mt-2 leading-relaxed">{award.description}</p>
+                  </GlassCard>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
 
@@ -221,7 +239,7 @@ const Awards = () => {
                   >
                     <option value="" disabled className="bg-dark-card text-gray-500">Choose category...</option>
                     {awards.map((award) => (
-                      <option key={award.id} value={award.id} className="bg-dark-card text-white">
+                      <option key={award.id} value={award.id.toString()} className="bg-dark-card text-white">
                         {award.name}
                       </option>
                     ))}

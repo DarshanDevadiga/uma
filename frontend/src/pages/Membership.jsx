@@ -276,7 +276,7 @@ const Membership = () => {
                   >
                     <option value="" disabled className="bg-dark-card text-gray-500">Select membership type...</option>
                     {types.map((type) => (
-                      <option key={type.id} value={type.id} className="bg-dark-card text-white">
+                      <option key={type.id} value={type.id.toString()} className="bg-dark-card text-white">
                         {type.name} (₹{parseInt(type.fee).toLocaleString('en-IN')})
                       </option>
                     ))}
