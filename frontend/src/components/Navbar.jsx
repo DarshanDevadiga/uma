@@ -55,6 +55,14 @@ const Navbar = () => {
         { name: 'Awards Nominations', path: '/awards' },
         { name: 'Publications & Outreach', path: '/publications' }
       ]
+    },
+    {
+      label: 'Media Centre',
+      items: [
+        { name: 'News Blog', path: '/media?tab=news' },
+        { name: 'Photo Gallery', path: '/media?tab=photos' },
+        { name: 'Video Stream', path: '/media?tab=videos' }
+      ]
     }
   ];
 
@@ -66,10 +74,19 @@ const Navbar = () => {
     }
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    const [pathName, queryStr] = path.split('?');
+    if (queryStr) {
+      return location.pathname === pathName && location.search === `?${queryStr}`;
+    }
+    return location.pathname === pathName;
+  };
   
   const isGroupActive = (group) => {
-    return group.items.some(item => location.pathname === item.path);
+    return group.items.some(item => {
+      const [pathName] = item.path.split('?');
+      return location.pathname === pathName;
+    });
   };
 
   return (
@@ -159,14 +176,6 @@ const Navbar = () => {
             </div>
           ))}
 
-          <Link 
-            to="/media" 
-            className={`text-sm font-medium transition-colors ${
-              isActive('/media') ? 'text-brand-primary' : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Media Centre
-          </Link>
 
           <Link 
             to="/contact" 
@@ -271,9 +280,6 @@ const Navbar = () => {
                   </div>
                 ))}
 
-                <Link to="/media" className={`text-base font-medium ${isActive('/media') ? 'text-brand-primary' : 'text-gray-300'}`}>
-                  Media Centre
-                </Link>
                 <Link to="/contact" className={`text-base font-medium ${isActive('/contact') ? 'text-brand-primary' : 'text-gray-300'}`}>
                   Contact
                 </Link>

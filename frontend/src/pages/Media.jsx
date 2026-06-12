@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Newspaper, Image as ImageIcon, Video, Calendar, ArrowRight, Play, Eye, Clock, X, 
@@ -31,7 +32,17 @@ const revealItem = {
 };
 
 const Media = () => {
-  const [activeTab, setActiveTab] = useState('news'); // news, photos, videos
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(
+    tabParam && ['news', 'photos', 'videos'].includes(tabParam) ? tabParam : 'news'
+  );
+
+  useEffect(() => {
+    if (tabParam && ['news', 'photos', 'videos'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
   
   const [news, setNews] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -419,7 +430,7 @@ const Media = () => {
               <button
                 key={tab.id}
                 onClick={() => {
-                  setActiveTab(tab.id);
+                  setSearchParams({ tab: tab.id });
                   setSearchQuery('');
                   setSelectedCategory('all');
                 }}
