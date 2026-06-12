@@ -8,7 +8,10 @@ const fs = require('fs');
  */
 const storage = (subfolder) => multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '..', 'uploads', subfolder);
+    const uploadsBase = process.env.UPLOADS_DIR
+      ? (path.isAbsolute(process.env.UPLOADS_DIR) ? process.env.UPLOADS_DIR : path.join(__dirname, '..', process.env.UPLOADS_DIR))
+      : path.join(__dirname, '..', 'uploads');
+    const uploadPath = path.join(uploadsBase, subfolder);
     
     // Ensure directory exists
     if (!fs.existsSync(uploadPath)) {

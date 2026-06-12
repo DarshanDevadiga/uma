@@ -183,7 +183,17 @@ const deleteNewsImage = async (req, res) => {
     // Delete file from disk
     const fs = require('fs');
     const path = require('path');
-    const filePath = path.join(__dirname, '..', imageUrl);
+    const uploadsBase = process.env.UPLOADS_DIR
+      ? (path.isAbsolute(process.env.UPLOADS_DIR) ? process.env.UPLOADS_DIR : path.join(__dirname, '..', process.env.UPLOADS_DIR))
+      : path.join(__dirname, '..', 'uploads');
+
+    let filePath;
+    if (imageUrl.startsWith('/uploads/')) {
+      filePath = path.join(uploadsBase, imageUrl.substring('/uploads/'.length));
+    } else {
+      filePath = path.join(__dirname, '..', imageUrl);
+    }
+
     if (fs.existsSync(filePath)) {
       try {
         fs.unlinkSync(filePath);

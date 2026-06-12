@@ -19,37 +19,43 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Resolve the base uploads directory from environment variable UPLOADS_DIR
+const uploadsDir = process.env.UPLOADS_DIR
+  ? (path.isAbsolute(process.env.UPLOADS_DIR) ? process.env.UPLOADS_DIR : path.join(__dirname, process.env.UPLOADS_DIR))
+  : path.join(__dirname, 'uploads');
+
 // Ensure upload folders exist
-const uploadDirs = [
-  'uploads',
-  'uploads/events',
-  'uploads/bearers',
-  'uploads/committees',
-  'uploads/news',
-  'uploads/gallery',
-  'uploads/publications',
-  'uploads/awards'
+const uploadSubDirs = [
+  'events',
+  'bearers',
+  'committees',
+  'news',
+  'gallery',
+  'publications',
+  'awards'
 ];
-uploadDirs.forEach(dir => {
-  const dirPath = path.join(__dirname, dir);
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+uploadSubDirs.forEach(sub => {
+  const dirPath = path.join(uploadsDir, sub);
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
 });
 
-// Serve static uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static uploaded files from the custom uploads location
+app.use('/uploads', express.static(uploadsDir));
 
 // Serve default placeholder images if they don't exist
-const defaultBearerPath = path.join(__dirname, 'uploads/bearers/default_bearer.png');
+const defaultBearerPath = path.join(uploadsDir, 'bearers/default_bearer.png');
 if (!fs.existsSync(defaultBearerPath)) {
-  // Create a simple blank SVG or copy a base image if available, but for now we write a dummy buffer or small base64 pixel
-  // Let's write a small empty transparent PNG pixel or a small base placeholder SVG
+  // Create a simple blank SVG placeholder
   const placeholderSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#27272a">
     <circle cx="50" cy="35" r="20" fill="#52525b"/>
     <path d="M20 80c0-15 15-20 30-20s30 5 30 20z" fill="#52525b"/>
   </svg>`;
-  fs.writeFileSync(path.join(__dirname, 'uploads/bearers/default_bearer.png'), placeholderSvg);
+  fs.writeFileSync(defaultBearerPath, placeholderSvg);
 }
 
 // Import routes
