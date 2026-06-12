@@ -26,7 +26,11 @@ const revealItem = {
 };
 
 const Awards = () => {
-  const [awards, setAwards] = useState([]);
+  const [awards, setAwards] = useState([
+    { id: 1, name: 'Outstanding Manager Award', description: 'Honors executives demonstrating exemplary leadership, organizational growth, and ethical management within the Udupi region.' },
+    { id: 2, name: 'Business Excellence Award', description: 'Recognizes organizations showing significant commercial growth, digital transformation, and contribution to local trade.' },
+    { id: 3, name: 'Young Teacher Award', description: 'Acknowledges business and commerce educators under 40 showing academic excellence and innovative teaching methods.' }
+  ]);
   const [formData, setFormData] = useState({
     award_id: '',
     nominee_name: '',

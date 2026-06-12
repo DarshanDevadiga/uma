@@ -26,7 +26,13 @@ const revealItem = {
 };
 
 const Membership = () => {
-  const [types, setTypes] = useState([]);
+  const [types, setTypes] = useState([
+    { id: 1, name: 'Executive Member', fee: 5000.00, description: 'Access to governance meetings and executive board voting privileges.' },
+    { id: 2, name: 'Life Member', fee: 10000.00, description: 'Lifetime association membership status and all general meeting benefits.' },
+    { id: 3, name: 'Industry Member', fee: 15000.00, description: 'Tailored for corporate representatives and corporate collaborations.' },
+    { id: 4, name: 'Academic Member', fee: 2000.00, description: 'Specially designed for educators, professors, and academic leaders.' },
+    { id: 5, name: 'Student Member', fee: 500.00, description: 'For students seeking career mentorship and management networking.' }
+  ]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
