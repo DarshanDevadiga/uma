@@ -37,3 +37,6 @@ Desktop.ini
 # App Uploads
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# Lockfiles
+package-lock.json
