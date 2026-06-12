@@ -87,10 +87,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'UMA Backend Server is running smoothly.' });
 });
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('UMA Backend API Server is active.');
-});
+// Serve static React production build assets if present
+const publicPath = path.join(__dirname, 'public');
+if (fs.existsSync(publicPath)) {
+  app.use(express.static(publicPath));
+  // Handle SPA routing: serve index.html for non-API routes
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
+  });
+} else {
+  // Fallback root route if frontend is not built
+  app.get('/', (req, res) => {
+    res.send('UMA Backend API Server is active.');
+  });
+}
 
 // 404 Route handler
 app.use((req, res, next) => {
