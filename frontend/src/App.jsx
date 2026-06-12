@@ -18,6 +18,7 @@ import Awards from './pages/Awards';
 import Publications from './pages/Publications';
 import Pd from './pages/Pd';
 import Media from './pages/Media';
+import NewsArticle from './pages/NewsArticle';
 import Contact from './pages/Contact';
 
 // Admin Pages
@@ -36,7 +37,8 @@ import {
   AdminNews,
   AdminContacts,
   AdminTraining,
-  AdminSettings
+  AdminSettings,
+  AdminEventRegistrations
 } from './pages/AdminModules';
 
 function App() {
@@ -58,6 +60,7 @@ function App() {
           <Route path="/publications" element={<MainLayout><Publications /></MainLayout>} />
           <Route path="/pd" element={<MainLayout><Pd /></MainLayout>} />
           <Route path="/media" element={<MainLayout><Media /></MainLayout>} />
+          <Route path="/news/:id" element={<MainLayout><NewsArticle /></MainLayout>} />
           <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
 
           {/* ==========================================
@@ -71,6 +74,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/members" element={<AdminLayout><AdminMembers /></AdminLayout>} />
           <Route path="/admin/events" element={<AdminLayout><AdminEvents /></AdminLayout>} />
+          <Route path="/admin/event-registrations" element={<AdminLayout><AdminEventRegistrations /></AdminLayout>} />
           <Route path="/admin/bearers" element={<AdminLayout><AdminBearers /></AdminLayout>} />
           <Route path="/admin/committees" element={<AdminLayout><AdminCommittees /></AdminLayout>} />
           <Route path="/admin/awards" element={<AdminLayout><AdminAwards /></AdminLayout>} />

@@ -8,12 +8,28 @@ const getGallery = async (req, res) => {
   const offset = (page - 1) * limit;
 
   try {
-    let queryStr = 'SELECT * FROM gallery';
+    let queryStr = '';
     const params = [];
 
-    if (type) {
-      queryStr += ' WHERE type = ?';
-      params.push(type);
+    if (type === 'photo') {
+      // Union of:
+      // 1. Manually uploaded photos from gallery table
+      // 2. Cover images from news table
+      // 3. Additional images from news_images table
+      queryStr = `
+        SELECT * FROM (
+          SELECT CONCAT('g-', id) as id, title, type, media_url, thumbnail_url, created_at FROM gallery WHERE type = 'photo'
+          UNION ALL
+          SELECT CONCAT('n-', id) as id, title, 'photo' as type, image_url as media_url, NULL as thumbnail_url, created_at FROM news WHERE image_url IS NOT NULL AND image_url != ''
+          UNION ALL
+          SELECT CONCAT('ni-', ni.id) as id, n.title, 'photo' as type, ni.image_url as media_url, NULL as thumbnail_url, ni.created_at FROM news_images ni JOIN news n ON ni.news_id = n.id
+        ) as combined_photos
+      `;
+    } else if (type === 'video') {
+      queryStr = "SELECT id, title, type, media_url, thumbnail_url, created_at FROM gallery WHERE type = 'video'";
+    } else {
+      // Default (e.g. Admin view)
+      queryStr = "SELECT id, title, type, media_url, thumbnail_url, created_at FROM gallery";
     }
 
     queryStr += ' ORDER BY created_at DESC';

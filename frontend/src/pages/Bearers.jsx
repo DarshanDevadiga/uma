@@ -36,6 +36,7 @@ const Bearers = () => {
     secretary: 'Secretary',
     joint_secretary: 'Joint Secretaries',
     treasurer: 'Treasurer',
+    executive_committee: 'Executive Committee',
     advisor: 'Advisors'
   };
 
@@ -45,6 +46,7 @@ const Bearers = () => {
     'secretary',
     'treasurer',
     'joint_secretary',
+    'executive_committee',
     'advisor'
   ];
 
@@ -112,10 +114,14 @@ const Bearers = () => {
     fetchBearers();
   }, []);
 
-  // Filter bearers by category helper
-  const getBearersByCategory = (category) => {
-    return bearers.filter(bearer => bearer.category === category);
-  };
+  // Sort bearers by categoryOrder priority
+  const sortedBearers = [...bearers].sort((a, b) => {
+    const aIndex = categoryOrder.indexOf(a.category);
+    const bIndex = categoryOrder.indexOf(b.category);
+    const valA = aIndex === -1 ? 999 : aIndex;
+    const valB = bIndex === -1 ? 999 : bIndex;
+    return valA - valB;
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-6 flex flex-col">
@@ -139,70 +145,72 @@ const Bearers = () => {
           <div className="w-10 h-10 rounded-full border-t-2 border-brand-primary animate-spin" />
         </div>
       ) : (
-        <div className="flex flex-col gap-8 py-8 border-t border-white/5 mb-6">
-          {categoryOrder.map((category) => {
-            const list = getBearersByCategory(category);
-            if (list.length === 0) return null;
-
-            return (
-              <div key={category} className="flex flex-col gap-6">
-                <motion.div 
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="flex items-center gap-3"
+        <div className="py-8 border-t border-white/5 mb-6">
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-80px' }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {sortedBearers.map((bearer, idx) => (
+              <motion.div key={bearer.id || idx} variants={revealItem}>
+                <GlassCard 
+                  className="p-4 flex flex-col gap-4 group cursor-pointer border border-white/5 relative overflow-hidden"
+                  hoverEffect={true}
                 >
-                  <h3 className="text-lg font-bold text-white uppercase tracking-wider font-sans">
-                    {categoryLabels[category]}
-                  </h3>
-                  <div className="flex-grow h-px bg-white/5" />
-                </motion.div>
+                  {/* Decorative Background Glows inside the Card */}
+                  <div className="absolute -bottom-12 -left-12 w-28 h-28 rounded-full bg-brand-primary/5 blur-2xl pointer-events-none group-hover:bg-brand-primary/10 transition-colors duration-500" />
+                  <div className="absolute -top-12 -right-12 w-28 h-28 rounded-full bg-brand-secondary/5 blur-2xl pointer-events-none group-hover:bg-brand-secondary/10 transition-colors duration-500" />
+                  
+                  {/* Glass Photo Frame Container */}
+                  <div className="w-full aspect-square rounded-2xl p-2 bg-white/[0.02] border border-white/10 flex items-center justify-center relative shadow-lg shadow-black/40 backdrop-blur-md overflow-hidden">
+                    {/* Floating Category Badge Overlay on Image */}
+                    <div className="absolute top-4 left-4 z-30 px-2.5 py-1 rounded-lg bg-black/60 border border-white/10 backdrop-blur-md text-[10px] uppercase tracking-wider font-semibold text-brand-primary shadow-lg shadow-black/20">
+                      {categoryLabels[bearer.category] || bearer.category}
+                    </div>
 
-                <motion.div 
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, margin: '-80px' }}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                >
-                  {list.map((bearer, idx) => (
-                    <motion.div key={bearer.id || idx} variants={revealItem}>
-                      <GlassCard 
-                        className="p-5 flex items-center gap-4"
-                        hoverEffect={true}
-                      >
-                        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-white/5 border border-white/10 flex items-center justify-center">
-                          <img 
-                            src={bearer.image_url.startsWith('http') 
-                              ? bearer.image_url 
-                              : bearer.image_url.startsWith('/uploads')
-                                ? `${BASE_URL}${bearer.image_url}`
-                                : bearer.image_url
-                            } 
-                            alt={bearer.name}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            onError={(e) => {
-                              e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%2327272a"><circle cx="50" cy="35" r="20" fill="%2352525b"/><path d="M20 80c0-15 15-20 30-20s30 5 30 20z" fill="%2352525b"/></svg>';
-                            }}
-                          />
-                        </div>
-                        
-                        <div className="flex flex-col truncate">
-                          <h4 className="text-white font-bold text-base truncate">{bearer.name}</h4>
-                          <span className="text-brand-secondary text-xs font-medium truncate mt-0.5">{bearer.designation}</span>
-                          <span className="text-gray-500 text-xs truncate flex items-center gap-1 mt-1">
-                            <Landmark size={12} className="shrink-0" />
-                            {bearer.organization}
-                          </span>
-                        </div>
-                      </GlassCard>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </div>
-            );
-          })}
+                    <div className="w-full h-full rounded-xl overflow-hidden relative border border-white/5 bg-dark-card">
+                      <img 
+                        src={bearer.image_url.startsWith('http') 
+                          ? bearer.image_url 
+                          : bearer.image_url.startsWith('/uploads')
+                            ? `${BASE_URL}${bearer.image_url}`
+                            : bearer.image_url
+                        } 
+                        alt={bearer.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                        onError={(e) => {
+                          e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%2327272a"><circle cx="50" cy="35" r="20" fill="%2352525b"/><path d="M20 80c0-15 15-20 30-20s30 5 30 20z" fill="%2352525b"/></svg>';
+                        }}
+                      />
+                      {/* Glass reflections overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.08] to-white/0 pointer-events-none z-10" />
+                      {/* Glass sheen sweep overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none z-20" />
+                    </div>
+                    {/* Inner glass frame border */}
+                    <div className="absolute inset-0 border border-white/10 rounded-2xl pointer-events-none" />
+                  </div>
+                  
+                  <div className="flex flex-col pt-1 px-1 gap-1 z-10">
+                    <h4 className="text-white font-bold text-base md:text-lg group-hover:text-brand-primary transition-colors duration-300 truncate">
+                      {bearer.name}
+                    </h4>
+                    <div className="flex items-center mt-0.5">
+                      <span className="text-brand-secondary text-[11px] font-semibold tracking-wide px-2.5 py-0.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 backdrop-blur-sm truncate">
+                        {bearer.designation}
+                      </span>
+                    </div>
+                    <span className="text-gray-400 text-xs flex items-center gap-1.5 mt-2.5 truncate">
+                      <Landmark size={12} className="shrink-0 text-brand-secondary/70" />
+                      <span className="truncate">{bearer.organization}</span>
+                    </span>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, Users, Calendar, Award, UserCheck, 
   Layers, BookOpen, Image, Newspaper, Mail, GraduationCap, 
-  Settings, LogOut, Menu, X, ShieldAlert 
+  Settings, LogOut, Menu, X, ShieldAlert, ClipboardList 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
@@ -36,6 +36,7 @@ const AdminLayout = ({ children }) => {
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Memberships', path: '/admin/members', icon: Users },
     { name: 'Events & Conf.', path: '/admin/events', icon: Calendar },
+    { name: 'Event Bookings', path: '/admin/event-registrations', icon: ClipboardList },
     { name: 'Award Nom.', path: '/admin/awards', icon: Award },
     { name: 'Office Bearers', path: '/admin/bearers', icon: UserCheck },
     { name: 'Committees', path: '/admin/committees', icon: Layers },

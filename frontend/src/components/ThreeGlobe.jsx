@@ -42,7 +42,7 @@ const GlobeModel = () => {
     <group ref={globeRef}>
       {/* Central Solid core with standard material for light reactions */}
       <mesh>
-        <sphereGeometry args={[2.5, 64, 64]} />
+        <sphereGeometry args={[2.1, 64, 64]} />
         <meshStandardMaterial 
           color="#090b16" 
           roughness={0.4} 
@@ -54,19 +54,19 @@ const GlobeModel = () => {
 
       {/* Wireframe outer sphere */}
       <mesh ref={wireRef}>
-        <sphereGeometry args={[2.52, 36, 36]} />
+        <sphereGeometry args={[2.12, 36, 36]} />
         <meshBasicMaterial color="#6366f1" wireframe transparent opacity={0.4} />
       </mesh>
 
       {/* Secondary wireframe for grid depth */}
       <mesh ref={wireSlowRef}>
-        <sphereGeometry args={[2.55, 20, 20]} />
+        <sphereGeometry args={[2.15, 20, 20]} />
         <meshBasicMaterial color="#8b5cf6" wireframe transparent opacity={0.2} />
       </mesh>
 
       {/* Connection points / nodes */}
       <points>
-        <sphereGeometry args={[2.53, 24, 24]} />
+        <sphereGeometry args={[2.13, 24, 24]} />
         <pointsMaterial color="#60a5fa" size={0.07} sizeAttenuation={true} />
       </points>
 
@@ -175,7 +175,7 @@ const ThreeGlobe = () => {
   return (
     <div className="w-full h-[350px] sm:h-[450px] md:h-[550px] lg:h-[650px] flex items-center justify-center relative select-none">
       <Canvas
-        camera={{ position: [0, 0, 7.6], fov: 45 }}
+        camera={{ position: [0, 0, 6.4], fov: 45 }}
         gl={{ antialias: true }}
       >
         <ambientLight intensity={0.4} />

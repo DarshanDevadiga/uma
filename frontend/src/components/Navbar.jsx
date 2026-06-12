@@ -59,9 +59,9 @@ const Navbar = () => {
     {
       label: 'Media Centre',
       items: [
-        { name: 'News Blog', path: '/media?tab=news' },
-        { name: 'Photo Gallery', path: '/media?tab=photos' },
-        { name: 'Video Stream', path: '/media?tab=videos' }
+        { name: 'News', path: '/media?tab=news' },
+        { name: 'Photo', path: '/media?tab=photos' },
+        { name: 'Video', path: '/media?tab=videos' }
       ]
     }
   ];

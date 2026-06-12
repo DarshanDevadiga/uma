@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS office_bearers (
     organization VARCHAR(150) NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     display_order INT DEFAULT 0,
-    category ENUM('honorary_president', 'working_president', 'secretary', 'joint_secretary', 'treasurer', 'advisor') NOT NULL,
+    category VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -139,10 +139,22 @@ CREATE TABLE IF NOT EXISTS news (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
+    paragraph1 TEXT,
+    paragraph2 TEXT,
+    paragraph3 TEXT,
     type ENUM('news', 'press_release') NOT NULL,
     image_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 12.5 News Images Table
+CREATE TABLE IF NOT EXISTS news_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    news_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 13. Contacts Table

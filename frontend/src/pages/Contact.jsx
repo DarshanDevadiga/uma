@@ -99,9 +99,9 @@ const Contact = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 flex flex-col">
+    <div className="max-w-7xl mx-auto px-6 flex flex-col pt-16 pb-24">
       {/* Header */}
-      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 pt-10 pb-4">
+      <section className="text-center max-w-3xl mx-auto flex flex-col gap-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: -25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,9 +118,9 @@ const Contact = () => {
       </section>
 
       {/* Grid */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-10 py-8 border-t border-white/5">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start py-16 border-t border-white/5">
         {/* Info panel left */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <div className="lg:col-span-5 flex flex-col gap-10">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -171,7 +171,7 @@ const Contact = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-            className="w-full h-64 rounded-3xl overflow-hidden border border-white/5 shadow-md"
+            className="w-full h-80 rounded-3xl overflow-hidden border border-white/5 shadow-md shadow-brand-primary/5"
           >
             <iframe 
               src={settings.google_map}

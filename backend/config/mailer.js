@@ -21,8 +21,22 @@ if (isSmtpConfigured()) {
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS
+    },
+    tls: {
+      rejectUnauthorized: false // Avoid certificate validation failures on local/custom SMTP setups
     }
   });
+
+  // Test the SMTP connection asynchronously on boot
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error('SMTP Connection Verification Failed:', error.message);
+    } else {
+      console.log('SMTP Server connection successfully verified. Ready to deliver messages!');
+    }
+  });
+} else {
+  console.log('SMTP is not configured in .env (or using default placeholders). Emails will run in MOCK mode.');
 }
 
 /**

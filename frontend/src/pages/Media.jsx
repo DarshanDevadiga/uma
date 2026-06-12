@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Newspaper, Image as ImageIcon, Video, Calendar, ArrowRight, Play, Eye, Clock, X, 
@@ -417,36 +417,7 @@ const Media = () => {
         </motion.div>
       </section>
 
-      {/* Tabs Menu */}
-      <section className="flex justify-center border-b border-white/5 py-2">
-        <div className="flex bg-white/5 border border-white/10 p-1.5 rounded-2xl">
-          {[
-            { id: 'news', label: 'News Blog', icon: Newspaper },
-            { id: 'photos', label: 'Photo Gallery', icon: ImageIcon },
-            { id: 'videos', label: 'Video Stream', icon: Video }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setSearchParams({ tab: tab.id });
-                  setSearchQuery('');
-                  setSelectedCategory('all');
-                }}
-                className={`px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-brand-primary text-white shadow-md'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Icon size={16} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-      </section>
+
 
       {/* Global Search and Filtering Row */}
       <section className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
@@ -512,11 +483,11 @@ const Media = () => {
           {activeTab === 'news' && (
             <div className="flex flex-col gap-8">
               
-              {/* News Layout Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* News Layout */}
+              <div className="max-w-4xl mx-auto w-full flex flex-col gap-8">
                 
-                {/* Left Column (News feed) */}
-                <div className="lg:col-span-8 flex flex-col gap-8">
+                {/* News feed */}
+                <div className="flex flex-col gap-8">
                   {filteredNews.length === 0 ? (
                     <div className="py-24 text-center text-gray-500 text-sm bg-white/[0.01] border border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center gap-3">
                       <Newspaper size={36} className="text-gray-600" />
@@ -540,11 +511,11 @@ const Media = () => {
                           viewport={{ once: true, margin: '-80px' }}
                           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                         >
-                          <GlassCard 
-                            onClick={() => setSelectedArticle(featuredArticle)}
-                            className="p-6 md:p-8 hover:-translate-y-1 transition-all duration-300 border border-white/10 group cursor-pointer overflow-hidden relative"
-                            hoverEffect={true}
-                          >
+                          <Link to={`/news/${featuredArticle.id}`} className="block">
+                            <GlassCard 
+                              className="p-6 md:p-8 hover:-translate-y-1 transition-all duration-300 border border-white/10 group cursor-pointer overflow-hidden relative"
+                              hoverEffect={true}
+                            >
                           {/* Top-Right Tag Badge */}
                           <div className="absolute top-4 right-4 z-20">
                             <span className={`px-3 py-1 rounded-full border text-xxs font-extrabold uppercase tracking-wider backdrop-blur-md ${getCategoryBadgeColor(featuredArticle.type)}`}>
@@ -600,7 +571,8 @@ const Media = () => {
                               </div>
                             </div>
                           </div>
-                          </GlassCard>
+                            </GlassCard>
+                          </Link>
                         </motion.div>
                       )}
 
@@ -619,11 +591,11 @@ const Media = () => {
                             
                             return (
                               <motion.div variants={revealItem} key={item.id || idx}>
-                                <GlassCard 
-                                  onClick={() => setSelectedArticle(item)}
-                                  className="flex flex-col justify-between h-full p-5 border border-white/5 hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
-                                  hoverEffect={true}
-                                >
+                                <Link to={`/news/${item.id}`} className="block h-full">
+                                  <GlassCard 
+                                    className="flex flex-col justify-between h-full p-5 border border-white/5 hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
+                                    hoverEffect={true}
+                                  >
                                   <div className="flex flex-col gap-4">
                                     {/* Article Card Image */}
                                     <div className="w-full h-44 rounded-xl overflow-hidden border border-white/5 relative bg-black/30">
@@ -671,7 +643,8 @@ const Media = () => {
                                       <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                     </span>
                                   </div>
-                                </GlassCard>
+                                  </GlassCard>
+                                </Link>
                               </motion.div>
                             );
                           })}
@@ -687,150 +660,6 @@ const Media = () => {
                     </>
                   )}
                 </div>
-
-                {/* Right Column (Editorial Sidebar) */}
-                <motion.div 
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, margin: '-60px' }}
-                  className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24"
-                >
-                  
-                  {/* Widget 1: Announcements/Live Bulletins */}
-                  <motion.div variants={revealItem}>
-                    <GlassCard className="p-5 border border-white/5">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-7 h-7 rounded-lg bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center text-brand-primary">
-                        <Bell size={14} className="animate-pulse" />
-                      </div>
-                      <h4 className="text-white font-bold text-sm uppercase tracking-wider font-mono">Live Bulletins</h4>
-                    </div>
-                    
-                    <div className="flex flex-col gap-4">
-                      {bulletins.map((bul) => {
-                        let indicatorColor = 'bg-green-500';
-                        if (bul.type === 'urgent') indicatorColor = 'bg-brand-accent animate-ping';
-                        if (bul.type === 'meeting') indicatorColor = 'bg-blue-400';
-                        if (bul.type === 'registry') indicatorColor = 'bg-yellow-400';
-
-                        return (
-                          <div key={bul.id} className="flex gap-3 items-start pb-3 border-b border-white/5 last:border-0 last:pb-0">
-                            <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${indicatorColor}`} />
-                            <p className="text-gray-400 text-xs leading-normal hover:text-white transition-colors duration-200">
-                              {bul.text}
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    </GlassCard>
-                  </motion.div>
-
-                  {/* Widget 2: Premium Newsletter Form */}
-                  <motion.div variants={revealItem}>
-                    <GlassCard className="p-5 border border-white/10 relative overflow-hidden bg-luxury-gradient">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl pointer-events-none" />
-                    
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg bg-brand-secondary/10 border border-brand-secondary/20 flex items-center justify-center text-brand-secondary">
-                        <Mail size={14} />
-                      </div>
-                      <h4 className="text-white font-bold text-sm uppercase tracking-wider font-mono">UMA Newsletter</h4>
-                    </div>
-
-                    <p className="text-gray-400 text-xs leading-relaxed mb-4 font-light">
-                      Get workshop updates, conference registrations, and regional commerce audits directly in your inbox.
-                    </p>
-
-                    <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
-                      <div className="relative">
-                        <input
-                          type="email"
-                          value={newsletterEmail}
-                          onChange={(e) => setNewsletterEmail(e.target.value)}
-                          placeholder="Your email address"
-                          required
-                          className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 focus:border-brand-primary/40 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none transition-all"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={newsletterSubscribed}
-                        className={`w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-350 ${
-                          newsletterSubscribed
-                            ? 'bg-green-600 text-white cursor-default'
-                            : 'bg-brand-primary hover:bg-brand-primary-light text-white shadow-lg shadow-brand-primary/10'
-                        }`}
-                      >
-                        {newsletterSubscribed ? (
-                          <>
-                            <Check size={13} />
-                            Subscribed!
-                          </>
-                        ) : (
-                          <>
-                            <Send size={12} />
-                            Subscribe
-                          </>
-                        )}
-                      </button>
-                    </form>
-                  </GlassCard>
-                  </motion.div>
-
-                  {/* Widget 3: Resources/Downloads */}
-                  <motion.div variants={revealItem}>
-                    <GlassCard className="p-5 border border-white/5">
-                      <div className="flex items-center gap-2 mb-4">
-                      <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-300">
-                        <BookOpen size={14} />
-                      </div>
-                      <h4 className="text-white font-bold text-sm uppercase tracking-wider font-mono">Media Resources</h4>
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      {resources.map((res) => (
-                        <div 
-                          key={res.id} 
-                          onClick={() => handleDownload(res.name)}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all cursor-pointer group"
-                        >
-                          <div className="flex items-center gap-2.5 overflow-hidden">
-                            <FileText size={15} className="text-gray-500 group-hover:text-brand-secondary transition-colors" />
-                            <div className="overflow-hidden">
-                              <span className="text-white text-xs block truncate font-medium">{res.name}</span>
-                              <span className="text-[10px] text-gray-500 font-mono">{res.size}</span>
-                            </div>
-                          </div>
-                          <Download size={13} className="text-gray-500 group-hover:text-white transition-colors" />
-                        </div>
-                      ))}
-                    </div>
-                  </GlassCard>
-                  </motion.div>
-
-                  {/* Widget 4: Media Contact details */}
-                  <motion.div variants={revealItem}>
-                    <GlassCard className="p-5 border border-white/5 text-xs">
-                    <h4 className="text-white font-bold text-sm mb-3 uppercase tracking-wider font-mono">Press Contact</h4>
-                    <div className="flex flex-col gap-2 text-gray-400 font-light leading-relaxed">
-                      <div className="flex items-center gap-2">
-                        <Mail size={12} className="text-brand-primary shrink-0" />
-                        <span className="hover:text-white cursor-pointer select-all">press@udupimanagement.org</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone size={12} className="text-brand-primary shrink-0" />
-                        <span className="select-all">+91 820 2520412</span>
-                      </div>
-                      <div className="border-t border-white/5 mt-2 pt-2 text-[10px] text-gray-500 leading-normal uppercase">
-                        For press credentials, guest relations, and academic media approvals.
-                      </div>
-                    </div>
-                  </GlassCard>
-                  </motion.div>
-
-                </motion.div>
 
               </div>
 
@@ -964,172 +793,7 @@ const Media = () => {
         title={lightboxTitle}
       />
 
-      {/* Premium Full Article Modal Reading View */}
-      <AnimatePresence>
-        {selectedArticle && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-            {/* Click outer to close */}
-            <div className="absolute inset-0" onClick={() => setSelectedArticle(null)} />
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 40, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.97 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="glass-card max-w-3xl w-full rounded-3xl relative z-10 border border-white/10 overflow-hidden flex flex-col max-h-[90vh]"
-            >
-              {/* Reading Progress Bar at the top of the modal */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-white/10 z-[21]">
-                <div className="h-full bg-brand-primary shadow-[0_0_8px_#ff2a5f]" style={{ width: `${scrollProgress}%` }} />
-              </div>
 
-              {/* Header Cover Image */}
-              <div className="w-full h-56 md:h-64 relative overflow-hidden bg-black/50 border-b border-white/5 flex items-center justify-center shrink-0">
-                <img 
-                  src={getNewsImage(selectedArticle)} 
-                  alt={selectedArticle.title} 
-                  className="w-full h-full object-cover opacity-80" 
-                />
-                
-                {/* Shadow Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/40 to-transparent" />
-                
-                {/* Close Button overlay */}
-                <button 
-                  onClick={() => setSelectedArticle(null)}
-                  className="absolute top-5 right-5 p-2 bg-dark/60 hover:bg-brand-primary text-gray-300 hover:text-white rounded-full backdrop-blur-md transition-all z-20 shadow-lg border border-white/10"
-                >
-                  <X size={16} />
-                </button>
-
-                {/* Article badge overlay inside header */}
-                <div className="absolute bottom-5 left-6 md:left-8 flex gap-2">
-                  <span className={`px-3 py-1 rounded-full border text-xxs font-extrabold uppercase tracking-wider backdrop-blur-md ${getCategoryBadgeColor(selectedArticle.type)}`}>
-                    {(selectedArticle.type || '').replace('_', ' ')}
-                  </span>
-                </div>
-              </div>
-
-              {/* Text Content Area (Scrollable) */}
-              <div 
-                ref={articleContentRef}
-                onScroll={handleModalScroll}
-                className="p-6 md:p-8 flex flex-col gap-5 overflow-y-auto"
-              >
-                
-                {/* Meta details */}
-                <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500 font-mono border-b border-white/5 pb-4">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar size={13} />
-                      {new Date(selectedArticle.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </span>
-                    <span>&bull;</span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock size={13} />
-                      {getReadTime(selectedArticle.content)}
-                    </span>
-                  </div>
-                  
-                  <span className="flex items-center gap-1 text-[11px] text-gray-400">
-                    <Eye size={12} />
-                    {modalViews} views
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h2 className="text-2xl md:text-3xl font-extrabold text-white leading-tight font-sans">
-                  {selectedArticle.title}
-                </h2>
-                
-                <div className="w-16 h-1 bg-brand-primary rounded" />
-
-                {/* Paragraph Content */}
-                <div className="text-gray-300 text-sm md:text-base leading-relaxed font-light space-y-4 pt-2">
-                  {(selectedArticle.content || '').split('\n').map((para, i) => (
-                    <p key={i}>{para}</p>
-                  ))}
-                </div>
-
-                {/* Share Article Section */}
-                <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <span className="text-xs text-gray-400 font-mono uppercase tracking-wider flex items-center gap-1.5">
-                    <Share2 size={13} />
-                    Share this Update
-                  </span>
-                  
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => triggerToast('Shared to Twitter!')}
-                      className="p-2.5 rounded-xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-brand-primary/10 hover:border-brand-primary/20 transition-all"
-                      title="Share on Twitter"
-                    >
-                      <Twitter size={14} />
-                    </button>
-                    <button 
-                      onClick={() => triggerToast('Shared to LinkedIn!')}
-                      className="p-2.5 rounded-xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-brand-primary/10 hover:border-brand-primary/20 transition-all"
-                      title="Share on LinkedIn"
-                    >
-                      <Linkedin size={14} />
-                    </button>
-                    <button 
-                      onClick={() => triggerToast('Shared to Facebook!')}
-                      className="p-2.5 rounded-xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-brand-primary/10 hover:border-brand-primary/20 transition-all"
-                      title="Share on Facebook"
-                    >
-                      <Facebook size={14} />
-                    </button>
-                    <button 
-                      onClick={() => handleCopyLink(selectedArticle)}
-                      className="p-2.5 rounded-xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-brand-primary/10 hover:border-brand-primary/20 transition-all flex items-center gap-1.5 text-xs font-semibold"
-                      title="Copy link"
-                    >
-                      <LinkIcon size={14} />
-                      Copy Link
-                    </button>
-                  </div>
-                </div>
-
-                {/* Read Next Section */}
-                {getRelatedArticles(selectedArticle).length > 0 && (
-                  <div className="mt-8 pt-8 border-t border-white/5">
-                    <h4 className="text-white font-bold text-sm uppercase tracking-wider font-mono mb-4">Read Next</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {getRelatedArticles(selectedArticle).map((rel) => (
-                        <div 
-                          key={rel.id} 
-                          onClick={() => setSelectedArticle(rel)}
-                          className="flex gap-3 items-center p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all cursor-pointer group"
-                        >
-                          <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/5 shrink-0">
-                            <img src={getNewsImage(rel)} alt={rel.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-350" />
-                          </div>
-                          <div className="overflow-hidden">
-                            <span className="text-[10px] text-gray-500 font-mono block mb-1">
-                              {new Date(rel.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                            </span>
-                            <span className="text-white text-xs block font-bold truncate group-hover:text-brand-primary transition-colors">
-                              {rel.title}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              </div>
-
-              {/* Footer details */}
-              <div className="p-4 border-t border-white/5 bg-white/2 flex justify-between items-center text-xs text-gray-500 font-mono shrink-0">
-                <span>AUTHOR: UMA PRESS OFFICE</span>
-                <span>STATUS: PUBLISHED &bull; PUBLIC</span>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

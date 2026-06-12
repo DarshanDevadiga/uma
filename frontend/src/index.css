@@ -51,18 +51,18 @@
 
   /* Glass Inputs */
   .glass-input {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transition: all 0.3s ease;
   }
 
   .glass-input:focus {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(99, 102, 241, 0.65);
     outline: none;
-    box-shadow: 0 0 15px -3px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 15px -3px rgba(99, 102, 241, 0.45);
   }
 
   /* Glow buttons */

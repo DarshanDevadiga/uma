@@ -4,6 +4,7 @@ import {
   Upload, Download, ShieldCheck, Mail, MapPin, Eye, ExternalLink, Users, Settings
 } from 'lucide-react';
 import api, { BASE_URL } from '../services/api';
+import GlassCard from '../components/GlassCard';
 
 // ==========================================
 // 1. MANAGE MEMBERS
@@ -368,6 +369,42 @@ export const AdminEvents = () => {
   });
   const [imageFile, setImageFile] = useState(null);
 
+  // Registrations state variables
+  const [registrationsModalOpen, setRegistrationsModalOpen] = useState(false);
+  const [activeEventForRegistrations, setActiveEventForRegistrations] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+
+  const handleOpenRegistrations = (event) => {
+    setActiveEventForRegistrations(event);
+    setRegistrationsModalOpen(true);
+    fetchRegistrations(event.id);
+  };
+
+  const fetchRegistrations = async (eventId) => {
+    setRegistrationsLoading(true);
+    try {
+      const res = await api.get(`/events/admin/registrations?eventId=${eventId}`);
+      setRegistrations(res.data.data);
+    } catch (err) {
+      console.error('Error fetching registrations:', err);
+    } finally {
+      setRegistrationsLoading(false);
+    }
+  };
+
+  const handleDeleteRegistration = async (regId) => {
+    if (!window.confirm('Remove this registration booking?')) return;
+    try {
+      await api.delete(`/events/admin/registrations/${regId}`);
+      if (activeEventForRegistrations) {
+        fetchRegistrations(activeEventForRegistrations.id);
+      }
+    } catch (err) {
+      alert('Failed to delete registration');
+    }
+  };
+
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -474,6 +511,13 @@ export const AdminEvents = () => {
                     <td className="px-6 py-4 truncate max-w-[150px]">{event.location}</td>
                     <td className="px-6 py-4 capitalize font-semibold">{event.type}</td>
                     <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button 
+                        onClick={() => handleOpenRegistrations(event)} 
+                        className="p-1.5 bg-white/5 text-gray-400 hover:text-brand-primary hover:bg-white/10 rounded-lg"
+                        title="View Registrations"
+                      >
+                        <Users size={14} />
+                      </button>
                       <button onClick={() => handleOpenEdit(event)} className="p-1.5 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg">
                         <Edit2 size={14} />
                       </button>
@@ -586,6 +630,66 @@ export const AdminEvents = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save Event</button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Event registrations modal */}
+      {registrationsModalOpen && activeEventForRegistrations && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+          <div className="absolute inset-0" onClick={() => setRegistrationsModalOpen(false)} />
+          <div className="glass-card max-w-3xl w-full p-8 rounded-3xl relative z-10 border border-white/10 max-h-[90vh] overflow-y-auto bg-dark-card">
+            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
+              <div>
+                <span className="text-brand-primary font-bold text-xxs font-mono uppercase tracking-widest block mb-0.5">Event Registrations</span>
+                <h3 className="text-white font-extrabold text-base truncate max-w-xl">{activeEventForRegistrations.title}</h3>
+              </div>
+              <button onClick={() => setRegistrationsModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
+            </div>
+
+            {registrationsLoading ? (
+              <div className="py-12 flex justify-center"><div className="w-8 h-8 rounded-full border-t-2 border-brand-primary animate-spin" /></div>
+            ) : registrations.length === 0 ? (
+              <div className="py-12 text-center text-gray-500 text-sm">No users registered yet for this event.</div>
+            ) : (
+              <div className="overflow-x-auto border border-white/5 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-white/5 text-gray-400 font-mono text-[10px] uppercase tracking-wider">
+                    <tr>
+                      <th className="px-4 py-3">Registrant</th>
+                      <th className="px-4 py-3">Contact</th>
+                      <th className="px-4 py-3">Organization</th>
+                      <th className="px-4 py-3 font-mono">Date</th>
+                      <th className="px-4 py-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-gray-400">
+                    {registrations.map((reg) => (
+                      <tr key={reg.id} className="hover:bg-white/2 transition-colors">
+                        <td className="px-4 py-3 font-bold text-white">{reg.name}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-col">
+                            <span>{reg.email}</span>
+                            <span className="text-gray-500 text-[10px] mt-0.5">{reg.phone}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 truncate max-w-[150px]">{reg.organization || 'N/A'}</td>
+                        <td className="px-4 py-3 font-mono">{new Date(reg.created_at).toLocaleDateString('en-IN')}</td>
+                        <td className="px-4 py-3 text-right">
+                          <button 
+                            onClick={() => handleDeleteRegistration(reg.id)}
+                            className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded"
+                            title="Remove registration"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -788,6 +892,7 @@ export const AdminBearers = () => {
                     <option value="joint_secretary" className="bg-dark-card">Joint Secretary</option>
                     <option value="treasurer" className="bg-dark-card">Treasurer</option>
                     <option value="advisor" className="bg-dark-card">Advisor</option>
+                    <option value="executive_committee" className="bg-dark-card">Executive Committee</option>
                   </select>
                 </div>
               </div>
@@ -1540,9 +1645,13 @@ export const AdminNews = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
+    paragraph1: '',
+    paragraph2: '',
+    paragraph3: '',
     type: 'news'
   });
   const [imageFile, setImageFile] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]); // Array for N additional images
 
   useEffect(() => {
     fetchNews();
@@ -1562,20 +1671,39 @@ export const AdminNews = () => {
 
   const handleOpenCreate = () => {
     setEditingNews(null);
-    setFormData({ title: '', content: '', type: 'news' });
+    setFormData({ 
+      title: '', 
+      content: '', 
+      paragraph1: '', 
+      paragraph2: '', 
+      paragraph3: '', 
+      type: 'news' 
+    });
     setImageFile(null);
+    setImageFiles([]);
     setModalOpen(true);
   };
 
-  const handleOpenEdit = (news) => {
-    setEditingNews(news);
-    setFormData({
-      title: news.title,
-      content: news.content,
-      type: news.type
-    });
-    setImageFile(null);
-    setModalOpen(true);
+  const handleOpenEdit = async (news) => {
+    try {
+      const res = await api.get(`/news/${news.id}`);
+      const fullNews = res.data;
+      setEditingNews(fullNews);
+      setFormData({
+        title: fullNews.title,
+        content: fullNews.content,
+        paragraph1: fullNews.paragraph1 || '',
+        paragraph2: fullNews.paragraph2 || '',
+        paragraph3: fullNews.paragraph3 || '',
+        type: fullNews.type
+      });
+      setImageFile(null);
+      setImageFiles([]);
+      setModalOpen(true);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to load news details');
+    }
   };
 
   const handleDelete = async (id) => {
@@ -1588,12 +1716,31 @@ export const AdminNews = () => {
     }
   };
 
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm('Delete this gallery image permanently?')) return;
+    try {
+      await api.delete(`/news/images/${imageId}`);
+      const res = await api.get(`/news/${editingNews.id}`);
+      setEditingNews(res.data);
+      fetchNews();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete image');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
     Object.keys(formData).forEach(key => data.append(key, formData[key]));
     if (imageFile) {
       data.append('image', imageFile);
+    }
+    // Append additional images
+    if (imageFiles && imageFiles.length > 0) {
+      imageFiles.forEach(file => {
+        data.append('images', file);
+      });
     }
 
     try {
@@ -1660,7 +1807,7 @@ export const AdminNews = () => {
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-lg w-full p-8 rounded-3xl relative z-10 border border-white/10">
+          <div className="glass-card max-w-2xl w-full p-8 rounded-3xl relative z-10 border border-white/10 max-h-[90vh] overflow-y-auto bg-dark-card">
             <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
               <h3 className="text-white font-bold text-base">{editingNews ? 'Edit News Update' : 'Publish News Feed'}</h3>
               <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
@@ -1692,23 +1839,113 @@ export const AdminNews = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-gray-400 text-xs">Content Text *</label>
+                <label className="text-gray-400 text-xs">Brief Excerpt / Summary *</label>
                 <textarea 
                   value={formData.content} 
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })} 
-                  rows={5} 
+                  rows={2} 
                   className="glass-input px-4 py-2.5 rounded-xl text-white resize-none" required 
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-gray-400 text-xs">Cover Image Upload</label>
-                <input 
-                  type="file" 
-                  accept="image/*"
-                  onChange={(e) => setImageFile(e.target.files[0])} 
-                  className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white/5 file:text-white hover:file:bg-white/10" 
+                <label className="text-gray-400 text-xs">Content Paragraph 1 *</label>
+                <textarea 
+                  value={formData.paragraph1} 
+                  onChange={(e) => setFormData({ ...formData, paragraph1: e.target.value })} 
+                  rows={3} 
+                  className="glass-input px-4 py-2.5 rounded-xl text-white resize-none" required 
                 />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-gray-400 text-xs">Content Paragraph 2</label>
+                <textarea 
+                  value={formData.paragraph2} 
+                  onChange={(e) => setFormData({ ...formData, paragraph2: e.target.value })} 
+                  rows={3} 
+                  className="glass-input px-4 py-2.5 rounded-xl text-white resize-none" 
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-gray-400 text-xs">Content Paragraph 3</label>
+                <textarea 
+                  value={formData.paragraph3} 
+                  onChange={(e) => setFormData({ ...formData, paragraph3: e.target.value })} 
+                  rows={3} 
+                  className="glass-input px-4 py-2.5 rounded-xl text-white resize-none" 
+                />
+              </div>
+
+              {/* Existing Uploaded Images Preview */}
+              {editingNews && (editingNews.image_url || (editingNews.galleryImages && editingNews.galleryImages.length > 0)) && (
+                <div className="flex flex-col gap-3 p-4 rounded-2xl bg-white/2 border border-white/5">
+                  <span className="text-xs font-mono text-gray-400">Currently Uploaded Media</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Cover image */}
+                    {editingNews.image_url && (
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-gray-500 text-xxs uppercase tracking-wider">Cover Image</label>
+                        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/5 bg-black/40">
+                          <img 
+                            src={`${BASE_URL}${editingNews.image_url}`} 
+                            alt="Cover" 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {/* Gallery images */}
+                    {editingNews.galleryImages && editingNews.galleryImages.length > 0 && (
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-gray-500 text-xxs uppercase tracking-wider">Gallery Photos ({editingNews.galleryImages.length})</label>
+                        <div className="grid grid-cols-3 gap-2 max-h-[140px] overflow-y-auto no-scrollbar">
+                          {editingNews.galleryImages.map((imgObj) => (
+                            <div key={imgObj.id} className="relative aspect-video rounded-lg overflow-hidden border border-white/5 bg-black/30 group">
+                              <img 
+                                src={`${BASE_URL}${imgObj.image_url}`} 
+                                alt="Gallery Item" 
+                                className="w-full h-full object-cover" 
+                              />
+                              {/* Delete Button Overlay */}
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteImage(imgObj.id)}
+                                className="absolute top-1.5 right-1.5 p-1 bg-red-500/80 hover:bg-red-600 rounded-md text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                title="Delete Image"
+                              >
+                                <Trash2 size={11} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-gray-400 text-xs">Cover Image Upload</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => setImageFile(e.target.files[0])} 
+                    className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white/5 file:text-white hover:file:bg-white/10" 
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-gray-400 text-xs">Additional Gallery Images (Upload N Images)</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => setImageFiles(Array.from(e.target.files))} 
+                    className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white/5 file:text-white hover:file:bg-white/10" 
+                  />
+                </div>
               </div>
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save News Item</button>
@@ -2320,6 +2557,195 @@ export const AdminSettings = () => {
           </button>
         </form>
       </GlassCard>
+    </div>
+  );
+};
+
+// ==========================================
+// 12. MANAGE EVENT REGISTRATIONS
+// ==========================================
+export const AdminEventRegistrations = () => {
+  const [registrations, setRegistrations] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [selectedEventId, setSelectedEventId] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    fetchRegistrations();
+  }, [search, selectedEventId, page]);
+
+  const fetchEvents = async () => {
+    try {
+      const res = await api.get('/events');
+      setEvents(res.data.data);
+    } catch (err) {
+      console.error('Error fetching events:', err);
+    }
+  };
+
+  const fetchRegistrations = async () => {
+    setLoading(true);
+    try {
+      let url = `/events/admin/registrations?page=${page}&limit=20`;
+      if (selectedEventId) {
+        url += `&eventId=${selectedEventId}`;
+      }
+      const res = await api.get(url);
+      
+      // Let's filter client-side for search to avoid adding backend search queries
+      let data = res.data.data || [];
+      if (search.trim() !== '') {
+        const queryStr = search.toLowerCase();
+        data = data.filter(reg => 
+          reg.name.toLowerCase().includes(queryStr) || 
+          reg.email.toLowerCase().includes(queryStr) ||
+          reg.phone.toLowerCase().includes(queryStr) ||
+          (reg.organization && reg.organization.toLowerCase().includes(queryStr)) ||
+          reg.event_title.toLowerCase().includes(queryStr)
+        );
+      }
+      
+      setRegistrations(data);
+      setTotalPages(res.data.pagination?.totalPages || 1);
+    } catch (err) {
+      console.error('Error fetching registrations:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this registration booking?')) return;
+    try {
+      await api.delete(`/events/admin/registrations/${id}`);
+      fetchRegistrations();
+    } catch (err) {
+      alert('Failed to delete registration');
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Header toolbar */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span className="text-gray-500 text-xs font-mono">List of users registered for events</span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          {/* Event Filter */}
+          <select 
+            value={selectedEventId} 
+            onChange={(e) => { setSelectedEventId(e.target.value); setPage(1); }} 
+            className="glass-input px-4 py-2 rounded-xl text-xs text-white bg-dark-card border-white/10"
+          >
+            <option value="">All Events & Conferences</option>
+            {events.map((e) => (
+              <option key={e.id} value={e.id} className="bg-dark-card">{e.title}</option>
+            ))}
+          </select>
+
+          {/* Search bar */}
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder="Search registrant or event..." 
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="glass-input pl-10 pr-4 py-2 rounded-xl text-xs text-white w-full sm:w-64"
+            />
+            <Search className="absolute left-3.5 top-2.5 text-gray-500" size={14} />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Grid table */}
+      <div className="glass-card rounded-2xl overflow-hidden border border-white/5">
+        {loading ? (
+          <div className="py-20 flex justify-center">
+            <div className="w-8 h-8 rounded-full border-t-2 border-brand-primary animate-spin" />
+          </div>
+        ) : registrations.length === 0 ? (
+          <div className="py-12 text-center text-gray-500 text-sm">No registrations found.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-white/5 text-gray-400 font-mono text-xxs uppercase tracking-wider">
+                <tr>
+                  <th className="px-6 py-4">Registrant</th>
+                  <th className="px-6 py-4">Event Details</th>
+                  <th className="px-6 py-4">Contact</th>
+                  <th className="px-6 py-4">Organization</th>
+                  <th className="px-6 py-4 font-mono">Registered Date</th>
+                  <th className="px-6 py-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 text-xs text-gray-400">
+                {registrations.map((reg) => (
+                  <tr key={reg.id} className="hover:bg-white/2 transition-colors">
+                    <td className="px-6 py-4 font-bold text-white">{reg.name}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-white max-w-xs truncate">{reg.event_title}</span>
+                        <span className="text-[10px] text-gray-500 mt-0.5">
+                          {new Date(reg.event_date).toLocaleDateString('en-IN')}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span>{reg.email}</span>
+                        <span className="text-gray-500 text-[10px] mt-0.5">{reg.phone}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 truncate max-w-[150px]">{reg.organization || 'N/A'}</td>
+                    <td className="px-6 py-4 font-mono">
+                      {new Date(reg.created_at).toLocaleDateString('en-IN')}
+                    </td>
+                    <td className="px-6 py-4 text-right flex justify-end">
+                      <button 
+                        onClick={() => handleDelete(reg.id)} 
+                        className="p-1.5 bg-white/5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
+                        title="Remove booking"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Pagination controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-2">
+          <button 
+            disabled={page === 1}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            className="px-3.5 py-1.5 rounded-lg bg-white/5 text-xs font-semibold hover:bg-white/10 disabled:opacity-50 text-white"
+          >
+            Prev
+          </button>
+          <span className="text-xs text-gray-400">Page {page} of {totalPages}</span>
+          <button 
+            disabled={page === totalPages}
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            className="px-3.5 py-1.5 rounded-lg bg-white/5 text-xs font-semibold hover:bg-white/10 disabled:opacity-50 text-white"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

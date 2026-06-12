@@ -133,7 +133,7 @@ const Home = () => {
       <section className="relative w-full h-screen min-h-[600px] overflow-hidden flex items-center bg-[#0a0a0c] pt-20 pb-10 lg:pb-0">
         {/* Layer 1 (Background): Animated Globe */}
         <div 
-          className="absolute z-[1] pointer-events-none lg:pointer-events-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:translate-x-0 lg:-translate-y-1/2 lg:left-auto lg:right-[-10%] w-[500px] h-[500px] md:w-[640px] md:h-[640px] md:left-[60%] lg:w-[800px] lg:h-[800px] opacity-30 md:opacity-40 lg:opacity-100"
+          className="absolute z-[1] pointer-events-none lg:pointer-events-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:translate-x-0 lg:-translate-y-1/2 lg:left-auto lg:right-[-15%] w-[600px] h-[600px] md:w-[800px] md:h-[800px] md:left-[55%] lg:w-[1000px] lg:h-[1000px] opacity-35 md:opacity-45 lg:opacity-100"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -400,27 +400,29 @@ const Home = () => {
         >
           {newsList.map((item, idx) => (
             <motion.div key={idx} variants={revealItem}>
-              <GlassCard className="flex flex-col justify-between h-full p-6 relative overflow-hidden group" hoverEffect={true}>
-                <div>
-                  <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded ${
-                    item.type === 'news' 
-                      ? 'bg-brand-primary/10 text-brand-primary border border-brand-primary/20' 
-                      : 'bg-brand-secondary/10 text-brand-secondary border border-brand-secondary/20'
-                  }`}>
-                    {item.type === 'news' ? 'News' : 'Press Release'}
-                  </span>
-                  <h4 className="text-white font-bold text-lg mt-3.5 mb-2 group-hover:text-brand-primary transition-colors line-clamp-1">{item.title}</h4>
-                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-6">{item.content}</p>
-                </div>
-                <div className="pt-4 border-t border-white/5 flex justify-between items-center text-xs text-gray-500 font-medium">
-                  <span>
-                    {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </span>
-                  <Link to="/media" className="text-brand-primary group-hover:underline inline-flex items-center gap-0.5">
-                    Read Feed <ArrowRight size={12} />
-                  </Link>
-                </div>
-              </GlassCard>
+              <Link to={`/news/${item.id}`} className="block h-full">
+                <GlassCard className="flex flex-col justify-between h-full p-6 relative overflow-hidden group" hoverEffect={true}>
+                  <div>
+                    <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded ${
+                      item.type === 'news' 
+                        ? 'bg-brand-primary/10 text-brand-primary border border-brand-primary/20' 
+                        : 'bg-brand-secondary/10 text-brand-secondary border border-brand-secondary/20'
+                    }`}>
+                      {item.type === 'news' ? 'News' : 'Press Release'}
+                    </span>
+                    <h4 className="text-white font-bold text-lg mt-3.5 mb-2 group-hover:text-brand-primary transition-colors line-clamp-1">{item.title}</h4>
+                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-6">{item.content}</p>
+                  </div>
+                  <div className="pt-4 border-t border-white/5 flex justify-between items-center text-xs text-gray-500 font-medium">
+                    <span>
+                      {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                    <span className="text-brand-primary group-hover:underline inline-flex items-center gap-0.5">
+                      Read Article <ArrowRight size={12} />
+                    </span>
+                  </div>
+                </GlassCard>
+              </Link>
             </motion.div>
           ))}
         </motion.div>

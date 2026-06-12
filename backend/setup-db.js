@@ -59,6 +59,47 @@ async function runSetup() {
     // Switch to database
     await connection.query(`USE ${process.env.DB_NAME || 'uma_db'}`);
 
+    // Alter office_bearers table to change category column from ENUM to VARCHAR(100)
+    try {
+      await connection.query('ALTER TABLE office_bearers MODIFY COLUMN category VARCHAR(100) NOT NULL');
+      console.log('Checked/Altered office_bearers category column type.');
+    } catch (err) {
+      console.warn('Alter office_bearers warning:', err.message);
+    }
+
+    // Alter news table to add paragraph1, paragraph2, paragraph3 if missing
+    const alterColumns = [
+      'ALTER TABLE news ADD COLUMN paragraph1 TEXT',
+      'ALTER TABLE news ADD COLUMN paragraph2 TEXT',
+      'ALTER TABLE news ADD COLUMN paragraph3 TEXT'
+    ];
+    for (const alterQuery of alterColumns) {
+      try {
+        await connection.query(alterQuery);
+      } catch (err) {
+        // Ignore column already exists / duplicate column errors
+        if (!err.message.includes('Duplicate column') && !err.message.includes('already exists')) {
+          console.warn('Alter news warning:', err.message);
+        }
+      }
+    }
+
+    // Create news_images table if not exist
+    try {
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS news_images (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          news_id INT NOT NULL,
+          image_url VARCHAR(255) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+      console.log('Checked/Created news_images table.');
+    } catch (err) {
+      console.error('Error creating news_images table:', err.message);
+    }
+
     // Check if admin already exists
     const [existing] = await connection.query(
       'SELECT id FROM users WHERE username = ? OR email = ?',
