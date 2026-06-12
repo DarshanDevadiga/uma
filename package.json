@@ -6,6 +6,7 @@
     "dev:backend": "cd backend && pnpm run start",
     "dev:frontend": "cd frontend && pnpm run dev",
     "dev": "npx concurrently --kill-others-on-fail \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "build": "node build-prod.js",
     "build:prod": "node build-prod.js"
   }
 }
