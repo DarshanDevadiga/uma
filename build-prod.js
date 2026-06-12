@@ -11,7 +11,7 @@ const publicDir = path.join(backendDir, 'public');
 function run() {
   try {
     console.log('1. Building the frontend application...');
-    execSync('pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
+    execSync('npm run build', { cwd: frontendDir, stdio: 'inherit' });
     
     console.log('\n2. Preparing the backend public directory...');
     if (fs.existsSync(publicDir)) {
