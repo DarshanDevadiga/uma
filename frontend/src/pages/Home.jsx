@@ -63,6 +63,22 @@ const Counter = ({ target, duration = 2 }) => {
 
 const Home = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [newsList, setNewsList] = useState([
+    {
+      id: 1,
+      title: 'UMA Partners with MAHE for Regional Incubation',
+      content: 'Udupi Management Association has signed an MoU with Manipal Academy of Higher Education to expand research funding for startup models in coastal Karnataka. The incubator will offer co-working office shares at Poornaprajna Campus.',
+      type: 'news',
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 2,
+      title: 'Official Statement on Annual Commerce Workshop Outcomes',
+      content: 'The executive council has released summaries of the 2-day lecturers workshop on taxation. Over 120 pre-university teachers attended, finalizing standard classroom spreadsheets.',
+      type: 'press_release',
+      created_at: new Date().toISOString()
+    }
+  ]);
 
   useEffect(() => {
     const fetchHomeEvents = async () => {
@@ -93,7 +109,22 @@ const Home = () => {
         ]);
       }
     };
+
+    const fetchHomeNews = async () => {
+      try {
+        const res = await api.get('/news?limit=3');
+        if (res.data && res.data.data && res.data.data.length > 0) {
+          setNewsList(res.data.data);
+        } else {
+          throw new Error('Empty news items returned');
+        }
+      } catch (err) {
+        console.warn('Could not fetch news, using fallback.');
+      }
+    };
+
     fetchHomeEvents();
+    fetchHomeNews();
   }, []);
 
   return (
@@ -333,6 +364,61 @@ const Home = () => {
                     {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
                   <span className="truncate">{event.location}</span>
+                </div>
+              </GlassCard>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* 5.5 NEWS & UPDATES SECTION */}
+      <section className="px-6 py-16 max-w-7xl mx-auto w-full relative border-t border-white/5">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-10"
+        >
+          <div className="flex flex-col gap-2">
+            <span className="text-brand-secondary font-bold text-xs uppercase tracking-widest font-mono">Bulletin</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Latest News & Press Releases</h2>
+            <div className="w-16 h-1 bg-brand-secondary rounded mt-1" />
+          </div>
+          <Link to="/media" className="text-gray-400 hover:text-white transition-colors flex items-center gap-1 text-sm font-medium">
+            Go to Media Centre
+            <ChevronRight size={16} />
+          </Link>
+        </motion.div>
+
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-100px' }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {newsList.map((item, idx) => (
+            <motion.div key={idx} variants={revealItem}>
+              <GlassCard className="flex flex-col justify-between h-full p-6 relative overflow-hidden group" hoverEffect={true}>
+                <div>
+                  <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded ${
+                    item.type === 'news' 
+                      ? 'bg-brand-primary/10 text-brand-primary border border-brand-primary/20' 
+                      : 'bg-brand-secondary/10 text-brand-secondary border border-brand-secondary/20'
+                  }`}>
+                    {item.type === 'news' ? 'News' : 'Press Release'}
+                  </span>
+                  <h4 className="text-white font-bold text-lg mt-3.5 mb-2 group-hover:text-brand-primary transition-colors line-clamp-1">{item.title}</h4>
+                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-6">{item.content}</p>
+                </div>
+                <div className="pt-4 border-t border-white/5 flex justify-between items-center text-xs text-gray-500 font-medium">
+                  <span>
+                    {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                  <Link to="/media" className="text-brand-primary group-hover:underline inline-flex items-center gap-0.5">
+                    Read Feed <ArrowRight size={12} />
+                  </Link>
                 </div>
               </GlassCard>
             </motion.div>
