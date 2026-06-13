@@ -43,3 +43,6 @@ package-lock.json
 
 # Local uploads
 uploads/
+
+# Hostinger server configurations
+.htaccess
