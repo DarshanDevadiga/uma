@@ -11,7 +11,55 @@ const publicDir = path.join(backendDir, 'public');
 function run() {
   try {
     console.log('1. Building the frontend application...');
-    execSync('pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
+    
+    // Try to use the package manager that launched the script
+    const execPath = process.env.npm_execpath;
+    let buildSuccess = false;
+    
+    if (execPath) {
+      console.log(`Using executing package manager path: ${execPath}`);
+      try {
+        if (execPath.endsWith('.js') || execPath.endsWith('.cjs') || execPath.endsWith('.mjs')) {
+          execSync(`"${process.execPath}" "${execPath}" run build`, { cwd: frontendDir, stdio: 'inherit' });
+        } else {
+          execSync(`"${execPath}" run build`, { cwd: frontendDir, stdio: 'inherit' });
+        }
+        buildSuccess = true;
+      } catch (e) {
+        console.warn('Execution using npm_execpath failed, trying fallback...', e.message);
+      }
+    }
+    
+    if (!buildSuccess) {
+      // Fallback 1: Try running local vite binary directly
+      try {
+        console.log('Trying local Vite build...');
+        const localVite = path.join(frontendDir, 'node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
+        if (fs.existsSync(localVite)) {
+          execSync(`"${localVite}" build`, { cwd: frontendDir, stdio: 'inherit' });
+          buildSuccess = true;
+        }
+      } catch (e) {
+        console.warn('Local Vite build failed, trying npx fallback...', e.message);
+      }
+    }
+    
+    if (!buildSuccess) {
+      // Fallback 2: npx vite build
+      try {
+        console.log('Trying npx vite build...');
+        execSync('npx vite build', { cwd: frontendDir, stdio: 'inherit' });
+        buildSuccess = true;
+      } catch (e) {
+        console.warn('npx vite build failed, trying global pnpm fallback...', e.message);
+      }
+    }
+    
+    if (!buildSuccess) {
+      // Fallback 3: Standard global pnpm (original behavior)
+      console.log('Trying global pnpm build...');
+      execSync('pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
+    }
     
     console.log('\n2. Preparing the backend public directory...');
     if (fs.existsSync(publicDir)) {
