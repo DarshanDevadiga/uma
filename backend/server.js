@@ -103,6 +103,40 @@ app.get('/api/health', (req, res) => {
   res.status(200).send("UMA Backend Running");
 });
 
+// Database diagnostics endpoint
+app.get('/api/db-test', async (req, res) => {
+  const { query } = require('./config/db');
+  console.log('Database diagnostic check initiated...');
+  console.log({
+    DB_HOST: process.env.DB_HOST,
+    DB_USER: process.env.DB_USER,
+    DB_NAME: process.env.DB_NAME,
+    PASSWORD_SET: !!process.env.DB_PASSWORD,
+    PASSWORD_LENGTH: process.env.DB_PASSWORD?.length || 0
+  });
+  
+  try {
+    const results = await query('SELECT 1 as connection_success');
+    res.status(200).json({
+      status: 'success',
+      message: 'Database connection succeeds.',
+      data: results
+    });
+  } catch (err) {
+    console.error('Database diagnostic query failed:', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'Database connection failed.',
+      error: {
+        code: err.code,
+        errno: err.errno,
+        sqlState: err.sqlState,
+        sqlMessage: err.sqlMessage || err.message
+      }
+    });
+  }
+});
+
 // Serve static React production build assets if present
 const publicPath = path.join(__dirname, 'public');
 if (fs.existsSync(publicPath)) {
@@ -134,6 +168,7 @@ app.use((err, req, res, next) => {
 
 // Start Server
 app.listen(PORT, () => {
+  console.log('=== UMA Backend Server starting ===');
   console.log(`Server is running on port ${PORT}`);
   console.log(`Uploads directory mapping: http://localhost:${PORT}/uploads`);
 
@@ -150,8 +185,8 @@ app.listen(PORT, () => {
     });
 
   // Auto-run DB Setup to ensure tables and seed data exist
-  const { exec } = require('child_process');
-  exec('node setup-db.js', { cwd: __dirname }, (err, stdout, stderr) => {
+  const { execFile } = require('child_process');
+  execFile(process.execPath, ['setup-db.js'], { cwd: __dirname }, (err, stdout, stderr) => {
     if (stdout) console.log('Database Setup Output:', stdout);
     if (stderr) console.error('Database Setup Stderr:', stderr);
     if (err) {

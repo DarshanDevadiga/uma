@@ -1,7 +1,16 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-// Create connection pool
+console.log('Database Configuration Diagnostics:');
+console.log({
+  DB_HOST: process.env.DB_HOST,
+  DB_USER: process.env.DB_USER,
+  DB_NAME: process.env.DB_NAME,
+  PASSWORD_SET: !!process.env.DB_PASSWORD,
+  PASSWORD_LENGTH: process.env.DB_PASSWORD?.length || 0
+});
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
