@@ -10,9 +10,34 @@ const publicDir = path.join(backendDir, 'public');
 
 function run() {
   console.log('=== Starting UMA Production Build Script ===');
-  console.log(`Working Directory: ${rootDir}`);
+  console.log(`Working Directory (cwd): ${process.cwd()}`);
+  console.log(`Script Directory (__dirname): ${rootDir}`);
   console.log(`Frontend Directory: ${frontendDir}`);
-  console.log(`Backend Public Directory: ${publicDir}\n`);
+  console.log(`Backend Public Directory: ${publicDir}`);
+  console.log(`npm_execpath: ${process.env.npm_execpath || 'Not Defined'}`);
+  console.log(`PATH: ${process.env.PATH || 'Not Defined'}\n`);
+
+  console.log('0. Cleaning previous build and cache directories...');
+  try {
+    const distPath = path.join(frontendDir, 'dist');
+    const viteCachePath = path.join(frontendDir, 'node_modules', '.vite');
+
+    if (fs.existsSync(distPath)) {
+      console.log(`Removing ${distPath}...`);
+      fs.rmSync(distPath, { recursive: true, force: true });
+    }
+    if (fs.existsSync(publicDir)) {
+      console.log(`Removing ${publicDir}...`);
+      fs.rmSync(publicDir, { recursive: true, force: true });
+    }
+    if (fs.existsSync(viteCachePath)) {
+      console.log(`Removing Vite cache ${viteCachePath}...`);
+      fs.rmSync(viteCachePath, { recursive: true, force: true });
+    }
+    console.log('Clean completed successfully.\n');
+  } catch (cleanErr) {
+    console.warn('Warning during clean phase:', cleanErr.message);
+  }
 
   let buildSuccess = false;
   let lastError = null;

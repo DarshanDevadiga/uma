@@ -4,12 +4,12 @@
   "description": "UMA Web App Workspace",
   "scripts": {
     "clean": "node -e \"const fs = require('fs'); fs.rmSync('frontend/dist', {recursive:true,force:true}); fs.rmSync('backend/public', {recursive:true,force:true}); fs.rmSync('frontend/node_modules/.vite', {recursive:true,force:true}); console.log('Cleaned build and cache directories successfully');\"",
-    "dev:backend": "cd backend && pnpm run start",
-    "dev:frontend": "cd frontend && pnpm run dev",
-    "dev": "concurrently --kill-others-on-fail \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
-    "build": "pnpm run clean && node build-prod.js",
-    "build:prod": "pnpm run build",
-    "start": "pnpm run build && node backend/server.js"
+    "dev:backend": "cd backend && node server.js",
+    "dev:frontend": "cd frontend && npx vite",
+    "dev": "concurrently --kill-others-on-fail \"node backend/server.js\" \"cd frontend && npx vite\"",
+    "build": "node build-prod.js",
+    "build:prod": "node build-prod.js",
+    "start": "node build-prod.js && node backend/server.js"
   },
   "devDependencies": {
     "concurrently": "^10.0.3"
