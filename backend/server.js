@@ -90,7 +90,7 @@ app.use('/api/dashboard', dashboardRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'UMA Backend Server is running smoothly.' });
+  res.status(200).send("UMA Backend Running");
 });
 
 // Serve static React production build assets if present
