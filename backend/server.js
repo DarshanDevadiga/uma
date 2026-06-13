@@ -19,6 +19,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`[HTTP] ${req.method} ${req.originalUrl} - Status: ${res.statusCode} (${duration}ms)`);
+  });
+  next();
+});
+
 // Resolve the base uploads directory from environment variable UPLOADS_DIR
 const uploadsDir = process.env.UPLOADS_DIR
   ? (path.isAbsolute(process.env.UPLOADS_DIR) ? process.env.UPLOADS_DIR : path.join(__dirname, process.env.UPLOADS_DIR))
@@ -127,9 +137,23 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Uploads directory mapping: http://localhost:${PORT}/uploads`);
 
+  // Test database connection pool on startup
+  const { pool } = require('./config/db');
+  pool.getConnection()
+    .then(conn => {
+      console.log('Database connection pool verified successfully.');
+      conn.release();
+    })
+    .catch(err => {
+      console.error('CRITICAL: Database connection pool verification failed on startup!');
+      console.error('Error details:', err);
+    });
+
   // Auto-run DB Setup to ensure tables and seed data exist
   const { exec } = require('child_process');
   exec('node setup-db.js', { cwd: __dirname }, (err, stdout, stderr) => {
+    if (stdout) console.log('Database Setup Output:', stdout);
+    if (stderr) console.error('Database Setup Stderr:', stderr);
     if (err) {
       console.error('Database auto-initialization check failed:', err);
     } else {
