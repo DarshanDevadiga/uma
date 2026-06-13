@@ -8,15 +8,14 @@ const schemaPath = path.join(__dirname, 'schema.sql');
 
 async function runSetup() {
   console.log('Starting MySQL Database Setup...');
-  
-  // 1. Establish connection to MySQL server (without selecting DB first)
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : ''
-  });
-
+  let connection;
   try {
+    // 1. Establish connection to MySQL server (without selecting DB first)
+    connection = await mysql.createConnection({
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : ''
+    });
     // 2. Read schema.sql
     if (!fs.existsSync(schemaPath)) {
       throw new Error(`schema.sql not found at path: ${schemaPath}`);
@@ -121,9 +120,11 @@ async function runSetup() {
 
     console.log('Database setup completed successfully!');
   } catch (error) {
-    console.error('Database setup failed:', error);
+    console.error('Database setup failed:', error.message);
   } finally {
-    await connection.end();
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

@@ -9,58 +9,102 @@ const distDir = path.join(frontendDir, 'dist');
 const publicDir = path.join(backendDir, 'public');
 
 function run() {
-  try {
-    console.log('1. Building the frontend application...');
-    
-    // Try to use the package manager that launched the script
-    const execPath = process.env.npm_execpath;
-    let buildSuccess = false;
-    
-    if (execPath) {
-      console.log(`Using executing package manager path: ${execPath}`);
-      try {
+  console.log('=== Starting UMA Production Build Script ===');
+  console.log(`Working Directory: ${rootDir}`);
+  console.log(`Frontend Directory: ${frontendDir}`);
+  console.log(`Backend Public Directory: ${publicDir}\n`);
+
+  let buildSuccess = false;
+  let lastError = null;
+
+  // Try different execution fallbacks to compile the frontend
+  const fallbacks = [
+    {
+      name: 'npm_execpath (Running via active package manager)',
+      fn: () => {
+        const execPath = process.env.npm_execpath;
+        if (!execPath) throw new Error('npm_execpath is not set in environment.');
+        console.log(`Resolved npm_execpath: ${execPath}`);
         if (execPath.endsWith('.js') || execPath.endsWith('.cjs') || execPath.endsWith('.mjs')) {
           execSync(`"${process.execPath}" "${execPath}" run build`, { cwd: frontendDir, stdio: 'inherit' });
         } else {
           execSync(`"${execPath}" run build`, { cwd: frontendDir, stdio: 'inherit' });
         }
-        buildSuccess = true;
-      } catch (e) {
-        console.warn('Execution using npm_execpath failed, trying fallback...', e.message);
       }
-    }
-    
-    if (!buildSuccess) {
-      // Fallback 1: Try running local vite binary directly
-      try {
-        console.log('Trying local Vite build...');
+    },
+    {
+      name: 'Local Vite Binary (Direct Execution)',
+      fn: () => {
         const localVite = path.join(frontendDir, 'node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
-        if (fs.existsSync(localVite)) {
-          execSync(`"${localVite}" build`, { cwd: frontendDir, stdio: 'inherit' });
-          buildSuccess = true;
-        }
-      } catch (e) {
-        console.warn('Local Vite build failed, trying npx fallback...', e.message);
+        console.log(`Checking local Vite binary at: ${localVite}`);
+        if (!fs.existsSync(localVite)) throw new Error('Local Vite binary does not exist.');
+        execSync(`"${localVite}" build`, { cwd: frontendDir, stdio: 'inherit' });
       }
-    }
-    
-    if (!buildSuccess) {
-      // Fallback 2: npx vite build
-      try {
-        console.log('Trying npx vite build...');
+    },
+    {
+      name: 'npx vite build (npm runner)',
+      fn: () => {
         execSync('npx vite build', { cwd: frontendDir, stdio: 'inherit' });
-        buildSuccess = true;
-      } catch (e) {
-        console.warn('npx vite build failed, trying global pnpm fallback...', e.message);
+      }
+    },
+    {
+      name: 'corepack pnpm run build (corepack wrapper)',
+      fn: () => {
+        execSync('corepack pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
+      }
+    },
+    {
+      name: 'npx pnpm run build (npx pnpm wrapper)',
+      fn: () => {
+        execSync('npx pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
+      }
+    },
+    {
+      name: 'Global pnpm run build',
+      fn: () => {
+        execSync('pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
       }
     }
-    
-    if (!buildSuccess) {
-      // Fallback 3: Standard global pnpm (original behavior)
-      console.log('Trying global pnpm build...');
-      execSync('pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
+  ];
+
+  console.log('1. Building the frontend application...');
+
+  for (const fallback of fallbacks) {
+    try {
+      console.log(`\n--- Attempting Fallback: ${fallback.name} ---`);
+      fallback.fn();
+      buildSuccess = true;
+      console.log(`Success: Frontend built successfully using: ${fallback.name}`);
+      break;
+    } catch (err) {
+      console.warn(`Warning: Fallback "${fallback.name}" failed.`);
+      console.warn(`Error details: ${err.message}`);
+      lastError = err;
     }
-    
+  }
+
+  if (!buildSuccess) {
+    console.error('\n[ERROR] All frontend build fallbacks failed!');
+    if (lastError) {
+      console.error('Stack trace of last failure:', lastError);
+    }
+    process.exit(1);
+  }
+
+  // Verify that the build directory was actually created and is not empty
+  console.log('\nChecking compiled frontend assets...');
+  if (!fs.existsSync(distDir)) {
+    console.error(`[ERROR] Build completed but dist directory does not exist at: ${distDir}`);
+    process.exit(1);
+  }
+  const distFiles = fs.readdirSync(distDir);
+  if (distFiles.length === 0) {
+    console.error(`[ERROR] Build completed but dist directory is empty at: ${distDir}`);
+    process.exit(1);
+  }
+  console.log(`Vite build verification passed! Found ${distFiles.length} items in dist/.`);
+
+  try {
     console.log('\n2. Preparing the backend public directory...');
     if (fs.existsSync(publicDir)) {
       console.log('Cleaning existing backend public directory...');
@@ -72,14 +116,16 @@ function run() {
     if (fs.cpSync) {
       fs.cpSync(distDir, publicDir, { recursive: true });
     } else {
-      // Fallback for older Node versions
       copyRecursiveSync(distDir, publicDir);
     }
     
     console.log('\nBuild and sync completed successfully!');
     console.log('You can now add, commit, and push backend/public to GitHub.');
+    console.log('=== Build Script Finished Successfully ===');
   } catch (error) {
-    console.error('\nBuild and sync failed:', error.message);
+    console.error('\n[ERROR] Failed to prepare public directory or copy assets:');
+    console.error(error);
+    process.exit(1);
   }
 }
 
