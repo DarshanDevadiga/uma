@@ -120,7 +120,7 @@ async function runSetup() {
 
     console.log('Database setup completed successfully!');
   } catch (error) {
-    console.error('Database setup failed:', error.message);
+    console.error('Database setup failed:', error);
   } finally {
     if (connection) {
       await connection.end();

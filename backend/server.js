@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 // Resolve the base uploads directory from environment variable UPLOADS_DIR
 const uploadsDir = process.env.UPLOADS_DIR
   ? (path.isAbsolute(process.env.UPLOADS_DIR) ? process.env.UPLOADS_DIR : path.join(__dirname, process.env.UPLOADS_DIR))
-  : path.join(__dirname, '../uploads');
+  : path.join(__dirname, 'uploads');
 
 // Ensure upload folders exist
 const uploadSubDirs = [
