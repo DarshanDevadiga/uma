@@ -98,6 +98,214 @@ app.use('/api/training', trainingRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+// Temporary Administrator Server Diagnostics Page
+app.get('/server-diagnostics', async (req, res) => {
+  const secretKey = process.env.DIAGNOSTIC_KEY;
+  if (!secretKey || req.query.key !== secretKey) {
+    return res.status(404).send("Not Found");
+  }
+
+  const { pool } = require('./config/db');
+  let dbStatus = 'Pending';
+  let dbError = null;
+  let connectionInfo = null;
+
+  try {
+    const conn = await pool.getConnection();
+    dbStatus = 'Success';
+    const [rows] = await conn.query('SELECT 1 as success');
+    connectionInfo = rows;
+    conn.release();
+  } catch (err) {
+    dbStatus = 'Failed';
+    dbError = {
+      code: err.code,
+      errno: err.errno,
+      sqlState: err.sqlState,
+      message: err.message
+    };
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>UMA Server Diagnostics</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: #09090b;
+          color: #f4f4f5;
+          margin: 0;
+          padding: 40px 20px;
+          display: flex;
+          justify-content: center;
+        }
+        .container {
+          max-width: 800px;
+          width: 100%;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          padding: 30px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(8px);
+        }
+        .banner {
+          background: #7f1d1d;
+          color: #fca5a5;
+          border: 1px solid #b91c1c;
+          padding: 15px;
+          border-radius: 6px;
+          text-align: center;
+          font-weight: bold;
+          margin-bottom: 25px;
+          letter-spacing: 1px;
+        }
+        h1 {
+          font-size: 24px;
+          margin-top: 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding-bottom: 15px;
+          color: #fbbf24;
+        }
+        h2 {
+          font-size: 18px;
+          color: #a1a1aa;
+          margin-top: 25px;
+          margin-bottom: 15px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 20px;
+        }
+        th, td {
+          padding: 12px;
+          text-align: left;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        th {
+          color: #a1a1aa;
+          font-weight: 600;
+          width: 30%;
+        }
+        td {
+          font-family: monospace;
+          color: #e4e4e7;
+          word-break: break-all;
+        }
+        .status-badge {
+          display: inline-block;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-weight: bold;
+          font-size: 14px;
+        }
+        .status-success {
+          background: #064e3b;
+          color: #6ee7b7;
+          border: 1px solid #047857;
+        }
+        .status-failed {
+          background: #7f1d1d;
+          color: #fca5a5;
+          border: 1px solid #b91c1c;
+        }
+        .error-panel {
+          background: rgba(185, 28, 28, 0.1);
+          border: 1px solid rgba(185, 28, 28, 0.2);
+          border-radius: 6px;
+          padding: 15px;
+          margin-top: 10px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="banner">
+          ⚠️ TEMPORARY DEBUG PAGE - REMOVE BEFORE GOING LIVE
+        </div>
+        <h1>UMA Server Diagnostics</h1>
+        
+        <h2>System Information</h2>
+        <table>
+          <tr>
+            <th>Node.js Version</th>
+            <td>${process.version}</td>
+          </tr>
+          <tr>
+            <th>Working Directory</th>
+            <td>${process.cwd()}</td>
+          </tr>
+          <tr>
+            <th>Environment (NODE_ENV)</th>
+            <td>${process.env.NODE_ENV || 'Not Set'}</td>
+          </tr>
+        </table>
+
+        <h2>Database Configuration</h2>
+        <table>
+          <tr>
+            <th>DB_HOST</th>
+            <td>${process.env.DB_HOST || 'localhost'}</td>
+          </tr>
+          <tr>
+            <th>DB_USER</th>
+            <td>${process.env.DB_USER || 'root'}</td>
+          </tr>
+          <tr>
+            <th>DB_NAME</th>
+            <td>${process.env.DB_NAME || 'uma_db'}</td>
+          </tr>
+          <tr>
+            <th>DB_PORT</th>
+            <td>${process.env.DB_PORT || '3306'}</td>
+          </tr>
+          <tr>
+            <th>DB_PASSWORD Status</th>
+            <td>${process.env.DB_PASSWORD ? `Loaded (Length: ${process.env.DB_PASSWORD.length})` : 'Not Set / Empty'}</td>
+          </tr>
+        </table>
+
+        <h2>Database Connection Test</h2>
+        <table>
+          <tr>
+            <th>Status</th>
+            <td>
+              <span class="status-badge ${dbStatus === 'Success' ? 'status-success' : 'status-failed'}">
+                ${dbStatus}
+              </span>
+            </td>
+          </tr>
+          ${dbStatus === 'Success' ? `
+          <tr>
+            <th>Test Query Output</th>
+            <td>${JSON.stringify(connectionInfo)}</td>
+          </tr>
+          ` : `
+          <tr>
+            <th>Diagnostics</th>
+            <td>
+              <div class="error-panel">
+                <strong>Error Code:</strong> ${dbError.code || 'N/A'}<br>
+                <strong>Error Number:</strong> ${dbError.errno || 'N/A'}<br>
+                <strong>SQL State:</strong> ${dbError.sqlState || 'N/A'}<br>
+                <strong>Message:</strong> ${dbError.message || 'N/A'}
+              </div>
+            </td>
+          </tr>
+          `}
+        </table>
+      </div>
+    </body>
+    </html>
+  `;
+  res.status(200).send(html);
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).send("UMA Backend Running");
