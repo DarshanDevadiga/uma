@@ -133,7 +133,6 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
         <span>&copy; {currentYear} Udupi Management Association. All Rights Reserved.</span>
         <div className="flex gap-4">
-          <Link to="/admin/login" className="hover:text-brand-primary transition-colors">Admin Console</Link>
           <a href="#" className="hover:text-brand-primary transition-colors">Privacy Policy</a>
           <a href="#" className="hover:text-brand-primary transition-colors">Terms of Service</a>
         </div>
