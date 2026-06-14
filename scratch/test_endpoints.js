@@ -6,7 +6,7 @@ async function testEndpoints() {
 
   // 1. Test GET /api/memberships/types
   try {
-    const res = await fetch('http://localhost:5000/api/memberships/types');
+    const res = await fetch('http://127.0.0.1:5000/api/memberships/types');
     const data = await res.json();
     console.log('GET /api/memberships/types success. Status:', res.status, 'Types count:', data.length);
   } catch (err) {
@@ -15,7 +15,7 @@ async function testEndpoints() {
 
   // 2. Test POST /api/memberships/register
   try {
-    const res = await fetch('http://localhost:5000/api/memberships/register', {
+    const res = await fetch('http://127.0.0.1:5000/api/memberships/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -37,7 +37,7 @@ async function testEndpoints() {
 
   // 3. Test GET /api/awards
   try {
-    const res = await fetch('http://localhost:5000/api/awards');
+    const res = await fetch('http://127.0.0.1:5000/api/awards');
     const data = await res.json();
     console.log('GET /api/awards success. Status:', res.status, 'Awards count:', data.length);
   } catch (err) {
@@ -62,7 +62,7 @@ async function testEndpoints() {
     const fileBlob = new Blob([fileBuffer], { type: 'application/pdf' });
     formData.append('document', fileBlob, 'dummy.pdf');
 
-    const res = await fetch('http://localhost:5000/api/awards/nominate', {
+    const res = await fetch('http://127.0.0.1:5000/api/awards/nominate', {
       method: 'POST',
       body: formData // native fetch automatically sets boundary
     });

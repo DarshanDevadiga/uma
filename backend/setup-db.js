@@ -12,7 +12,7 @@ async function runSetup() {
   try {
     // 1. Establish connection to MySQL server (without selecting DB first)
     connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
+      host: process.env.DB_HOST || '127.0.0.1',
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : ''
     });

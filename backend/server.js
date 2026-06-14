@@ -250,7 +250,7 @@ app.get('/server-diagnostics', async (req, res) => {
         <table>
           <tr>
             <th>DB_HOST</th>
-            <td>${process.env.DB_HOST || 'localhost'}</td>
+            <td>${process.env.DB_HOST || '127.0.0.1'}</td>
           </tr>
           <tr>
             <th>DB_USER</th>
@@ -378,7 +378,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log('=== UMA Backend Server starting ===');
   console.log(`Server is running on port ${PORT}`);
-  console.log(`Uploads directory mapping: http://localhost:${PORT}/uploads`);
+  console.log(`Uploads directory mapping: http://127.0.0.1:${PORT}/uploads`);
 
   // Test database connection pool on startup
   const { pool } = require('./config/db');

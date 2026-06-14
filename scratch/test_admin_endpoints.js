@@ -5,7 +5,7 @@ async function testAdminEndpoints() {
 
   // 1. Admin login
   try {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const res = await fetch('http://127.0.0.1:5000/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ async function testAdminEndpoints() {
 
   // 2. Fetch admin memberships
   try {
-    const res = await fetch('http://localhost:5000/api/memberships', {
+    const res = await fetch('http://127.0.0.1:5000/api/memberships', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -44,7 +44,7 @@ async function testAdminEndpoints() {
 
   // 3. Fetch admin nominations
   try {
-    const res = await fetch('http://localhost:5000/api/awards/admin/nominations', {
+    const res = await fetch('http://127.0.0.1:5000/api/awards/admin/nominations', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
