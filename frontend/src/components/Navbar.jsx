@@ -94,7 +94,7 @@ const Navbar = () => {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`absolute lg:fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled 
           ? 'bg-dark/80 backdrop-blur-md border-b border-white/5 py-4' 
           : 'bg-transparent py-6'
@@ -102,13 +102,13 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link to="/" className="flex items-center gap-3 group min-w-0">
           <img 
             src={logoImg} 
             alt="UMA Logo" 
-            className="w-14 h-14 rounded-xl object-cover shadow-md shadow-brand-primary/20 group-hover:scale-105 transition-transform" 
+            className="w-14 h-14 rounded-xl object-cover shrink-0 shadow-md shadow-brand-primary/20 group-hover:scale-105 transition-transform" 
           />
-          <span className="font-semibold text-lg tracking-wider bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent group-hover:text-white transition-colors">
+          <span className="font-semibold text-xs sm:text-sm md:text-base lg:text-lg tracking-wider bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent group-hover:text-white transition-colors truncate sm:overflow-visible sm:whitespace-normal whitespace-nowrap max-w-[180px] sm:max-w-none">
             UDUPI MANAGEMENT ASSOCIATION
           </span>
         </Link>
