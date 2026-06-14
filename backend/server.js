@@ -265,8 +265,8 @@ app.get('/server-diagnostics', async (req, res) => {
             <td>${process.env.DB_PORT || '3306'}</td>
           </tr>
           <tr>
-            <th>DB_PASSWORD Status</th>
-            <td>${process.env.DB_PASSWORD ? `Loaded (Length: ${process.env.DB_PASSWORD.length})` : 'Not Set / Empty'}</td>
+            <th>DB_PASSWORD</th>
+            <td>${process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : 'Not Set / Empty'}</td>
           </tr>
         </table>
 
