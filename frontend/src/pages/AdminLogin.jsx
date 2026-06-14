@@ -112,12 +112,6 @@ const AdminLogin = () => {
           </button>
         </form>
 
-        {/* Informative credentials card for testing purposes */}
-        <div className="mt-8 pt-6 border-t border-white/5 text-xxs text-gray-500 leading-relaxed font-mono flex flex-col gap-1">
-          <span>SEED ADMIN CREDENTIALS:</span>
-          <span>Username: Admin</span>
-          <span>Password: UMAAdmin@26</span>
-        </div>
       </GlassCard>
     </div>
   );
