@@ -279,3 +279,27 @@ CREATE TABLE IF NOT EXISTS training_registrations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (program_id) REFERENCES training_programs(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 17. Activities Table (Annual Schedule / Timeline)
+CREATE TABLE IF NOT EXISTS activities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    icon VARCHAR(50) DEFAULT 'Calendar',
+    color VARCHAR(50) DEFAULT 'text-brand-primary',
+    display_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Seed Activities
+INSERT IGNORE INTO activities (id, title, subtitle, description, icon, color, display_order) VALUES
+(1, 'National Management Day', 'Annual Observance', 'Celebrating leadership frameworks, hosting executive keynotes, and holding regional panels on corporate sustainability.', 'Flame', 'text-amber-400', 1),
+(2, 'Annual National Conference', 'Flagship Colloquium', 'Bringing together research scholars, directors, and managers from across India to present papers on modern business development.', 'Presentation', 'text-indigo-400', 2),
+(3, 'Lecture Series', 'Monthly Executive Talks', 'Inviting regional entrepreneurs, bank directors, and corporate specialists to address commerce educators on industry trends.', 'BookOpen', 'text-sky-400', 3),
+(4, 'Management & Technology Talks', 'Digital Transformation Forums', 'Seminars targeting modern tech topics (Fintech, Blockchain, AI governance) and their applications in regional trading.', 'Target', 'text-emerald-400', 4),
+(5, 'Special Lectures', 'Guest Speaker Audits', 'Short panels conducted inside university campuses addressing MBA, MCom, and BBA student cohorts on career preparation.', 'GraduationCap', 'text-purple-400', 5),
+(6, 'Business Quiz', 'Inter-Collegiate Tournament', 'Signature annual quiz competition for undergraduate business students, offering trophy accolades and monetary sponsorships.', 'Trophy', 'text-brand-gold', 6),
+(7, 'Outstanding Manager Award', 'Executive Honors', 'Recognizing regional business stalwarts demonstrating impressive leadership, financial growth, and CSR initiatives.', 'Award', 'text-rose-400', 7),
+(8, 'Student Paper Presentation Competition', 'Young Scholars Panel', 'Annual contest giving students a forum to present research papers on local entrepreneurship, trade networks, and digital marketing.', 'Calendar', 'text-teal-400', 8);

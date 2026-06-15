@@ -335,9 +335,9 @@ const Events = () => {
                   <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                     <CheckCircle size={28} />
                   </div>
-                  <h4 className="text-white font-bold text-lg">Registration Successful!</h4>
+                  <h4 className="text-white font-bold text-lg">Thank you for registering!</h4>
                   <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
-                    We have successfully registered your seat. A verification email containing program schedules has been dispatched.
+                    Your registration has been submitted successfully. A confirmation email has been dispatched.
                   </p>
                   <motion.button 
                     onClick={() => setSelectedEvent(null)}

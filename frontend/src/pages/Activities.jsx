@@ -1,67 +1,105 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Award, BookOpen, GraduationCap, Flame, Presentation, Target, Trophy } from 'lucide-react';
+import { 
+  Calendar, Award, BookOpen, GraduationCap, Flame, Presentation, Target, Trophy,
+  Activity, Anchor, Bell, Book, Briefcase, ChevronRight, Clock, Compass, 
+  Cpu, Database, FileText, Flag, Gift, Globe, Heart, Home, 
+  Image, Info, Lightbulb, Link, Map, MessageSquare, Music, 
+  Rocket, Send, Shield, Sparkles, Star, TrendingUp, Zap
+} from 'lucide-react';
+import api from '../services/api';
 import GlassCard from '../components/GlassCard';
 
 const Activities = () => {
-  const activities = [
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const iconMap = {
+    Calendar, Award, BookOpen, GraduationCap, Flame, Presentation, Target, Trophy,
+    Activity, Anchor, Bell, Book, Briefcase, ChevronRight, Clock, Compass, 
+    Cpu, Database, FileText, Flag, Gift, Globe, Heart, Home, 
+    Image, Info, Lightbulb, Link, Map, MessageSquare, Music, 
+    Rocket, Send, Shield, Sparkles, Star, TrendingUp, Zap
+  };
+
+  const fallbackActivities = [
     {
       title: 'National Management Day',
       subtitle: 'Annual Observance',
       description: 'Celebrating leadership frameworks, hosting executive keynotes, and holding regional panels on corporate sustainability.',
-      icon: Flame,
+      icon: 'Flame',
       color: 'text-amber-400'
     },
     {
       title: 'Annual National Conference',
       subtitle: 'Flagship Colloquium',
       description: 'Bringing together research scholars, directors, and managers from across India to present papers on modern business development.',
-      icon: Presentation,
+      icon: 'Presentation',
       color: 'text-indigo-400'
     },
     {
       title: 'Lecture Series',
       subtitle: 'Monthly Executive Talks',
       description: 'Inviting regional entrepreneurs, bank directors, and corporate specialists to address commerce educators on industry trends.',
-      icon: BookOpen,
+      icon: 'BookOpen',
       color: 'text-sky-400'
     },
     {
       title: 'Management & Technology Talks',
       subtitle: 'Digital Transformation Forums',
       description: 'Seminars targeting modern tech topics (Fintech, Blockchain, AI governance) and their applications in regional trading.',
-      icon: Target,
+      icon: 'Target',
       color: 'text-emerald-400'
     },
     {
       title: 'Special Lectures',
       subtitle: 'Guest Speaker Audits',
       description: 'Short panels conducted inside university campuses addressing MBA, MCom, and BBA student cohorts on career preparation.',
-      icon: GraduationCap,
+      icon: 'GraduationCap',
       color: 'text-purple-400'
     },
     {
       title: 'Business Quiz',
       subtitle: 'Inter-Collegiate Tournament',
-      description: 'Siginature annual quiz competition for undergraduate business students, offering trophy accolades and monetary sponsorships.',
-      icon: Trophy,
+      description: 'Signature annual quiz competition for undergraduate business students, offering trophy accolades and monetary sponsorships.',
+      icon: 'Trophy',
       color: 'text-brand-gold'
     },
     {
       title: 'Outstanding Manager Award',
       subtitle: 'Executive Honors',
       description: 'Recognizing regional business stalwarts demonstrating impressive leadership, financial growth, and CSR initiatives.',
-      icon: Award,
+      icon: 'Award',
       color: 'text-rose-400'
     },
     {
       title: 'Student Paper Presentation Competition',
       subtitle: 'Young Scholars Panel',
       description: 'Annual contest giving students a forum to present research papers on local entrepreneurship, trade networks, and digital marketing.',
-      icon: Calendar,
+      icon: 'Calendar',
       color: 'text-teal-400'
     }
   ];
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const res = await api.get('/activities');
+        if (res.data && res.data.length > 0) {
+          setActivities(res.data);
+        } else {
+          setActivities(fallbackActivities);
+        }
+      } catch (err) {
+        console.warn('Could not fetch activities from API, using static fallback.', err);
+        setActivities(fallbackActivities);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-6 flex flex-col">
@@ -81,8 +119,10 @@ const Activities = () => {
         <div className="absolute left-4 md:left-1/2 top-4 bottom-4 w-0.5 bg-gradient-to-b from-brand-primary via-brand-secondary to-brand-accent opacity-25" />
 
         <div className="flex flex-col gap-12 relative">
-          {activities.map((activity, idx) => {
-            const Icon = activity.icon;
+          {loading ? (
+            <div className="py-20 flex justify-center"><div className="w-8 h-8 rounded-full border-t-2 border-brand-primary animate-spin" /></div>
+          ) : activities.map((activity, idx) => {
+            const Icon = iconMap[activity.icon] || Calendar;
             const isLeft = idx % 2 === 0;
             // Modulo delay to prevent compounding delays deep down the page
             const staggerDelay = (idx % 3) * 0.12;

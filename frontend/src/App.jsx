@@ -38,7 +38,8 @@ import {
   AdminContacts,
   AdminTraining,
   AdminSettings,
-  AdminEventRegistrations
+  AdminEventRegistrations,
+  AdminActivities
 } from './pages/AdminModules';
 
 function App() {
@@ -84,6 +85,7 @@ function App() {
           <Route path="/admin/contacts" element={<AdminLayout><AdminContacts /></AdminLayout>} />
           <Route path="/admin/training" element={<AdminLayout><AdminTraining /></AdminLayout>} />
           <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+          <Route path="/admin/activities" element={<AdminLayout><AdminActivities /></AdminLayout>} />
 
           {/* Fallback wildcard redirect to Home */}
           <Route path="*" element={<MainLayout><Home /></MainLayout>} />

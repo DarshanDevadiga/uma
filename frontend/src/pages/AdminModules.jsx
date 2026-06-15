@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, Check, X, Search, FileText, 
-  Upload, Download, ShieldCheck, Mail, MapPin, Eye, ExternalLink, Users, Settings
+  Upload, Download, ShieldCheck, Mail, MapPin, Eye, ExternalLink, Users, Settings,
+  Calendar, Award, BookOpen, GraduationCap, Flame, Presentation, Target, Trophy,
+  Activity, Anchor, Bell, Book, Briefcase, ChevronRight, Clock, Compass, Cpu, Database, 
+  Gift, Globe, Heart, Home, Image, Info, Lightbulb, Link, Map, MessageSquare, Music, 
+  Rocket, Send, Shield, Sparkles, Star, TrendingUp, Zap
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import api, { BASE_URL } from '../services/api';
 import GlassCard from '../components/GlassCard';
 
@@ -245,19 +250,18 @@ export const AdminMembers = () => {
 
       {/* Edit Modal */}
       {editModalOpen && editMember && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => { setEditModalOpen(false); setEditMember(null); }} />
-          
-          <div className="glass-card max-w-lg w-full p-8 rounded-3xl relative z-10 border border-white/10 overflow-hidden flex flex-col bg-dark-card">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-extrabold text-lg">Edit Membership Details</h3>
-              <button 
-                onClick={() => { setEditModalOpen(false); setEditMember(null); }}
-                className="p-1.5 bg-white/5 hover:bg-brand-primary text-gray-400 hover:text-white rounded-full transition-colors"
-              >
-                <X size={15} />
-              </button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-lg w-full rounded-2xl overflow-hidden shadow-2xl p-6 relative z-10">
+            <button 
+              onClick={() => { setEditModalOpen(false); setEditMember(null); }} 
+              className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
+            >
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              Edit Membership Details
+            </h3>
 
             <form onSubmit={handleEditSubmit} className="flex flex-col gap-4 text-sm text-gray-400">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -341,7 +345,7 @@ export const AdminMembers = () => {
                 <Check size={14} />
               </button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -535,13 +539,15 @@ export const AdminEvents = () => {
 
       {/* Edit/Create Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-lg w-full p-8 rounded-3xl relative z-10 border border-white/10 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-bold text-base">{editingEvent ? 'Edit Event Details' : 'Create New Event'}</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-lg w-full rounded-2xl border border-white/10 max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative z-10">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              {editingEvent ? 'Edit Event Details' : 'Create New Event'}
+            </h3>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
               <div className="flex flex-col gap-1.5">
@@ -630,21 +636,21 @@ export const AdminEvents = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save Event</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* Event registrations modal */}
       {registrationsModalOpen && activeEventForRegistrations && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setRegistrationsModalOpen(false)} />
-          <div className="glass-card max-w-3xl w-full p-8 rounded-3xl relative z-10 border border-white/10 max-h-[90vh] overflow-y-auto bg-dark-card">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <div>
-                <span className="text-brand-primary font-bold text-xxs font-mono uppercase tracking-widest block mb-0.5">Event Registrations</span>
-                <h3 className="text-white font-extrabold text-base truncate max-w-xl">{activeEventForRegistrations.title}</h3>
-              </div>
-              <button onClick={() => setRegistrationsModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-3xl w-full rounded-2xl border border-white/10 max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative z-10">
+            <button onClick={() => setRegistrationsModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <div className="mb-4">
+              <span className="text-brand-primary font-bold text-xxs font-mono uppercase tracking-widest block mb-0.5">Event Registrations</span>
+              <h3 className="text-white font-extrabold text-base truncate max-w-xl">{activeEventForRegistrations.title}</h3>
             </div>
 
             {registrationsLoading ? (
@@ -690,7 +696,7 @@ export const AdminEvents = () => {
                 </table>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -849,13 +855,15 @@ export const AdminBearers = () => {
 
       {/* Edit/Create Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-md w-full p-8 rounded-3xl relative z-10 border border-white/10">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-bold text-base">{editingBearer ? 'Edit Bearer' : 'Add Bearer'}</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-md w-full rounded-2xl border border-white/10 shadow-2xl p-6 relative z-10">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              {editingBearer ? 'Edit Bearer' : 'Add Bearer'}
+            </h3>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
               <div className="flex flex-col gap-1.5">
@@ -930,7 +938,7 @@ export const AdminBearers = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save Bearer</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -1061,13 +1069,15 @@ export const AdminCommittees = () => {
 
       {/* Edit/Create Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-md w-full p-8 rounded-3xl relative z-10 border border-white/10">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-bold text-base">{editingCommittee ? 'Edit Committee' : 'Create Committee'}</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-md w-full rounded-2xl border border-white/10 shadow-2xl p-6 relative z-10">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              {editingCommittee ? 'Edit Committee' : 'Create Committee'}
+            </h3>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
               <div className="flex flex-col gap-1.5">
@@ -1113,7 +1123,7 @@ export const AdminCommittees = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save Committee</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -1386,13 +1396,15 @@ export const AdminPublications = () => {
 
       {/* Edit/Create Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-md w-full p-8 rounded-3xl relative z-10 border border-white/10">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-bold text-base">{editingPub ? 'Edit Publication Portal' : 'Create Portal Link'}</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-md w-full rounded-2xl border border-white/10 shadow-2xl p-6 relative z-10">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              {editingPub ? 'Edit Publication Portal' : 'Create Portal Link'}
+            </h3>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
               <div className="flex flex-col gap-1.5">
@@ -1447,7 +1459,7 @@ export const AdminPublications = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save Portal Link</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -1568,13 +1580,15 @@ export const AdminGallery = () => {
 
       {/* Create Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-md w-full p-8 rounded-3xl relative z-10 border border-white/10">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-bold text-base">Add Media Asset</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-md w-full rounded-2xl border border-white/10 shadow-2xl p-6 relative z-10">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              Add Media Asset
+            </h3>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
               <div className="flex flex-col gap-1.5">
@@ -1625,7 +1639,7 @@ export const AdminGallery = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save Media Asset</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -1805,13 +1819,15 @@ export const AdminNews = () => {
 
       {/* Edit/Create Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-2xl w-full p-8 rounded-3xl relative z-10 border border-white/10 max-h-[90vh] overflow-y-auto bg-dark-card">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-bold text-base">{editingNews ? 'Edit News Update' : 'Publish News Feed'}</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-2xl w-full rounded-2xl border border-white/10 max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative z-10">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              {editingNews ? 'Edit News Update' : 'Publish News Feed'}
+            </h3>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
               <div className="grid grid-cols-2 gap-4">
@@ -1950,7 +1966,7 @@ export const AdminNews = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save News Item</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -2065,15 +2081,15 @@ export const AdminContacts = () => {
 
       {/* View message detail modal */}
       {selectedMsg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setSelectedMsg(null)} />
-          <div className="glass-card max-w-md w-full p-8 rounded-3xl relative z-10 border border-white/10">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-4">
-              <div className="flex flex-col">
-                <span className="text-brand-secondary text-xxs font-mono uppercase">Contact Form Query</span>
-                <span className="text-white font-bold text-sm truncate max-w-[280px] mt-0.5">{selectedMsg.subject}</span>
-              </div>
-              <button onClick={() => setSelectedMsg(null)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-md w-full rounded-2xl border border-white/10 shadow-2xl p-6 relative z-10">
+            <button onClick={() => setSelectedMsg(null)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <div className="mb-4">
+              <span className="text-brand-secondary text-xxs font-mono uppercase">Contact Form Query</span>
+              <span className="text-white font-bold text-sm truncate max-w-[280px] mt-0.5 block">{selectedMsg.subject}</span>
             </div>
             
             <div className="flex flex-col gap-4 text-xs text-gray-400">
@@ -2114,7 +2130,7 @@ export const AdminContacts = () => {
                 </a>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -2292,15 +2308,15 @@ export const AdminTraining = () => {
 
       {/* Bookings registrations modal */}
       {registrationsModalOpen && activeProgramForRegistrations && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setRegistrationsModalOpen(false)} />
-          <div className="glass-card max-w-3xl w-full p-8 rounded-3xl relative z-10 border border-white/10 max-h-[90vh] overflow-y-auto bg-dark-card">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <div>
-                <span className="text-brand-primary font-bold text-xxs font-mono uppercase tracking-widest block mb-0.5">Seat Enrollments</span>
-                <h3 className="text-white font-extrabold text-base truncate max-w-xl">{activeProgramForRegistrations.title}</h3>
-              </div>
-              <button onClick={() => setRegistrationsModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-3xl w-full rounded-2xl border border-white/10 max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative z-10">
+            <button onClick={() => setRegistrationsModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <div className="mb-4">
+              <span className="text-brand-primary font-bold text-xxs font-mono uppercase tracking-widest block mb-0.5">Seat Enrollments</span>
+              <h3 className="text-white font-extrabold text-base truncate max-w-xl">{activeProgramForRegistrations.title}</h3>
             </div>
 
             {registrationsLoading ? (
@@ -2346,19 +2362,21 @@ export const AdminTraining = () => {
                 </table>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="absolute inset-0" onClick={() => setModalOpen(false)} />
-          <div className="glass-card max-w-lg w-full p-8 rounded-3xl relative z-10 border border-white/10">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5 mb-6">
-              <h3 className="text-white font-bold text-base">{editingProg ? 'Edit Program' : 'Create Program'}</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-white"><X size={18} /></button>
-            </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-lg w-full rounded-2xl border border-white/10 shadow-2xl p-6 relative z-10">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              {editingProg ? 'Edit Program' : 'Create Program'}
+            </h3>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
               <div className="flex flex-col gap-1.5">
@@ -2430,7 +2448,7 @@ export const AdminTraining = () => {
 
               <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white">Save Program</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -2744,6 +2762,287 @@ export const AdminEventRegistrations = () => {
           >
             Next
           </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ==========================================
+// 12. MANAGE ACTIVITIES TIMELINE
+// ==========================================
+export const AdminActivities = () => {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+
+  const [formData, setFormData] = useState({
+    title: '',
+    subtitle: '',
+    description: '',
+    icon: 'Calendar',
+    color: 'text-brand-primary',
+    display_order: '0'
+  });
+
+  const availableIcons = [
+    'Calendar', 'Award', 'BookOpen', 'GraduationCap', 'Flame', 'Presentation', 'Target', 'Trophy',
+    'Activity', 'Anchor', 'Bell', 'Book', 'Briefcase', 'ChevronRight', 'Clock', 'Compass', 'Cpu', 'Database', 
+    'Gift', 'Globe', 'Heart', 'Home', 'Image', 'Info', 'Lightbulb', 'Link', 'Map', 'MessageSquare', 'Music', 
+    'Rocket', 'Send', 'Shield', 'Sparkles', 'Star', 'TrendingUp', 'Zap'
+  ];
+  const iconMap = { 
+    Calendar, Award, BookOpen, GraduationCap, Flame, Presentation, Target, Trophy,
+    Activity, Anchor, Bell, Book, Briefcase, ChevronRight, Clock, Compass, Cpu, Database, 
+    Gift, Globe, Heart, Home, Image, Info, Lightbulb, Link, Map, MessageSquare, Music, 
+    Rocket, Send, Shield, Sparkles, Star, TrendingUp, Zap
+  };
+
+  const availableColors = [
+    { value: 'text-brand-primary', label: 'Default Primary' },
+    { value: 'text-amber-400', label: 'Amber Yellow' },
+    { value: 'text-indigo-400', label: 'Indigo Blue' },
+    { value: 'text-sky-400', label: 'Sky Blue' },
+    { value: 'text-emerald-400', label: 'Emerald Green' },
+    { value: 'text-purple-400', label: 'Purple Orchid' },
+    { value: 'text-brand-gold', label: 'Luxury Gold' },
+    { value: 'text-rose-400', label: 'Rose Pink' },
+    { value: 'text-teal-400', label: 'Teal' },
+    // 30 More Colors:
+    { value: 'text-red-400', label: 'Vibrant Red' },
+    { value: 'text-red-500', label: 'Crimson Red' },
+    { value: 'text-orange-400', label: 'Tangerine Orange' },
+    { value: 'text-orange-500', label: 'Deep Orange' },
+    { value: 'text-yellow-300', label: 'Light Yellow' },
+    { value: 'text-yellow-500', label: 'Gold Yellow' },
+    { value: 'text-lime-400', label: 'Bright Lime' },
+    { value: 'text-lime-500', label: 'Lime Green' },
+    { value: 'text-green-400', label: 'Mint Green' },
+    { value: 'text-green-500', label: 'Forest Green' },
+    { value: 'text-emerald-500', label: 'Deep Emerald' },
+    { value: 'text-teal-500', label: 'Dark Teal' },
+    { value: 'text-cyan-400', label: 'Cyan Aqua' },
+    { value: 'text-cyan-500', label: 'Ocean Cyan' },
+    { value: 'text-sky-500', label: 'Deep Sky' },
+    { value: 'text-blue-400', label: 'Soft Blue' },
+    { value: 'text-blue-500', label: 'Royal Blue' },
+    { value: 'text-indigo-500', label: 'Deep Indigo' },
+    { value: 'text-violet-500', label: 'Deep Violet' },
+    { value: 'text-purple-500', label: 'Royal Purple' },
+    { value: 'text-fuchsia-400', label: 'Magenta Fuchsia' },
+    { value: 'text-fuchsia-500', label: 'Deep Fuchsia' },
+    { value: 'text-pink-400', label: 'Light Pink' },
+    { value: 'text-pink-500', label: 'Hot Pink' },
+    { value: 'text-rose-500', label: 'Ruby Rose' },
+    { value: 'text-slate-300', label: 'Light Slate' },
+    { value: 'text-slate-400', label: 'Slate Gray' },
+    { value: 'text-zinc-400', label: 'Zinc Gray' },
+    { value: 'text-neutral-400', label: 'Neutral Gray' },
+    { value: 'text-stone-400', label: 'Stone Gray' }
+  ];
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  const fetchActivities = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.get('/activities');
+      setActivities(res.data);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || err.message || 'Failed to fetch activities');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenCreate = () => {
+    setEditingActivity(null);
+    setFormData({
+      title: '',
+      subtitle: '',
+      description: '',
+      icon: 'Calendar',
+      color: 'text-brand-primary',
+      display_order: '0'
+    });
+    setModalOpen(true);
+  };
+
+  const handleOpenEdit = (act) => {
+    setEditingActivity(act);
+    setFormData({
+      title: act.title,
+      subtitle: act.subtitle,
+      description: act.description,
+      icon: act.icon || 'Calendar',
+      color: act.color || 'text-brand-primary',
+      display_order: String(act.display_order || 0)
+    });
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this activity timeline item?')) return;
+    try {
+      await api.delete(`/activities/${id}`);
+      fetchActivities();
+    } catch (err) {
+      alert('Error deleting activity');
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...formData,
+        display_order: parseInt(formData.display_order) || 0
+      };
+
+      if (editingActivity) {
+        await api.put(`/activities/${editingActivity.id}`, payload);
+      } else {
+        await api.post('/activities', payload);
+      }
+      setModalOpen(false);
+      fetchActivities();
+    } catch (err) {
+      console.error('Save activity error:', err);
+      const errMsg = err.response?.data?.message || err.message || 'Failed to save activity details';
+      alert(`Failed to save activity: ${errMsg}`);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-between items-center">
+        <span className="text-gray-500 text-xs font-mono">Dynamic activities timeline planner</span>
+        <button onClick={handleOpenCreate} className="btn-primary px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-white">
+          <Plus size={15} /> Create Activity
+        </button>
+      </div>
+
+      <div className="glass-card rounded-2xl overflow-hidden border border-white/5">
+        {loading ? (
+          <div className="py-20 flex justify-center"><div className="w-8 h-8 rounded-full border-t-2 border-brand-primary animate-spin" /></div>
+        ) : error ? (
+          <div className="py-12 text-center text-red-400 text-sm">Error loading activities: {error}</div>
+        ) : activities.length === 0 ? (
+          <div className="py-12 text-center text-gray-500 text-sm">No activities found.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-white/5 text-gray-400 font-mono text-xxs uppercase tracking-wider">
+                <tr>
+                  <th className="px-6 py-4">Order</th>
+                  <th className="px-6 py-4">Icon</th>
+                  <th className="px-6 py-4">Title</th>
+                  <th className="px-6 py-4">Subtitle</th>
+                  <th className="px-6 py-4">Description</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {activities.map((act) => {
+                  const IconComp = iconMap[act.icon] || Calendar;
+                  return (
+                    <tr key={act.id} className="hover:bg-white/[0.01] transition-colors">
+                      <td className="px-6 py-4 font-mono text-xs text-gray-400">{act.display_order}</td>
+                      <td className="px-6 py-4">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                          <IconComp size={16} className={act.color || 'text-brand-primary'} />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-white">{act.title}</td>
+                      <td className="px-6 py-4 text-gray-400 text-xs">{act.subtitle}</td>
+                      <td className="px-6 py-4 text-gray-400 text-xs max-w-xs truncate">{act.description}</td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => handleOpenEdit(act)} className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand-primary hover:bg-white/10 transition-colors">
+                            <Edit2 size={14} />
+                          </button>
+                          <button onClick={() => handleDelete(act.id)} className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Create/Edit Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card max-w-lg w-full rounded-2xl overflow-hidden shadow-2xl p-6 relative">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5">
+              <X size={18} />
+            </button>
+            <h3 className="text-white font-extrabold text-lg mb-4 font-sans">
+              {editingActivity ? 'Edit Activity Details' : 'Create New Activity'}
+            </h3>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xxs font-mono text-gray-400 uppercase">Title</label>
+                <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="glass-input px-4 py-2.5 rounded-xl text-sm text-white w-full" placeholder="Enter activity name" />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xxs font-mono text-gray-400 uppercase">Subtitle / Caption</label>
+                <input required type="text" value={formData.subtitle} onChange={e => setFormData({ ...formData, subtitle: e.target.value })} className="glass-input px-4 py-2.5 rounded-xl text-sm text-white w-full" placeholder="e.g. Annual Observance, Monthly Talks" />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xxs font-mono text-gray-400 uppercase">Description</label>
+                <textarea required rows="3" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="glass-input px-4 py-2.5 rounded-xl text-sm text-white w-full resize-none" placeholder="Provide details about the activity" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xxs font-mono text-gray-400 uppercase">Lucide Icon</label>
+                  <select value={formData.icon} onChange={e => setFormData({ ...formData, icon: e.target.value })} className="glass-input px-4 py-2.5 rounded-xl text-sm text-white w-full bg-dark">
+                    {availableIcons.map(ic => (
+                      <option key={ic} value={ic} className="bg-dark text-white">{ic}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xxs font-mono text-gray-400 uppercase">Display Color</label>
+                  <select value={formData.color} onChange={e => setFormData({ ...formData, color: e.target.value })} className="glass-input px-4 py-2.5 rounded-xl text-sm text-white w-full bg-dark">
+                    {availableColors.map(col => (
+                      <option key={col.value} value={col.value} className="bg-dark text-white">{col.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xxs font-mono text-gray-400 uppercase">Sort Order Index</label>
+                <input type="number" min="0" value={formData.display_order} onChange={e => setFormData({ ...formData, display_order: e.target.value })} className="glass-input px-4 py-2.5 rounded-xl text-sm text-white w-full" placeholder="0" />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary px-5 py-2.5 rounded-xl text-sm font-semibold text-white">
+                  Cancel
+                </button>
+                <button type="submit" className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold text-white">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </motion.div>
         </div>
       )}
     </div>

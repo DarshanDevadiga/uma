@@ -82,6 +82,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const trainingRoutes = require('./routes/trainingRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const activityRoutes = require('./routes/activityRoutes');
 
 // Register API Routes
 app.use('/api/auth', authRoutes);
@@ -97,6 +98,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/training', trainingRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/activities', activityRoutes);
 
 // Temporary Administrator Server Diagnostics Page
 app.get('/server-diagnostics', async (req, res) => {

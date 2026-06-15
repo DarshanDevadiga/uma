@@ -285,9 +285,9 @@ const Pd = () => {
                     <Check size={28} />
                   </div>
                   <div>
-                    <h4 className="text-white font-bold text-base mb-1">Booking Confirmed!</h4>
+                    <h4 className="text-white font-bold text-base mb-1">Thank you for registering!</h4>
                     <p className="text-gray-400 text-xs leading-relaxed max-w-xs">
-                      You have successfully registered for the program. A confirmation email has been dispatched to <strong>{bookingFormData.email}</strong>.
+                      Your booking is confirmed. A confirmation email has been dispatched to <strong>{bookingFormData.email}</strong>.
                     </p>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 const { query } = require('../config/db');
-const { sendMail } = require('../config/mailer');
+const { sendMail, sendRichMail } = require('../config/mailer');
 
 // Get Awards Categories (Public)
 const getAwards = async (req, res) => {
@@ -40,15 +40,14 @@ const nominateAward = async (req, res) => {
     );
 
     // Send confirmation email
-    await sendMail({
+    await sendRichMail({
       to: email,
       subject: `Award Nomination Received: ${award.name}`,
-      text: `Dear ${nominee_name},\n\nWe have received your nomination for the "${award.name}" under the organization "${organization}".\n\nOur awards review committee will evaluate your nomination, and we will contact you if any further details are required.\n\nBest regards,\nUdupi Management Association`,
-      html: `<p>Dear <strong>${nominee_name}</strong>,</p>
-             <p>We have received your nomination for the <strong>"${award.name}"</strong> under the organization <strong>"${organization}"</strong>.</p>
-             <p>Our awards review committee will evaluate your nomination, and we will contact you if any further details are required.</p>
-             <p>Best regards,<br/><strong>Udupi Management Association</strong></p>`
-    });
+      text: `Dear ${nominee_name},\n\nThank you for applying! We have received your nomination for the "${award.name}" under the organization "${organization}".\n\nOur awards review committee will evaluate your nomination, and we will contact you if any further details are required.\n\nBest regards,\nUdupi Management Association`,
+      bodyHtml: `<p>Dear <strong>${nominee_name}</strong>,</p>
+                 <p>Thank you for applying! We have received your nomination for the <strong>"${award.name}"</strong> under the organization <strong>"${organization}"</strong>.</p>
+                 <p>Our awards review committee will evaluate your nomination, and we will contact you if any further details are required.</p>`
+    }, req);
 
     res.status(201).json({
       message: 'Nomination submitted successfully.',

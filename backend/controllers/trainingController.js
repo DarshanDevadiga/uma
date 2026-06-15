@@ -1,5 +1,5 @@
 const { query } = require('../config/db');
-const { sendMail } = require('../config/mailer');
+const { sendMail, sendRichMail } = require('../config/mailer');
 
 // Get Training Programs (Public, optional type filter)
 const getTrainingPrograms = async (req, res) => {
@@ -114,21 +114,20 @@ const registerForTraining = async (req, res) => {
 
     // Send confirmation email to enrollee
     try {
-      await sendMail({
+      await sendRichMail({
         to: email,
         subject: `UMA Booking Confirmation: ${program.title}`,
-        text: `Dear ${name},\n\nThank you for enrolling in the training program "${program.title}" organized by Udupi Management Association (UMA).\n\nDetails:\n- Program: ${program.title}\n- Duration: ${program.duration || 'N/A'}\n- Start Date: ${program.date ? new Date(program.date).toLocaleDateString('en-IN') : 'N/A'}\n\nOur training coordinator will reach out to you with access links or venue details prior to the session.\n\nBest regards,\nUdupi Management Association`,
-        html: `<p>Dear <strong>${name}</strong>,</p>
-               <p>Thank you for enrolling in the training program "<strong>${program.title}</strong>" organized by the <strong>Udupi Management Association (UMA)</strong>.</p>
-               <p><strong>Program Details:</strong></p>
-               <ul>
-                 <li><strong>Program Title:</strong> ${program.title}</li>
-                 <li><strong>Duration:</strong> ${program.duration || 'N/A'}</li>
-                 <li><strong>Start Date:</strong> ${program.date ? new Date(program.date).toLocaleDateString('en-IN') : 'N/A'}</li>
-               </ul>
-               <p>Our training coordinator will reach out to you with session access details prior to the start date.</p>
-               <p>Best regards,<br/><strong>Udupi Management Association</strong></p>`
-      });
+        text: `Dear ${name},\n\nThank you for registering! Thank you for enrolling in the training program "${program.title}" organized by Udupi Management Association (UMA).\n\nDetails:\n- Program: ${program.title}\n- Duration: ${program.duration || 'N/A'}\n- Start Date: ${program.date ? new Date(program.date).toLocaleDateString('en-IN') : 'N/A'}\n\nOur training coordinator will reach out to you with access links or venue details prior to the session.\n\nBest regards,\nUdupi Management Association`,
+        bodyHtml: `<p>Dear <strong>${name}</strong>,</p>
+                   <p>Thank you for registering! Thank you for enrolling in the training program "<strong>${program.title}</strong>" organized by the <strong>Udupi Management Association (UMA)</strong>.</p>
+                   <p><strong>Program Details:</strong></p>
+                   <table style="margin: 20px 0; font-size: 14px; color: #4b5563;">
+                     <tr><td style="padding-right: 15px; font-weight: bold;">Program:</td><td>${program.title}</td></tr>
+                     <tr><td style="padding-right: 15px; font-weight: bold;">Duration:</td><td>${program.duration || 'N/A'}</td></tr>
+                     <tr><td style="padding-right: 15px; font-weight: bold;">Start Date:</td><td>${program.date ? new Date(program.date).toLocaleDateString('en-IN') : 'N/A'}</td></tr>
+                   </table>
+                   <p>Our training coordinator will reach out to you with session access details prior to the start date.</p>`
+      }, req);
 
       // Send alert email to admin
       await sendMail({

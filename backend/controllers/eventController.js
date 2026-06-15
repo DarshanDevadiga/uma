@@ -1,5 +1,5 @@
 const { query } = require('../config/db');
-const { sendMail } = require('../config/mailer');
+const { sendMail, sendRichMail } = require('../config/mailer');
 const path = require('fs');
 
 // Get Events & Conferences (Public)
@@ -111,19 +111,18 @@ const registerForEvent = async (req, res) => {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
     
-    await sendMail({
+    await sendRichMail({
       to: email,
       subject: `Registration Confirmed: ${event.title}`,
-      text: `Dear ${name},\n\nYour registration for the event "${event.title}" has been confirmed!\n\nDate: ${formattedDate}\nLocation: ${event.location}\n\nWe look forward to seeing you there.\n\nBest regards,\nUdupi Management Association`,
-      html: `<p>Dear <strong>${name}</strong>,</p>
-             <p>Your registration for the event "<strong>${event.title}</strong>" has been confirmed!</p>
-             <ul>
-               <li><strong>Date:</strong> ${formattedDate}</li>
-               <li><strong>Location:</strong> ${event.location}</li>
-             </ul>
-             <p>We look forward to seeing you there.</p>
-             <p>Best regards,<br/><strong>Udupi Management Association</strong></p>`
-    });
+      text: `Dear ${name},\n\nThank you for registering! Your registration for the event "${event.title}" has been confirmed!\n\nDate: ${formattedDate}\nLocation: ${event.location}\n\nWe look forward to seeing you there.\n\nBest regards,\nUdupi Management Association`,
+      bodyHtml: `<p>Dear <strong>${name}</strong>,</p>
+                 <p>Thank you for registering! Your registration for the event "<strong>${event.title}</strong>" has been <strong>confirmed</strong>!</p>
+                 <table style="margin: 20px 0; font-size: 14px; color: #4b5563;">
+                   <tr><td style="padding-right: 15px; font-weight: bold;">Date:</td><td>${formattedDate}</td></tr>
+                   <tr><td style="padding-right: 15px; font-weight: bold;">Location:</td><td>${event.location}</td></tr>
+                 </table>
+                 <p>We look forward to seeing you there.</p>`
+    }, req);
 
     res.status(201).json({ message: 'Successfully registered for the event.' });
   } catch (error) {

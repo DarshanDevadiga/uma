@@ -1,5 +1,5 @@
 const { query } = require('../config/db');
-const { sendMail } = require('../config/mailer');
+const { sendMail, sendRichMail } = require('../config/mailer');
 
 // Submit Contact Form (Public)
 const submitContact = async (req, res) => {
@@ -32,15 +32,14 @@ const submitContact = async (req, res) => {
     });
 
     // Send confirmation receipt to sender
-    await sendMail({
+    await sendRichMail({
       to: email,
       subject: 'UMA: Contact Message Received',
       text: `Dear ${name},\n\nThank you for contacting the Udupi Management Association (UMA).\n\nWe have received your message regarding "${subject}" and our office will get back to you shortly.\n\nBest regards,\nUdupi Management Association`,
-      html: `<p>Dear <strong>${name}</strong>,</p>
-             <p>Thank you for contacting the <strong>Udupi Management Association (UMA)</strong>.</p>
-             <p>We have received your message regarding "<strong>${subject}</strong>" and our office will get back to you shortly.</p>
-             <p>Best regards,<br/><strong>Udupi Management Association</strong></p>`
-    });
+      bodyHtml: `<p>Dear <strong>${name}</strong>,</p>
+                 <p>Thank you for contacting the <strong>Udupi Management Association (UMA)</strong>.</p>
+                 <p>We have received your message regarding "<strong>${subject}</strong>" and our office will get back to you shortly.</p>`
+    }, req);
 
     res.status(201).json({
       message: 'Your message has been submitted successfully. We will contact you soon.',

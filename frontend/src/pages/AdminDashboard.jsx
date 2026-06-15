@@ -92,13 +92,13 @@ const AdminDashboard = () => {
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <GlassCard key={idx} hoverEffect={true} className="p-6 flex items-center justify-between border border-white/5">
-              <div className="flex flex-col gap-1">
-                <span className="text-gray-500 text-xs uppercase tracking-wider font-semibold font-mono">{card.label}</span>
-                <span className="text-2xl font-extrabold text-white font-sans mt-1">{card.value}</span>
-              </div>
-              <div className={`w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center ${card.color}`}>
-                <Icon size={20} />
+            <GlassCard key={idx} hoverEffect={true} className="p-6 flex flex-col gap-2 border border-white/5">
+              <span className="text-gray-500 text-xs uppercase tracking-wider font-semibold font-mono">{card.label}</span>
+              <div className="flex items-center gap-3.5 mt-1">
+                <span className="text-3xl font-extrabold text-white font-sans">{card.value}</span>
+                <div className={`w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center ${card.color}`}>
+                  <Icon size={16} />
+                </div>
               </div>
             </GlassCard>
           );

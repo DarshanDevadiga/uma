@@ -1,5 +1,5 @@
 const { query } = require('../config/db');
-const { sendMail } = require('../config/mailer');
+const { sendMail, sendRichMail } = require('../config/mailer');
 
 // Get Membership Types
 const getMembershipTypes = async (req, res) => {
@@ -35,15 +35,14 @@ const registerMembership = async (req, res) => {
     );
 
     // Send confirmation email
-    await sendMail({
+    await sendRichMail({
       to: email,
       subject: 'UMA Membership Application Received',
       text: `Dear ${name},\n\nThank you for applying for the ${types[0].name} at Udupi Management Association (UMA).\n\nYour application has been received and is currently under review by our administration team. You will receive an update once it is approved.\n\nBest regards,\nUdupi Management Association`,
-      html: `<p>Dear <strong>${name}</strong>,</p>
-             <p>Thank you for applying for the <strong>${types[0].name}</strong> at Udupi Management Association (UMA).</p>
-             <p>Your application has been received and is currently under review by our administration team. You will receive an email update once it is approved.</p>
-             <p>Best regards,<br/><strong>Udupi Management Association</strong></p>`
-    });
+      bodyHtml: `<p>Dear <strong>${name}</strong>,</p>
+                 <p>Thank you for applying for the <strong>${types[0].name}</strong> at Udupi Management Association (UMA).</p>
+                 <p>Your application has been received and is currently under review by our administration team. You will receive an email update once it is approved.</p>`
+    }, req);
 
     res.status(201).json({
       message: 'Membership application submitted successfully. Admin review pending.',
@@ -165,18 +164,16 @@ const updateMembershipStatus = async (req, res) => {
       ? `Dear ${member.name},\n\nWe are pleased to inform you that your application for ${member.type_name} at Udupi Management Association (UMA) has been approved!\n\nWelcome aboard.\n\nBest regards,\nUdupi Management Association`
       : `Dear ${member.name},\n\nThank you for your interest in Udupi Management Association (UMA).\n\nWe regret to inform you that your application for ${member.type_name} could not be approved at this time.\n\nBest regards,\nUdupi Management Association`;
 
-    await sendMail({
+    await sendRichMail({
       to: member.email,
       subject: emailSubject,
       text: emailText,
-      html: `<p>Dear <strong>${member.name}</strong>,</p>
-             <p>${isApproved 
-                ? `We are pleased to inform you that your application for <strong>${member.type_name}</strong> at Udupi Management Association (UMA) has been <strong>approved</strong>! Welcome aboard.`
-                : `Thank you for your interest in Udupi Management Association (UMA). We regret to inform you that your application for <strong>${member.type_name}</strong> could not be approved at this time.`
-             }</p>
-             <br/>
-             <p>Best regards,<br/><strong>Udupi Management Association</strong></p>`
-    });
+      bodyHtml: `<p>Dear <strong>${member.name}</strong>,</p>
+                 <p>${isApproved 
+                    ? `We are pleased to inform you that your application for <strong>${member.type_name}</strong> at Udupi Management Association (UMA) has been <strong>approved</strong>! Welcome aboard.`
+                    : `Thank you for your interest in Udupi Management Association (UMA). We regret to inform you that your application for <strong>${member.type_name}</strong> could not be approved at this time.`
+                 }</p>`
+    }, req);
 
     res.json({ message: `Membership status successfully updated to ${status}` });
   } catch (error) {
