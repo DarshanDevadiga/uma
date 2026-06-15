@@ -16,11 +16,16 @@ async function runSetup() {
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : ''
     });
+    const dbName = process.env.DB_NAME || 'uma_db';
     // 2. Read schema.sql
     if (!fs.existsSync(schemaPath)) {
       throw new Error(`schema.sql not found at path: ${schemaPath}`);
     }
-    const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+    let schemaSql = fs.readFileSync(schemaPath, 'utf8');
+
+    // Dynamically replace hardcoded 'uma_db' with the configured database name from process.env.DB_NAME
+    schemaSql = schemaSql.replace(/CREATE DATABASE IF NOT EXISTS uma_db/gi, `CREATE DATABASE IF NOT EXISTS ${dbName}`);
+    schemaSql = schemaSql.replace(/USE uma_db/gi, `USE ${dbName}`);
 
     // Split SQL statements by semicolon (accounting for newlines)
     // We filter out empty commands
