@@ -511,7 +511,7 @@ const Media = () => {
                           viewport={{ once: true, margin: '-80px' }}
                           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                         >
-                          <Link to={`/news/${featuredArticle.id}`} className="block">
+                          <Link to={`/news/${featuredArticle.slug || featuredArticle.id}`} className="block">
                             <GlassCard 
                               className="p-6 md:p-8 hover:-translate-y-1 transition-all duration-300 border border-white/10 group cursor-pointer overflow-hidden relative"
                               hoverEffect={true}
@@ -591,7 +591,7 @@ const Media = () => {
                             
                             return (
                               <motion.div variants={revealItem} key={item.id || idx}>
-                                <Link to={`/news/${item.id}`} className="block h-full">
+                                <Link to={`/news/${item.slug || item.id}`} className="block h-full">
                                   <GlassCard 
                                     className="flex flex-col justify-between h-full p-5 border border-white/5 hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
                                     hoverEffect={true}

@@ -38,8 +38,16 @@ async function runSetup() {
         await connection.query(statement);
       } catch (stmtError) {
         console.error(`Error executing statement ${i + 1}:`, stmtError.message);
-        // Ignore duplicate key/seed insert errors, but fail on structural errors
-        if (!stmtError.message.includes('Duplicate entry') && !stmtError.message.includes('already exists')) {
+        // Ignore duplicate key/seed/structural errors, but fail on other errors
+        const ignoreErrors = [
+          'Duplicate entry',
+          'already exists',
+          'Duplicate column name',
+          'Duplicate key name',
+          'Multiple primary key defined'
+        ];
+        const shouldIgnore = ignoreErrors.some(errMsg => stmtError.message.includes(errMsg));
+        if (!shouldIgnore) {
           throw stmtError;
         }
       }

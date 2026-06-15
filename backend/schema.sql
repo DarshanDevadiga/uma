@@ -303,3 +303,108 @@ INSERT IGNORE INTO activities (id, title, subtitle, description, icon, color, di
 (6, 'Business Quiz', 'Inter-Collegiate Tournament', 'Signature annual quiz competition for undergraduate business students, offering trophy accolades and monetary sponsorships.', 'Trophy', 'text-brand-gold', 6),
 (7, 'Outstanding Manager Award', 'Executive Honors', 'Recognizing regional business stalwarts demonstrating impressive leadership, financial growth, and CSR initiatives.', 'Award', 'text-rose-400', 7),
 (8, 'Student Paper Presentation Competition', 'Young Scholars Panel', 'Annual contest giving students a forum to present research papers on local entrepreneurship, trade networks, and digital marketing.', 'Calendar', 'text-teal-400', 8);
+
+-- ==========================================
+-- PERFORMANCE, SEO, SECURITY & CMS OPTIMIZATION TABLES
+-- ==========================================
+
+-- ALTER news table to add slug if not exists
+ALTER TABLE news ADD COLUMN slug VARCHAR(255) NULL UNIQUE AFTER title;
+
+-- 18. SEO Settings Table
+CREATE TABLE IF NOT EXISTS seo_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) UNIQUE NOT NULL,
+    setting_value TEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 19. Article SEO Table
+CREATE TABLE IF NOT EXISTS article_seo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    news_id INT NOT NULL,
+    seo_title VARCHAR(255) NULL,
+    seo_description TEXT NULL,
+    seo_keywords VARCHAR(255) NULL,
+    canonical_url VARCHAR(255) NULL,
+    og_title VARCHAR(255) NULL,
+    og_description TEXT NULL,
+    og_image VARCHAR(255) NULL,
+    twitter_title VARCHAR(255) NULL,
+    twitter_description TEXT NULL,
+    twitter_image VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,
+    UNIQUE KEY (news_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 20. Redirects Table
+CREATE TABLE IF NOT EXISTS redirects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    source_url VARCHAR(255) NOT NULL UNIQUE,
+    target_url VARCHAR(255) NOT NULL,
+    hit_count INT DEFAULT 0,
+    last_accessed TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 21. SEO Audits Table
+CREATE TABLE IF NOT EXISTS seo_audits (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    url VARCHAR(255) NOT NULL,
+    missing_title TINYINT(1) DEFAULT 0,
+    missing_description TINYINT(1) DEFAULT 0,
+    missing_canonical TINYINT(1) DEFAULT 0,
+    missing_alt_tags INT DEFAULT 0,
+    broken_links TEXT NULL,
+    redirect_chain TINYINT(1) DEFAULT 0,
+    status_code INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 22. Sitemap Logs Table
+CREATE TABLE IF NOT EXISTS sitemap_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(50) NOT NULL,
+    item_count INT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 23. Robots Settings Table
+CREATE TABLE IF NOT EXISTS robots_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    robots_txt TEXT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 24. Performance Logs Table
+CREATE TABLE IF NOT EXISTS performance_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    metric_type VARCHAR(50) NOT NULL,
+    metric_value FLOAT NOT NULL,
+    url VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Seed default robots.txt
+INSERT IGNORE INTO robots_settings (id, robots_txt) VALUES (1, 'User-agent: *\nDisallow: /admin/\nDisallow: /api/\nSitemap: http://localhost:5000/sitemap.xml');
+
+-- Seed default SEO settings
+INSERT IGNORE INTO seo_settings (setting_key, setting_value) VALUES
+('website_title', 'Udupi Management Association | Building Leadership Excellence'),
+('website_description', 'Official portal of the Udupi Management Association (UMA), facilitating commercial networking, professional upskilling, and business governance panels in coastal Karnataka.'),
+('website_keywords', 'UMA, Udupi Management Association, management training, coastal Karnataka, business conclave, professional development'),
+('canonical_domain', 'http://localhost:5000'),
+('favicon', '/favicon.ico'),
+('logo', '/logo.png'),
+('google_analytics_id', 'G-XXXXXXXXXX'),
+('google_tag_manager_id', 'GTM-XXXXXXX'),
+('google_search_console_id', ''),
+('bing_verification_id', ''),
+('facebook_pixel_id', ''),
+('org_name', 'Udupi Management Association'),
+('org_email', 'info@udupimanagement.org'),
+('org_phone', '+91 820 2520412'),
+('org_address', 'Poornaprajna Campus, Udupi - 576101');

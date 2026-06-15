@@ -365,7 +365,7 @@ const NewsArticle = () => {
                 {getRelatedArticles().map((rel) => (
                   <Link 
                     key={rel.id} 
-                    to={`/news/${rel.id}`}
+                    to={`/news/${rel.slug || rel.id}`}
                     className="flex flex-col p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all group"
                   >
                     <div className="w-full aspect-video rounded-xl overflow-hidden border border-white/5 mb-3">

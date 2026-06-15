@@ -2,11 +2,32 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // Initialize express app
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Apply secure headers via Helmet (disabling CSP to prevent inline styling / asset issues in client bundle)
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
+
+// Apply Brotli/Gzip compression for static text/JSON files
+app.use(compression());
+
+// Set up API rate limiter to defend against denial of service/scraping
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 requests per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many requests from this IP, please try again after 15 minutes.' }
+});
 
 // Apply CORS middleware
 app.use(cors({
@@ -28,6 +49,10 @@ app.use((req, res, next) => {
   });
   next();
 });
+
+// Apply custom redirect middleware (run before static or API routes)
+const { redirectMiddleware, log404 } = require('./middleware/redirectMiddleware');
+app.use(redirectMiddleware);
 
 // Resolve the base uploads directory from environment variable UPLOADS_DIR
 const uploadsDir = process.env.UPLOADS_DIR
@@ -83,6 +108,10 @@ const trainingRoutes = require('./routes/trainingRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const activityRoutes = require('./routes/activityRoutes');
+const seoRoutes = require('./routes/seoRoutes');
+
+// Apply the rate limiting middleware to API calls
+app.use('/api/', apiLimiter);
 
 // Register API Routes
 app.use('/api/auth', authRoutes);
@@ -99,6 +128,7 @@ app.use('/api/training', trainingRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/activities', activityRoutes);
+app.use('/api/seo', seoRoutes);
 
 // Temporary Administrator Server Diagnostics Page
 app.get('/server-diagnostics', async (req, res) => {
@@ -347,14 +377,57 @@ app.get('/api/db-test', async (req, res) => {
   }
 });
 
+// Dynamic public SEO files
+const { generateSitemapXml, generateNewsSitemapXml, getGlobalSeoSettingsInternal } = require('./controllers/seoController');
+
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const globalSettings = await getGlobalSeoSettingsInternal();
+    const canonicalDomain = globalSettings.canonical_domain || `${req.protocol}://${req.get('host')}`;
+    const { xml } = await generateSitemapXml(canonicalDomain);
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    console.error('Error generating sitemap.xml:', err);
+    res.status(500).send('Error generating sitemap.xml');
+  }
+});
+
+app.get('/sitemap-news.xml', async (req, res) => {
+  try {
+    const globalSettings = await getGlobalSeoSettingsInternal();
+    const canonicalDomain = globalSettings.canonical_domain || `${req.protocol}://${req.get('host')}`;
+    const orgName = globalSettings.org_name || 'Udupi Management Association';
+    const { xml } = await generateNewsSitemapXml(canonicalDomain, orgName);
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    console.error('Error generating sitemap-news.xml:', err);
+    res.status(500).send('Error generating sitemap-news.xml');
+  }
+});
+
+app.get('/robots.txt', async (req, res) => {
+  const { query } = require('./config/db');
+  try {
+    const rules = await query('SELECT robots_txt FROM robots_settings WHERE id = 1');
+    const robotsTxt = rules.length > 0 ? rules[0].robots_txt : 'User-agent: *\nDisallow: /admin/';
+    res.header('Content-Type', 'text/plain');
+    res.send(robotsTxt);
+  } catch (err) {
+    console.error('Error serving robots.txt:', err);
+    res.status(500).send('Error serving robots.txt');
+  }
+});
+
 // Serve static React production build assets if present
 const publicPath = path.join(__dirname, 'public');
+const { injectSeo } = require('./utils/seoInjector');
+
 if (fs.existsSync(publicPath)) {
   app.use(express.static(publicPath));
-  // Handle SPA routing: serve index.html for non-API routes
-  app.get(/^\/(?!api).*/, (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
-  });
+  // Handle SPA routing with dynamic SEO head metadata/schema injection
+  app.get(/^\/(?!api).*/, injectSeo);
 } else {
   // Fallback root route if frontend is not built
   app.get('/', (req, res) => {
@@ -363,9 +436,7 @@ if (fs.existsSync(publicPath)) {
 }
 
 // 404 Route handler
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Resource not found' });
-});
+app.use(log404);
 
 // Global error handling middleware
 app.use((err, req, res, next) => {

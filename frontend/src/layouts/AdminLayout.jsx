@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, Users, Calendar, Award, UserCheck, 
   Layers, BookOpen, Image, Newspaper, Mail, GraduationCap, 
-  Settings, LogOut, Menu, X, ShieldAlert, ClipboardList, Flame
+  Settings, LogOut, Menu, X, ShieldAlert, ClipboardList, Flame,
+  Globe
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
@@ -47,6 +48,7 @@ const AdminLayout = ({ children }) => {
     { name: 'Activities', path: '/admin/activities', icon: Flame },
     { name: 'Training Progs', path: '/admin/training', icon: GraduationCap },
     { name: 'Site Settings', path: '/admin/settings', icon: Settings },
+    { name: 'SEO Manager', path: '/admin/seo', icon: Globe },
   ];
 
   const isActive = (path) => location.pathname === path;

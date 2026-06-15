@@ -1,5 +1,44 @@
 const { query } = require('../config/db');
 
+// Helper to convert title to slug
+const slugify = (text) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start
+    .replace(/-+$/, '');            // Trim - from end
+};
+
+// Helper to generate a unique slug
+const generateUniqueSlug = async (title, currentId = null) => {
+  let baseSlug = slugify(title);
+  if (!baseSlug) {
+    baseSlug = 'news';
+  }
+  let slug = baseSlug;
+  let counter = 1;
+
+  while (true) {
+    let rows;
+    if (currentId) {
+      rows = await query('SELECT id FROM news WHERE slug = ? AND id != ?', [slug, currentId]);
+    } else {
+      rows = await query('SELECT id FROM news WHERE slug = ?', [slug]);
+    }
+
+    if (rows.length === 0) {
+      break;
+    }
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+  return slug;
+};
+
 // Get News and Press Releases (Public)
 const getNews = async (req, res) => {
   const { type } = req.query; // news, press_release
@@ -42,22 +81,34 @@ const getNews = async (req, res) => {
   }
 };
 
-// Get News by ID
+// Get News by ID or Slug
 const getNewsById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const newsItems = await query('SELECT * FROM news WHERE id = ?', [id]);
+    let newsItems;
+    // Check if id is numeric
+    if (/^\d+$/.test(id)) {
+      newsItems = await query('SELECT * FROM news WHERE id = ?', [id]);
+    } else {
+      newsItems = await query('SELECT * FROM news WHERE slug = ?', [id]);
+    }
+
     if (newsItems.length === 0) {
       return res.status(404).json({ message: 'News item not found' });
     }
     const newsItem = newsItems[0];
-    
+    const newsId = newsItem.id;
+
     // Fetch associated images
-    const images = await query('SELECT id, image_url FROM news_images WHERE news_id = ?', [id]);
+    const images = await query('SELECT id, image_url FROM news_images WHERE news_id = ?', [newsId]);
     newsItem.images = images.map(img => img.image_url);
     newsItem.galleryImages = images;
-    
+
+    // Fetch associated SEO settings
+    const seoData = await query('SELECT * FROM article_seo WHERE news_id = ?', [newsId]);
+    newsItem.seo = seoData.length > 0 ? seoData[0] : null;
+
     res.json(newsItem);
   } catch (error) {
     console.error('getNewsById error:', error);
@@ -67,7 +118,26 @@ const getNewsById = async (req, res) => {
 
 // Create News (Admin)
 const createNews = async (req, res) => {
-  const { title, content, paragraph1, paragraph2, paragraph3, type } = req.body;
+  const {
+    title,
+    content,
+    paragraph1,
+    paragraph2,
+    paragraph3,
+    type,
+    custom_slug,
+    seo_title,
+    seo_description,
+    seo_keywords,
+    canonical_url,
+    og_title,
+    og_description,
+    og_image,
+    twitter_title,
+    twitter_description,
+    twitter_image
+  } = req.body;
+
   let image_url = null;
 
   if (!title || !content || !type) {
@@ -80,11 +150,14 @@ const createNews = async (req, res) => {
   }
 
   try {
+    // Generate clean URL slug
+    const slug = await generateUniqueSlug(custom_slug || title);
+
     // Insert base news item
     const result = await query(
-      `INSERT INTO news (title, content, paragraph1, paragraph2, paragraph3, type, image_url)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [title, content, paragraph1 || null, paragraph2 || null, paragraph3 || null, type, image_url]
+      `INSERT INTO news (title, slug, content, paragraph1, paragraph2, paragraph3, type, image_url)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, slug, content, paragraph1 || null, paragraph2 || null, paragraph3 || null, type, image_url]
     );
 
     const newsId = result.insertId;
@@ -98,9 +171,44 @@ const createNews = async (req, res) => {
       await Promise.all(imageInsertQueries);
     }
 
+    // Save associated SEO settings if provided
+    if (
+      seo_title ||
+      seo_description ||
+      seo_keywords ||
+      canonical_url ||
+      og_title ||
+      og_description ||
+      og_image ||
+      twitter_title ||
+      twitter_description ||
+      twitter_image
+    ) {
+      await query(
+        `INSERT INTO article_seo (
+          news_id, seo_title, seo_description, seo_keywords, canonical_url,
+          og_title, og_description, og_image, twitter_title, twitter_description, twitter_image
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          newsId,
+          seo_title || null,
+          seo_description || null,
+          seo_keywords || null,
+          canonical_url || null,
+          og_title || null,
+          og_description || null,
+          og_image || null,
+          twitter_title || null,
+          twitter_description || null,
+          twitter_image || null
+        ]
+      );
+    }
+
     res.status(201).json({
       message: 'News item created successfully',
-      newsId: newsId
+      newsId: newsId,
+      slug: slug
     });
   } catch (error) {
     console.error('createNews error:', error);
@@ -111,10 +219,28 @@ const createNews = async (req, res) => {
 // Update News (Admin)
 const updateNews = async (req, res) => {
   const { id } = req.params;
-  const { title, content, paragraph1, paragraph2, paragraph3, type } = req.body;
+  const {
+    title,
+    content,
+    paragraph1,
+    paragraph2,
+    paragraph3,
+    type,
+    custom_slug,
+    seo_title,
+    seo_description,
+    seo_keywords,
+    canonical_url,
+    og_title,
+    og_description,
+    og_image,
+    twitter_title,
+    twitter_description,
+    twitter_image
+  } = req.body;
 
   try {
-    const newsItems = await query('SELECT image_url FROM news WHERE id = ?', [id]);
+    const newsItems = await query('SELECT title, slug, image_url FROM news WHERE id = ?', [id]);
     if (newsItems.length === 0) {
       return res.status(404).json({ message: 'News item not found' });
     }
@@ -125,12 +251,20 @@ const updateNews = async (req, res) => {
       image_url = `/uploads/news/${req.files['image'][0].filename}`;
     }
 
+    // Determine slug: if custom_slug or title changed, regenerate/validate slug
+    let slug = newsItems[0].slug;
+    if (custom_slug && custom_slug !== newsItems[0].slug) {
+      slug = await generateUniqueSlug(custom_slug, id);
+    } else if (!slug || (title && title !== newsItems[0].title)) {
+      slug = await generateUniqueSlug(title || newsItems[0].title, id);
+    }
+
     // Update news record
     await query(
-      `UPDATE news 
-       SET title = ?, content = ?, paragraph1 = ?, paragraph2 = ?, paragraph3 = ?, type = ?, image_url = ?
+      `UPDATE news
+       SET title = ?, slug = ?, content = ?, paragraph1 = ?, paragraph2 = ?, paragraph3 = ?, type = ?, image_url = ?
        WHERE id = ?`,
-      [title, content, paragraph1 || null, paragraph2 || null, paragraph3 || null, type, image_url, id]
+      [title, slug, content, paragraph1 || null, paragraph2 || null, paragraph3 || null, type, image_url, id]
     );
 
     // Handle additional images uploads
@@ -142,7 +276,39 @@ const updateNews = async (req, res) => {
       await Promise.all(imageInsertQueries);
     }
 
-    res.json({ message: 'News item updated successfully' });
+    // Upsert associated SEO settings
+    await query(
+      `INSERT INTO article_seo (
+        news_id, seo_title, seo_description, seo_keywords, canonical_url,
+        og_title, og_description, og_image, twitter_title, twitter_description, twitter_image
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        seo_title = VALUES(seo_title),
+        seo_description = VALUES(seo_description),
+        seo_keywords = VALUES(seo_keywords),
+        canonical_url = VALUES(canonical_url),
+        og_title = VALUES(og_title),
+        og_description = VALUES(og_description),
+        og_image = VALUES(og_image),
+        twitter_title = VALUES(twitter_title),
+        twitter_description = VALUES(twitter_description),
+        twitter_image = VALUES(twitter_image)`,
+      [
+        id,
+        seo_title || null,
+        seo_description || null,
+        seo_keywords || null,
+        canonical_url || null,
+        og_title || null,
+        og_description || null,
+        og_image || null,
+        twitter_title || null,
+        twitter_description || null,
+        twitter_image || null
+      ]
+    );
+
+    res.json({ message: 'News item updated successfully', slug: slug });
   } catch (error) {
     console.error('updateNews error:', error);
     res.status(500).json({ message: 'Internal server error' });

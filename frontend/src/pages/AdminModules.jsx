@@ -1691,7 +1691,16 @@ export const AdminNews = () => {
       paragraph1: '', 
       paragraph2: '', 
       paragraph3: '', 
-      type: 'news' 
+      type: 'news',
+      custom_slug: '',
+      seo_title: '',
+      seo_description: '',
+      seo_keywords: '',
+      canonical_url: '',
+      og_title: '',
+      og_description: '',
+      twitter_title: '',
+      twitter_description: ''
     });
     setImageFile(null);
     setImageFiles([]);
@@ -1709,7 +1718,16 @@ export const AdminNews = () => {
         paragraph1: fullNews.paragraph1 || '',
         paragraph2: fullNews.paragraph2 || '',
         paragraph3: fullNews.paragraph3 || '',
-        type: fullNews.type
+        type: fullNews.type,
+        custom_slug: fullNews.slug || '',
+        seo_title: fullNews.seo?.seo_title || '',
+        seo_description: fullNews.seo?.seo_description || '',
+        seo_keywords: fullNews.seo?.seo_keywords || '',
+        canonical_url: fullNews.seo?.canonical_url || '',
+        og_title: fullNews.seo?.og_title || '',
+        og_description: fullNews.seo?.og_description || '',
+        twitter_title: fullNews.seo?.twitter_title || '',
+        twitter_description: fullNews.seo?.twitter_description || ''
       });
       setImageFile(null);
       setImageFiles([]);
@@ -1941,6 +1959,83 @@ export const AdminNews = () => {
                   </div>
                 </div>
               )}
+
+              {/* SEO Configurations Expansion Section */}
+              <div className="border border-white/5 rounded-2xl p-4 bg-white/2 flex flex-col gap-3">
+                <h4 className="text-white text-xs font-bold font-mono">Article SEO & Metadata Overrides</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5 col-span-2">
+                    <label className="text-gray-400 text-xs">Custom URL Slug (URL path friendly, e.g. 'my-custom-title')</label>
+                    <input 
+                      type="text" 
+                      value={formData.custom_slug || ''} 
+                      onChange={(e) => setFormData({ ...formData, custom_slug: e.target.value })} 
+                      placeholder="Leave blank to auto-generate from Title"
+                      className="glass-input px-4 py-2.5 rounded-xl text-white" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5 col-span-2">
+                    <label className="text-gray-400 text-xs">SEO Title Tag Override</label>
+                    <input 
+                      type="text" 
+                      value={formData.seo_title || ''} 
+                      onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })} 
+                      placeholder="Leave blank to use base Title"
+                      className="glass-input px-4 py-2.5 rounded-xl text-white" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5 col-span-2">
+                    <label className="text-gray-400 text-xs">SEO Meta Description Override</label>
+                    <textarea 
+                      value={formData.seo_description || ''} 
+                      onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })} 
+                      placeholder="Summarize the article for search results (recommended length: 150-160 chars)"
+                      rows={2}
+                      className="glass-input px-4 py-2.5 rounded-xl text-white resize-none" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+                    <label className="text-gray-400 text-xs">SEO Keywords</label>
+                    <input 
+                      type="text" 
+                      value={formData.seo_keywords || ''} 
+                      onChange={(e) => setFormData({ ...formData, seo_keywords: e.target.value })} 
+                      placeholder="e.g. news, events, incubation"
+                      className="glass-input px-4 py-2.5 rounded-xl text-white" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+                    <label className="text-gray-400 text-xs">Canonical URL</label>
+                    <input 
+                      type="text" 
+                      value={formData.canonical_url || ''} 
+                      onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })} 
+                      placeholder="Only set if referencing external source"
+                      className="glass-input px-4 py-2.5 rounded-xl text-white" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+                    <label className="text-gray-400 text-xs">Social Open Graph Title</label>
+                    <input 
+                      type="text" 
+                      value={formData.og_title || ''} 
+                      onChange={(e) => setFormData({ ...formData, og_title: e.target.value })} 
+                      placeholder="Facebook/LinkedIn share title"
+                      className="glass-input px-4 py-2.5 rounded-xl text-white" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+                    <label className="text-gray-400 text-xs">Social Open Graph Description</label>
+                    <input 
+                      type="text" 
+                      value={formData.og_description || ''} 
+                      onChange={(e) => setFormData({ ...formData, og_description: e.target.value })} 
+                      placeholder="Facebook/LinkedIn share snippet"
+                      className="glass-input px-4 py-2.5 rounded-xl text-white" 
+                    />
+                  </div>
+                </div>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
@@ -3043,6 +3138,591 @@ export const AdminActivities = () => {
               </div>
             </form>
           </motion.div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ==========================================
+// 14. ADMIN SEO MANAGER
+// ==========================================
+export const AdminSeo = () => {
+  const [activeTab, setActiveTab] = useState('settings');
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // 1. Settings state
+  const [settings, setSettings] = useState({
+    website_title: '',
+    website_description: '',
+    website_keywords: '',
+    canonical_domain: '',
+    org_name: '',
+    logo: '/logo.png',
+    tracking_analytics: '',
+    tracking_pixel: ''
+  });
+
+  // 2. Robots state
+  const [robotsText, setRobotsText] = useState('');
+
+  // 3. Redirects state
+  const [redirects, setRedirects] = useState([]);
+  const [newRedirect, setNewRedirect] = useState({ source_url: '', target_url: '' });
+
+  // 4. Audits state
+  const [audits, setAudits] = useState([]);
+  const [auditSummary, setAuditSummary] = useState({ total: 0, issues: 0 });
+
+  // 5. CWV state
+  const [vitals, setVitals] = useState([]);
+
+  // Clear feedback after 4 seconds
+  useEffect(() => {
+    if (successMsg || errorMsg) {
+      const timer = setTimeout(() => {
+        setSuccessMsg('');
+        setErrorMsg('');
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMsg, errorMsg]);
+
+  // Load active tab data
+  useEffect(() => {
+    fetchTabData();
+  }, [activeTab]);
+
+  const fetchTabData = async () => {
+    setLoading(true);
+    try {
+      if (activeTab === 'settings') {
+        const res = await api.get('/seo/settings');
+        setSettings({
+          website_title: res.data.website_title || '',
+          website_description: res.data.website_description || '',
+          website_keywords: res.data.website_keywords || '',
+          canonical_domain: res.data.canonical_domain || '',
+          org_name: res.data.org_name || '',
+          logo: res.data.logo || '/logo.png',
+          tracking_analytics: res.data.tracking_analytics || '',
+          tracking_pixel: res.data.tracking_pixel || ''
+        });
+      } else if (activeTab === 'robots') {
+        const res = await api.get('/seo/robots');
+        setRobotsText(res.data.robots_txt || '');
+      } else if (activeTab === 'redirects') {
+        const res = await api.get('/seo/redirects');
+        setRedirects(res.data || []);
+      } else if (activeTab === 'audits') {
+        const res = await api.get('/seo/audits');
+        setAudits(res.data || []);
+        const total = res.data.length;
+        const issues = res.data.filter(a => a.missing_title || a.missing_description || a.missing_canonical || a.missing_alt_tags || a.status_code === 404).length;
+        setAuditSummary({ total, issues });
+      } else if (activeTab === 'performance') {
+        const res = await api.get('/seo/performance-logs');
+        setVitals(res.data || []);
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to load tab data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handlers
+  const handleUpdateSettings = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api.put('/seo/settings', settings);
+      setSuccessMsg('Global SEO Settings updated successfully');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to update settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateRobots = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api.put('/seo/robots', { robots_txt: robotsText });
+      setSuccessMsg('Robots.txt rules saved successfully');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to update robots.txt');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateRedirect = async (e) => {
+    e.preventDefault();
+    if (!newRedirect.source_url || !newRedirect.target_url) return;
+    setLoading(true);
+    try {
+      await api.post('/seo/redirects', newRedirect);
+      setNewRedirect({ source_url: '', target_url: '' });
+      setSuccessMsg('Redirect rule created successfully');
+      fetchTabData();
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to create redirect. Ensure URL is unique.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteRedirect = async (id) => {
+    if (!window.confirm('Delete this redirect rule?')) return;
+    setLoading(true);
+    try {
+      await api.delete(`/seo/redirects/${id}`);
+      setSuccessMsg('Redirect rule deleted');
+      fetchTabData();
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to delete redirect');
+      setLoading(false);
+    }
+  };
+
+  const handleRunAudit = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/seo/audits/run');
+      setSuccessMsg('Diagnostic scan complete');
+      setAudits(res.data.data || []);
+      const total = res.data.data.length;
+      const issues = res.data.data.filter(a => a.missing_title || a.missing_description || a.missing_canonical || a.missing_alt_tags || a.status_code === 404).length;
+      setAuditSummary({ total, issues });
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('SEO Auditor failed to execute');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRebuildSitemaps = async () => {
+    setLoading(true);
+    try {
+      await api.post('/seo/sitemaps/rebuild');
+      setSuccessMsg('XML and Google News Sitemaps rebuilt successfully!');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Sitemap rebuild failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <span className="text-gray-500 text-xs font-mono">Manage site search appearances, redirects, crawlers, and performance index.</span>
+        </div>
+        <button 
+          onClick={handleRebuildSitemaps}
+          disabled={loading}
+          className="btn-primary px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 text-white shadow-md shadow-brand-primary/10"
+        >
+          <Database size={15} /> Rebuild XML Sitemaps
+        </button>
+      </div>
+
+      {/* Messages */}
+      {successMsg && (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-3 rounded-xl text-xs font-semibold">
+          {successMsg}
+        </div>
+      )}
+      {errorMsg && (
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-semibold">
+          {errorMsg}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex border-b border-white/5 overflow-x-auto no-scrollbar gap-2">
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`px-5 py-3 text-xs font-bold font-mono tracking-wider border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'settings' 
+              ? 'border-brand-primary text-white bg-brand-primary/5' 
+              : 'border-transparent text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          Global SEO
+        </button>
+        <button
+          onClick={() => setActiveTab('redirects')}
+          className={`px-5 py-3 text-xs font-bold font-mono tracking-wider border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'redirects' 
+              ? 'border-brand-primary text-white bg-brand-primary/5' 
+              : 'border-transparent text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          Redirects (301)
+        </button>
+        <button
+          onClick={() => setActiveTab('robots')}
+          className={`px-5 py-3 text-xs font-bold font-mono tracking-wider border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'robots' 
+              ? 'border-brand-primary text-white bg-brand-primary/5' 
+              : 'border-transparent text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          Robots.txt
+        </button>
+        <button
+          onClick={() => setActiveTab('audits')}
+          className={`px-5 py-3 text-xs font-bold font-mono tracking-wider border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'audits' 
+              ? 'border-brand-primary text-white bg-brand-primary/5' 
+              : 'border-transparent text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          SEO Auditor
+        </button>
+        <button
+          onClick={() => setActiveTab('performance')}
+          className={`px-5 py-3 text-xs font-bold font-mono tracking-wider border-b-2 transition-all whitespace-nowrap ${
+            activeTab === 'performance' 
+              ? 'border-brand-primary text-white bg-brand-primary/5' 
+              : 'border-transparent text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          Core Web Vitals
+        </button>
+      </div>
+
+      {/* Loading overlay */}
+      {loading && (
+        <div className="py-20 flex justify-center">
+          <div className="w-8 h-8 rounded-full border-t-2 border-brand-primary animate-spin" />
+        </div>
+      )}
+
+      {/* Render tab screen */}
+      {!loading && activeTab === 'settings' && (
+        <form onSubmit={handleUpdateSettings} className="glass-card rounded-2xl border border-white/5 p-6 flex flex-col gap-5">
+          <h3 className="text-white text-sm font-extrabold uppercase font-sans tracking-wide font-bold">Global Site Metadata Configurations</h3>
+          
+          <div className="grid grid-cols-2 gap-5 text-sm">
+            <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+              <label className="text-gray-400 text-xs">Default Website Title *</label>
+              <input
+                type="text"
+                value={settings.website_title}
+                onChange={(e) => setSettings({ ...settings, website_title: e.target.value })}
+                className="glass-input px-4 py-2.5 rounded-xl text-white"
+                required
+              />
+            </div>
+            
+            <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+              <label className="text-gray-400 text-xs">Canonical Domain *</label>
+              <input
+                type="url"
+                value={settings.canonical_domain}
+                onChange={(e) => setSettings({ ...settings, canonical_domain: e.target.value })}
+                placeholder="https://udupimanagement.org"
+                className="glass-input px-4 py-2.5 rounded-xl text-white"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 col-span-2">
+              <label className="text-gray-400 text-xs">Default Website Description *</label>
+              <textarea
+                value={settings.website_description}
+                onChange={(e) => setSettings({ ...settings, website_description: e.target.value })}
+                rows={3}
+                className="glass-input px-4 py-2.5 rounded-xl text-white resize-none"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+              <label className="text-gray-400 text-xs">Global Keywords</label>
+              <input
+                type="text"
+                value={settings.website_keywords}
+                onChange={(e) => setSettings({ ...settings, website_keywords: e.target.value })}
+                placeholder="UMA, management, Udupi leadership"
+                className="glass-input px-4 py-2.5 rounded-xl text-white"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+              <label className="text-gray-400 text-xs">Organization Schema Name</label>
+              <input
+                type="text"
+                value={settings.org_name}
+                onChange={(e) => setSettings({ ...settings, org_name: e.target.value })}
+                className="glass-input px-4 py-2.5 rounded-xl text-white"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 col-span-2">
+              <h4 className="text-white text-xs font-bold font-mono mt-3">Tracking & Pixel Identifiers</h4>
+            </div>
+
+            <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+              <label className="text-gray-400 text-xs">Google Analytics Tag ID (e.g. G-XXXXXXX)</label>
+              <input
+                type="text"
+                value={settings.tracking_analytics}
+                onChange={(e) => setSettings({ ...settings, tracking_analytics: e.target.value })}
+                className="glass-input px-4 py-2.5 rounded-xl text-white"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+              <label className="text-gray-400 text-xs">Facebook Pixel Tag ID</label>
+              <input
+                type="text"
+                value={settings.tracking_pixel}
+                onChange={(e) => setSettings({ ...settings, tracking_pixel: e.target.value })}
+                className="glass-input px-4 py-2.5 rounded-xl text-white"
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold mt-4 text-white">
+            Save SEO Settings
+          </button>
+        </form>
+      )}
+
+      {!loading && activeTab === 'redirects' && (
+        <div className="flex flex-col gap-6">
+          <form onSubmit={handleCreateRedirect} className="glass-card rounded-2xl border border-white/5 p-6 flex flex-col gap-4">
+            <h3 className="text-white text-sm font-extrabold uppercase font-sans tracking-wide">Add 301 Permanent Redirect</h3>
+            
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+                <label className="text-gray-400 text-xs">Source Path *</label>
+                <input
+                  type="text"
+                  value={newRedirect.source_url}
+                  onChange={(e) => setNewRedirect({ ...newRedirect, source_url: e.target.value })}
+                  placeholder="/old-news-link"
+                  className="glass-input px-4 py-2.5 rounded-xl text-white"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5 col-span-2 md:col-span-1">
+                <label className="text-gray-400 text-xs">Target Destination *</label>
+                <input
+                  type="text"
+                  value={newRedirect.target_url}
+                  onChange={(e) => setNewRedirect({ ...newRedirect, target_url: e.target.value })}
+                  placeholder="/news/new-slug-url"
+                  className="glass-input px-4 py-2.5 rounded-xl text-white"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="btn-primary w-full py-3 rounded-xl font-bold text-white">
+              Create Redirect Rule
+            </button>
+          </form>
+
+          <div className="glass-card rounded-2xl border border-white/5 overflow-hidden">
+            <h3 className="text-white text-sm font-extrabold uppercase font-sans tracking-wide p-6 border-b border-white/5">Active Redirect List</h3>
+            {redirects.length === 0 ? (
+              <div className="py-12 text-center text-gray-500 text-sm">No redirects active. Add one above.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-white/5 text-gray-400 font-mono text-xxs uppercase tracking-wider">
+                    <tr>
+                      <th className="px-6 py-4">Source URL</th>
+                      <th className="px-6 py-4">Target URL</th>
+                      <th className="px-6 py-4">Hits</th>
+                      <th className="px-6 py-4">Last Hit</th>
+                      <th className="px-6 py-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-xs text-gray-400">
+                    {redirects.map((red) => (
+                      <tr key={red.id} className="hover:bg-white/2 transition-colors">
+                        <td className="px-6 py-4 font-mono">{red.source_url}</td>
+                        <td className="px-6 py-4 font-mono">{red.target_url}</td>
+                        <td className="px-6 py-4">{red.hit_count}</td>
+                        <td className="px-6 py-4">{red.last_accessed ? new Date(red.last_accessed).toLocaleString() : 'Never'}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => handleDeleteRedirect(red.id)}
+                            className="p-2 text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!loading && activeTab === 'robots' && (
+        <form onSubmit={handleUpdateRobots} className="glass-card rounded-2xl border border-white/5 p-6 flex flex-col gap-4">
+          <h3 className="text-white text-sm font-extrabold uppercase font-sans tracking-wide">Configure Robots.txt Guidelines</h3>
+          <span className="text-gray-500 text-xs">Define crawler directories permissions here. Disallowing /admin/ is strongly suggested.</span>
+          
+          <textarea
+            value={robotsText}
+            onChange={(e) => setRobotsText(e.target.value)}
+            rows={10}
+            className="font-mono text-sm glass-input p-4 rounded-xl text-white w-full resize-y"
+            required
+          />
+
+          <button type="submit" className="btn-primary w-full py-3.5 rounded-xl font-bold text-white">
+            Save Robots.txt
+          </button>
+        </form>
+      )}
+
+      {!loading && activeTab === 'audits' && (
+        <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="glass-card p-5 rounded-2xl border border-white/5 flex flex-col gap-1">
+              <span className="text-gray-500 text-xxs uppercase tracking-wider font-mono">Pages Audited</span>
+              <span className="text-white text-2xl font-bold font-sans">{auditSummary.total} Pages</span>
+            </div>
+            
+            <div className="glass-card p-5 rounded-2xl border border-white/5 flex flex-col gap-1">
+              <span className="text-gray-500 text-xxs uppercase tracking-wider font-mono">SEO Warning Items</span>
+              <span className={`text-2xl font-bold font-sans ${auditSummary.issues > 0 ? 'text-amber-400 animate-pulse' : 'text-emerald-400'}`}>
+                {auditSummary.issues} Errors
+              </span>
+            </div>
+
+            <button
+              onClick={handleRunAudit}
+              className="glass-card p-5 rounded-2xl border border-white/5 bg-brand-primary/5 hover:bg-brand-primary/10 flex items-center justify-center gap-2.5 text-brand-primary font-bold text-sm transition-all"
+            >
+              <Search size={18} /> Trigger Crawler Scan
+            </button>
+          </div>
+
+          <div className="glass-card rounded-2xl border border-white/5 overflow-hidden">
+            <h3 className="text-white text-sm font-extrabold uppercase font-sans tracking-wide p-6 border-b border-white/5">Audit Logs & 404 Reports</h3>
+            {audits.length === 0 ? (
+              <div className="py-12 text-center text-gray-500 text-sm">No scans performed yet. Click the crawler button to check SEO status.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-white/5 text-gray-400 font-mono text-xxs uppercase tracking-wider">
+                    <tr>
+                      <th className="px-6 py-4">Target URL</th>
+                      <th className="px-6 py-4">Warnings</th>
+                      <th className="px-6 py-4">Broken Alt Tags</th>
+                      <th className="px-6 py-4">Response</th>
+                      <th className="px-6 py-4 font-mono">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-xs text-gray-400">
+                    {audits.map((a) => {
+                      const warningList = [];
+                      if (a.missing_title) warningList.push('Missing Title');
+                      if (a.missing_description) warningList.push('Missing Description');
+                      if (a.missing_canonical) warningList.push('Missing Canonical');
+
+                      return (
+                        <tr key={a.id} className="hover:bg-white/2 transition-colors">
+                          <td className="px-6 py-4 font-mono font-semibold text-white">{a.url}</td>
+                          <td className="px-6 py-4">
+                            {warningList.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {warningList.map((w, idx) => (
+                                  <span key={idx} className="bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded text-xxs font-medium font-mono uppercase">{w}</span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-emerald-400 font-semibold font-mono text-xxs uppercase">None</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">{a.missing_alt_tags || 0}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2 py-0.5 rounded font-mono text-xxs uppercase font-semibold ${
+                              a.status_code === 200 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                            }`}>
+                              {a.status_code || 200}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 font-mono text-xxs">{new Date(a.created_at).toLocaleString()}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!loading && activeTab === 'performance' && (
+        <div className="flex flex-col gap-6">
+          <div className="glass-card rounded-2xl border border-white/5 p-6 flex flex-col gap-4">
+            <h3 className="text-white text-sm font-extrabold uppercase font-sans tracking-wide">Core Web Vitals Telemetry</h3>
+            <span className="text-gray-500 text-xs">Averages calculated from visitors device browser performance reports.</span>
+            
+            {vitals.length === 0 ? (
+              <div className="py-12 text-center text-gray-500 text-sm">No visitor web metrics collected yet.</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-3">
+                {vitals.map((m, idx) => {
+                  let threshold = 'text-emerald-400';
+                  let status = 'Good';
+                  const type = m.metric_type;
+                  const val = m.avg_value;
+
+                  if (type === 'TTFB') {
+                    if (val > 800) { threshold = 'text-red-400'; status = 'Poor'; }
+                    else if (val > 200) { threshold = 'text-amber-400'; status = 'Needs Imp.'; }
+                  } else if (type === 'LCP') {
+                    if (val > 4000) { threshold = 'text-red-400'; status = 'Poor'; }
+                    else if (val > 2500) { threshold = 'text-amber-400'; status = 'Needs Imp.'; }
+                  } else if (type === 'CLS') {
+                    if (val > 0.25) { threshold = 'text-red-400'; status = 'Poor'; }
+                    else if (val > 0.1) { threshold = 'text-amber-400'; status = 'Needs Imp.'; }
+                  } else if (type === 'INP') {
+                    if (val > 500) { threshold = 'text-red-400'; status = 'Poor'; }
+                    else if (val > 200) { threshold = 'text-amber-400'; status = 'Needs Imp.'; }
+                  }
+
+                  return (
+                    <div key={idx} className="glass-card p-5 rounded-2xl border border-white/5 flex flex-col gap-1.5">
+                      <span className="text-white font-extrabold text-sm font-sans tracking-wider">{type}</span>
+                      <span className={`text-2xl font-black font-mono ${threshold}`}>
+                        {type === 'CLS' ? val.toFixed(3) : `${val.toFixed(0)} ms`}
+                      </span>
+                      <span className="text-gray-500 text-xxs font-mono uppercase tracking-widest">{status} (Hits: {m.count})</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

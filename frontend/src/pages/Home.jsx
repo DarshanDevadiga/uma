@@ -400,7 +400,7 @@ const Home = () => {
         >
           {newsList.map((item, idx) => (
             <motion.div key={idx} variants={revealItem}>
-              <Link to={`/news/${item.id}`} className="block h-full">
+              <Link to={`/news/${item.slug || item.id}`} className="block h-full">
                 <GlassCard className="flex flex-col justify-between h-full p-6 relative overflow-hidden group" hoverEffect={true}>
                   <div>
                     <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded ${
