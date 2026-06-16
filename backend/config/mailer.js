@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 // Create transporter
@@ -61,7 +62,8 @@ const sendMail = async (options) => {
     to: options.to,
     subject: options.subject,
     text: options.text,
-    html: options.html
+    html: options.html,
+    attachments: options.attachments || []
   };
 
   if (transporter) {
@@ -90,15 +92,14 @@ const sendMail = async (options) => {
  * @param {Object} req - Express request object (optional, used to resolve host/protocol dynamically)
  */
 const sendRichMail = async ({ to, subject, title, bodyHtml, text }, req) => {
-  const protocol = req ? req.protocol : 'http';
-  const host = req ? req.get('host') : '127.0.0.1:5000';
-  const logoUrl = `${protocol}://${host}/logo.png`;
+  const logoPath = path.join(__dirname, '..', 'public', 'logo.png');
+  const hasLogo = fs.existsSync(logoPath);
 
   const html = `
     <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px 20px; color: #374151; background-color: #ffffff; border: 1px solid #f3f4f6; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
       <!-- Header -->
       <div style="text-align: center; padding-bottom: 24px; border-bottom: 1px solid #f3f4f6; margin-bottom: 24px;">
-        <img src="${logoUrl}" alt="UMA Logo" style="height: 70px; object-fit: contain; margin-bottom: 12px;" />
+        <img src="${hasLogo ? 'cid:umalogo' : 'https://raw.githubusercontent.com/DarshanDevadiga/uma/main/backend/public/logo.png'}" alt="UMA Logo" style="height: 70px; object-fit: contain; margin-bottom: 12px;" />
         <h2 style="margin: 0; color: #111827; font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Udupi Management Association</h2>
       </div>
       
@@ -118,7 +119,16 @@ const sendRichMail = async ({ to, subject, title, bodyHtml, text }, req) => {
     </div>
   `;
 
-  return sendMail({ to, subject, text, html });
+  const attachments = [];
+  if (hasLogo) {
+    attachments.push({
+      filename: 'logo.png',
+      path: logoPath,
+      cid: 'umalogo'
+    });
+  }
+
+  return sendMail({ to, subject, text, html, attachments });
 };
 
 module.exports = {
