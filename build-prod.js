@@ -13,110 +13,42 @@ function run() {
   console.log(`Working Directory (cwd): ${process.cwd()}`);
   console.log(`Script Directory (__dirname): ${rootDir}`);
   console.log(`Frontend Directory: ${frontendDir}`);
-  console.log(`Backend Public Directory: ${publicDir}`);
-  console.log(`npm_execpath: ${process.env.npm_execpath || 'Not Defined'}`);
-  console.log(`PATH: ${process.env.PATH || 'Not Defined'}\n`);
+  console.log(`Backend Public Directory: ${publicDir}\n`);
 
-  console.log('0. Cleaning previous build and cache directories...');
+  // 1. Cleaning previous build directories
+  console.log('Cleaning previous build and cache directories...');
   try {
-    const distPath = path.join(frontendDir, 'dist');
     const viteCachePath = path.join(frontendDir, 'node_modules', '.vite');
-
-    if (fs.existsSync(distPath)) {
-      console.log(`Removing ${distPath}...`);
-      fs.rmSync(distPath, { recursive: true, force: true });
-    }
-    if (fs.existsSync(publicDir)) {
-      console.log(`Removing ${publicDir}...`);
-      fs.rmSync(publicDir, { recursive: true, force: true });
-    }
-    if (fs.existsSync(viteCachePath)) {
-      console.log(`Removing Vite cache ${viteCachePath}...`);
-      fs.rmSync(viteCachePath, { recursive: true, force: true });
-    }
+    [distDir, publicDir, viteCachePath].forEach(dir => {
+      if (fs.existsSync(dir)) {
+        console.log(`Removing ${dir}...`);
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
     console.log('Clean completed successfully.\n');
   } catch (cleanErr) {
     console.warn('Warning during clean phase:', cleanErr.message);
   }
 
-  let buildSuccess = false;
-  let lastError = null;
-
-  // Try different execution fallbacks to compile the frontend
-  const fallbacks = [
-    {
-      name: 'npm_execpath (Running via active package manager)',
-      fn: () => {
-        const execPath = process.env.npm_execpath;
-        if (!execPath) throw new Error('npm_execpath is not set in environment.');
-        console.log(`Resolved npm_execpath: ${execPath}`);
-        if (execPath.endsWith('.js') || execPath.endsWith('.cjs') || execPath.endsWith('.mjs')) {
-          execSync(`"${process.execPath}" "${execPath}" run build`, { cwd: frontendDir, stdio: 'inherit' });
-        } else {
-          execSync(`"${execPath}" run build`, { cwd: frontendDir, stdio: 'inherit' });
-        }
-      }
-    },
-    {
-      name: 'Local Vite Binary (Direct Execution)',
-      fn: () => {
-        const localVite = path.join(frontendDir, 'node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
-        console.log(`Checking local Vite binary at: ${localVite}`);
-        if (!fs.existsSync(localVite)) throw new Error('Local Vite binary does not exist.');
-        execSync(`"${localVite}" build`, { cwd: frontendDir, stdio: 'inherit' });
-      }
-    },
-    {
-      name: 'npx vite build (npm runner)',
-      fn: () => {
-        execSync('npx vite build', { cwd: frontendDir, stdio: 'inherit' });
-      }
-    },
-    {
-      name: 'corepack pnpm run build (corepack wrapper)',
-      fn: () => {
-        execSync('corepack pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
-      }
-    },
-    {
-      name: 'npx pnpm run build (npx pnpm wrapper)',
-      fn: () => {
-        execSync('npx pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
-      }
-    },
-    {
-      name: 'Global pnpm run build',
-      fn: () => {
-        execSync('pnpm run build', { cwd: frontendDir, stdio: 'inherit' });
-      }
-    }
-  ];
-
-  console.log('1. Building the frontend application...');
-
-  for (const fallback of fallbacks) {
+  // 2. Building the frontend application
+  console.log('Building the frontend application...');
+  try {
+    // Standard workspace-safe build execution
+    execSync('npm run build', { cwd: frontendDir, stdio: 'inherit' });
+    console.log('Success: Frontend built successfully via standard npm script.');
+  } catch (err) {
+    console.warn('Warning: npm run build inside frontend failed. Trying fallback npx build...');
     try {
-      console.log(`\n--- Attempting Fallback: ${fallback.name} ---`);
-      fallback.fn();
-      buildSuccess = true;
-      console.log(`Success: Frontend built successfully using: ${fallback.name}`);
-      break;
-    } catch (err) {
-      console.warn(`Warning: Fallback "${fallback.name}" failed.`);
-      console.warn(`Error details: ${err.message}`);
-      lastError = err;
+      execSync('npx vite build', { cwd: frontendDir, stdio: 'inherit' });
+      console.log('Success: Frontend built successfully via fallback npx execution.');
+    } catch (npxErr) {
+      console.error('[ERROR] All frontend build methods failed!');
+      console.error(npxErr);
+      process.exit(1);
     }
   }
 
-  if (!buildSuccess) {
-    console.error('\n[ERROR] All frontend build fallbacks failed!');
-    if (lastError) {
-      console.error('Stack trace of last failure:', lastError);
-    }
-    process.exit(1);
-  }
-
-  // Verify that the build directory was actually created and is not empty
+  // 3. Verify compilation
   console.log('\nChecking compiled frontend assets...');
   if (!fs.existsSync(distDir)) {
     console.error(`[ERROR] Build completed but dist directory does not exist at: ${distDir}`);
@@ -129,15 +61,15 @@ function run() {
   }
   console.log(`Vite build verification passed! Found ${distFiles.length} items in dist/.`);
 
+  // 4. Prepare backend public directory and copy assets
   try {
-    console.log('\n2. Preparing the backend public directory...');
+    console.log('\nPreparing the backend public directory...');
     if (fs.existsSync(publicDir)) {
-      console.log('Cleaning existing backend public directory...');
       fs.rmSync(publicDir, { recursive: true, force: true });
     }
     fs.mkdirSync(publicDir, { recursive: true });
 
-    console.log('\n3. Copying compiled static assets...');
+    console.log('Copying compiled static assets...');
     if (fs.cpSync) {
       fs.cpSync(distDir, publicDir, { recursive: true });
     } else {
@@ -145,7 +77,6 @@ function run() {
     }
     
     console.log('\nBuild and sync completed successfully!');
-    console.log('You can now add, commit, and push backend/public to GitHub.');
     console.log('=== Build Script Finished Successfully ===');
   } catch (error) {
     console.error('\n[ERROR] Failed to prepare public directory or copy assets:');
