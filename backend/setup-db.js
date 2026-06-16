@@ -42,7 +42,6 @@ async function runSetup() {
       try {
         await connection.query(statement);
       } catch (stmtError) {
-        console.error(`Error executing statement ${i + 1}:`, stmtError.message);
         // Ignore duplicate key/seed/structural errors, but fail on other errors
         const ignoreErrors = [
           'Duplicate entry',
@@ -53,6 +52,7 @@ async function runSetup() {
         ];
         const shouldIgnore = ignoreErrors.some(errMsg => stmtError.message.includes(errMsg));
         if (!shouldIgnore) {
+          console.error(`Error executing statement ${i + 1}:`, stmtError.message);
           throw stmtError;
         }
       }

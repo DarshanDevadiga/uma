@@ -32,6 +32,17 @@ if (isSmtpConfigured()) {
   transporter.verify((error, success) => {
     if (error) {
       console.error('SMTP Connection Verification Failed:', error.message);
+      console.log('SMTP Diagnostics (No secrets exposed):');
+      console.log({
+        SMTP_HOST: process.env.SMTP_HOST || 'Not Set',
+        SMTP_PORT: process.env.SMTP_PORT || 'Not Set',
+        SMTP_SECURE: parseInt(process.env.SMTP_PORT) === 465,
+        SMTP_USER_SET: !!process.env.SMTP_USER,
+        SMTP_USER_LENGTH: process.env.SMTP_USER ? process.env.SMTP_USER.length : 0,
+        SMTP_PASS_SET: !!process.env.SMTP_PASS,
+        SMTP_PASS_LENGTH: process.env.SMTP_PASS ? process.env.SMTP_PASS.length : 0,
+        SMTP_FROM: process.env.SMTP_FROM || 'Not Set'
+      });
     } else {
       console.log('SMTP Server connection successfully verified. Ready to deliver messages!');
     }

@@ -11,6 +11,9 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Enable trust proxy to receive the correct client IP under reverse proxy setups (Hostinger, Nginx, etc.)
+app.set('trust proxy', 1);
+
 // Apply secure headers via Helmet (disabling CSP to prevent inline styling / asset issues in client bundle)
 app.use(helmet({
   contentSecurityPolicy: false,
