@@ -2871,6 +2871,9 @@ export const AdminEventRegistrations = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('');
+
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -3007,7 +3010,14 @@ export const AdminEventRegistrations = () => {
                     <td className="px-6 py-4 font-mono">
                       {new Date(reg.created_at).toLocaleDateString('en-IN')}
                     </td>
-                    <td className="px-6 py-4 text-right flex justify-end">
+                    <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button 
+                        onClick={() => { setEmailRecipient(reg.email); setEmailModalOpen(true); }}
+                        className="p-1 text-brand-secondary hover:text-white hover:bg-brand-secondary/10 rounded"
+                        title="Send Message"
+                      >
+                        <Mail size={14} />
+                      </button>
                       <button 
                         onClick={() => handleDelete(reg.id)} 
                         className="p-1.5 bg-white/5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
@@ -3044,6 +3054,13 @@ export const AdminEventRegistrations = () => {
           </button>
         </div>
       )}
+
+      <SendEmailModal 
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        recipientEmail={emailRecipient}
+        defaultSubject={`UMA Event Registration: ${registrations.find(r => r.email === emailRecipient)?.event_title || ''}`}
+      />
     </div>
   );
 };
