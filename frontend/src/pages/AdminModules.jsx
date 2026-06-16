@@ -11,6 +11,106 @@ import { motion } from 'framer-motion';
 import api, { BASE_URL } from '../services/api';
 import GlassCard from '../components/GlassCard';
 
+// Reusable Send Email Modal Component
+export const SendEmailModal = ({ isOpen, onClose, recipientEmail, defaultSubject = 'UMA Notification' }) => {
+  const [subject, setSubject] = useState(defaultSubject);
+  const [body, setBody] = useState('');
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSubject(defaultSubject);
+      setBody('');
+    }
+  }, [isOpen, defaultSubject]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    try {
+      await api.post('/contacts/send-email', {
+        to: recipientEmail,
+        subject: subject,
+        body: body
+      });
+      alert('Email sent successfully!');
+      onClose();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to send email');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="absolute inset-0" onClick={onClose} />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }} 
+        animate={{ opacity: 1, scale: 1 }} 
+        className="glass-card max-w-md w-full rounded-2xl border border-white/10 shadow-2xl p-6 relative z-10"
+      >
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5"
+        >
+          <X size={18} />
+        </button>
+        <h3 className="text-white font-extrabold text-lg mb-4 font-sans flex items-center gap-2">
+          <Mail className="text-brand-secondary" size={20} />
+          Send Custom Message
+        </h3>
+        
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-sm">
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="text-gray-400 text-xs">Recipient Email</label>
+            <input 
+              type="email" 
+              value={recipientEmail} 
+              disabled
+              className="glass-input px-4 py-2.5 rounded-xl text-white opacity-70 bg-white/5" 
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="text-gray-400 text-xs">Subject *</label>
+            <input 
+              type="text" 
+              value={subject} 
+              onChange={(e) => setSubject(e.target.value)} 
+              className="glass-input px-4 py-2.5 rounded-xl text-white" 
+              required 
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="text-gray-400 text-xs">Message Body *</label>
+            <textarea 
+              value={body} 
+              onChange={(e) => setBody(e.target.value)} 
+              rows={5} 
+              className="glass-input px-4 py-2.5 rounded-xl text-white resize-none" 
+              placeholder="Type your custom message here..."
+              required 
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={sending}
+            className="btn-primary w-full py-3.5 rounded-xl font-bold mt-2 text-white flex items-center justify-center gap-2"
+          >
+            {sending ? 'Sending...' : 'Send Message'}
+            <Send size={14} />
+          </button>
+        </form>
+      </motion.div>
+    </div>
+  );
+};
+
 // ==========================================
 // 1. MANAGE MEMBERS
 // ==========================================
@@ -21,6 +121,9 @@ export const AdminMembers = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('');
 
   const [editMember, setEditMember] = useState(null);
   const [types, setTypes] = useState([
@@ -217,6 +320,13 @@ export const AdminMembers = () => {
                         </>
                       )}
                       <button 
+                        onClick={() => { setEmailRecipient(member.email); setEmailModalOpen(true); }}
+                        className="p-1.5 bg-white/5 text-gray-400 hover:bg-brand-secondary/20 hover:text-brand-secondary rounded-lg transition-colors"
+                        title="Send Message"
+                      >
+                        <Mail size={15} />
+                      </button>
+                      <button 
                         onClick={() => handleOpenEdit(member)}
                         className="p-1.5 bg-white/5 text-gray-400 hover:bg-brand-primary/20 hover:text-brand-primary rounded-lg transition-colors"
                         title="Edit Details"
@@ -348,6 +458,13 @@ export const AdminMembers = () => {
           </motion.div>
         </div>
       )}
+
+      <SendEmailModal 
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        recipientEmail={emailRecipient}
+        defaultSubject="UMA Membership Update"
+      />
     </div>
   );
 };
@@ -378,6 +495,9 @@ export const AdminEvents = () => {
   const [activeEventForRegistrations, setActiveEventForRegistrations] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [registrationsLoading, setRegistrationsLoading] = useState(false);
+
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('');
 
   const handleOpenRegistrations = (event) => {
     setActiveEventForRegistrations(event);
@@ -683,6 +803,13 @@ export const AdminEvents = () => {
                         <td className="px-4 py-3 font-mono">{new Date(reg.created_at).toLocaleDateString('en-IN')}</td>
                         <td className="px-4 py-3 text-right">
                           <button 
+                            onClick={() => { setEmailRecipient(reg.email); setEmailModalOpen(true); }}
+                            className="p-1 text-brand-secondary hover:text-white hover:bg-brand-secondary/10 rounded mr-2"
+                            title="Send Message"
+                          >
+                            <Mail size={14} />
+                          </button>
+                          <button 
                             onClick={() => handleDeleteRegistration(reg.id)}
                             className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded"
                             title="Remove registration"
@@ -699,6 +826,13 @@ export const AdminEvents = () => {
           </motion.div>
         </div>
       )}
+
+      <SendEmailModal 
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        recipientEmail={emailRecipient}
+        defaultSubject={`UMA Event Registration Update: ${activeEventForRegistrations?.title || ''}`}
+      />
     </div>
   );
 };
@@ -1141,6 +1275,9 @@ export const AdminAwards = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('');
+
   useEffect(() => {
     fetchNominations();
   }, [search, page]);
@@ -1239,6 +1376,13 @@ export const AdminAwards = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button 
+                        onClick={() => { setEmailRecipient(nom.email); setEmailModalOpen(true); }}
+                        className="p-1.5 bg-white/5 text-gray-400 hover:bg-brand-secondary/20 hover:text-brand-secondary rounded-lg"
+                        title="Send Message"
+                      >
+                        <Mail size={14} />
+                      </button>
                       {nom.status === 'pending' && (
                         <button 
                           onClick={() => handleStatusUpdate(nom.id, 'reviewed')}
@@ -1268,6 +1412,13 @@ export const AdminAwards = () => {
           <button disabled={page === totalPages} onClick={() => setPage(page + 1)} className="btn-secondary px-3 py-1.5 rounded-lg text-xs disabled:opacity-50">Next</button>
         </div>
       )}
+
+      <SendEmailModal 
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        recipientEmail={emailRecipient}
+        defaultSubject="UMA Award Nomination Update"
+      />
     </div>
   );
 };
@@ -2081,6 +2232,9 @@ export const AdminContacts = () => {
   
   const [selectedMsg, setSelectedMsg] = useState(null);
 
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('');
+
   useEffect(() => {
     fetchMessages();
   }, [search, page]);
@@ -2150,6 +2304,13 @@ export const AdminContacts = () => {
                     <td className="px-6 py-4 font-bold text-white max-w-sm truncate">{msg.subject}</td>
                     <td className="px-6 py-4 font-mono">{new Date(msg.created_at).toLocaleString('en-IN')}</td>
                     <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button 
+                        onClick={() => { setEmailRecipient(msg.email); setEmailModalOpen(true); }}
+                        className="p-1.5 bg-white/5 text-gray-400 hover:text-brand-secondary hover:bg-brand-secondary/10 rounded-lg"
+                        title="Send Message"
+                      >
+                        <Mail size={14} />
+                      </button>
                       <button onClick={() => setSelectedMsg(msg)} className="p-1.5 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg">
                         <Eye size={14} />
                       </button>
@@ -2217,17 +2378,24 @@ export const AdminContacts = () => {
                 >
                   Delete Message
                 </button>
-                <a 
-                  href={`mailto:${selectedMsg.email}`} 
+                <button 
+                  onClick={() => { setEmailRecipient(selectedMsg.email); setEmailModalOpen(true); }}
                   className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold text-white flex items-center gap-1"
                 >
-                  <Mail size={12} /> Reply Email
-                </a>
+                  <Mail size={12} /> Send Message
+                </button>
               </div>
             </div>
           </motion.div>
         </div>
       )}
+
+      <SendEmailModal 
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        recipientEmail={emailRecipient}
+        defaultSubject={`UMA Reply: ${selectedMsg?.subject || ''}`}
+      />
     </div>
   );
 };
@@ -2256,6 +2424,9 @@ export const AdminTraining = () => {
   const [activeProgramForRegistrations, setActiveProgramForRegistrations] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [registrationsLoading, setRegistrationsLoading] = useState(false);
+
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('');
 
   useEffect(() => {
     fetchPrograms();
@@ -2444,6 +2615,13 @@ export const AdminTraining = () => {
                         <td className="px-4 py-3 font-mono">{new Date(reg.created_at).toLocaleDateString('en-IN')}</td>
                         <td className="px-4 py-3 text-right">
                           <button 
+                            onClick={() => { setEmailRecipient(reg.email); setEmailModalOpen(true); }}
+                            className="p-1 text-brand-secondary hover:text-white hover:bg-brand-secondary/10 rounded mr-2"
+                            title="Send Message"
+                          >
+                            <Mail size={13} />
+                          </button>
+                          <button 
                             onClick={() => handleDeleteRegistration(reg.id)}
                             className="p-1.5 bg-white/5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
                             title="Remove Booking"
@@ -2546,6 +2724,13 @@ export const AdminTraining = () => {
           </motion.div>
         </div>
       )}
+
+      <SendEmailModal 
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        recipientEmail={emailRecipient}
+        defaultSubject={`UMA Training Program Update: ${activeProgramForRegistrations?.title || ''}`}
+      />
     </div>
   );
 };

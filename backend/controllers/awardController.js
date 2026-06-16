@@ -126,12 +126,35 @@ const updateNominationStatus = async (req, res) => {
   }
 
   try {
-    const nominations = await query('SELECT * FROM award_nominations WHERE id = ?', [id]);
+    const nominations = await query(
+      `SELECT an.*, a.name as award_name 
+       FROM award_nominations an
+       JOIN awards a ON an.award_id = a.id
+       WHERE an.id = ?`,
+      [id]
+    );
     if (nominations.length === 0) {
       return res.status(404).json({ message: 'Nomination not found' });
     }
 
+    const nomination = nominations[0];
+
     await query('UPDATE award_nominations SET status = ? WHERE id = ?', [status, id]);
+
+    if (status === 'reviewed') {
+      try {
+        await sendRichMail({
+          to: nomination.email,
+          subject: `Award Nomination Reviewed: ${nomination.award_name}`,
+          text: `Dear ${nomination.nominee_name},\n\nWe are pleased to inform you that your nomination for the "${nomination.award_name}" at Udupi Management Association (UMA) has been successfully reviewed by our committee.\n\nBest regards,\nUdupi Management Association`,
+          bodyHtml: `<p>Dear <strong>${nomination.nominee_name}</strong>,</p>
+                     <p>We are pleased to inform you that your nomination for the <strong>"${nomination.award_name}"</strong> at Udupi Management Association (UMA) has been successfully <strong>reviewed</strong> by our committee.</p>`
+        }, req);
+      } catch (mailErr) {
+        console.error('Mail sending error for reviewed nomination:', mailErr);
+      }
+    }
+
     res.json({ message: `Nomination status updated to ${status}` });
   } catch (error) {
     console.error('updateNominationStatus error:', error);

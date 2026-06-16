@@ -109,8 +109,32 @@ const deleteMessage = async (req, res) => {
   }
 };
 
+// Send custom message to a user (Admin only)
+const sendCustomEmail = async (req, res) => {
+  const { to, subject, body } = req.body;
+
+  if (!to || !subject || !body) {
+    return res.status(400).json({ message: 'Required fields: to, subject, body' });
+  }
+
+  try {
+    await sendRichMail({
+      to,
+      subject,
+      text: body,
+      bodyHtml: `<p>${body.replace(/\n/g, '<br/>')}</p>`
+    }, req);
+
+    res.json({ message: 'Custom email sent successfully' });
+  } catch (error) {
+    console.error('sendCustomEmail error:', error);
+    res.status(500).json({ message: 'Error sending email: ' + error.message });
+  }
+};
+
 module.exports = {
   submitContact,
   getMessages,
-  deleteMessage
+  deleteMessage,
+  sendCustomEmail
 };
