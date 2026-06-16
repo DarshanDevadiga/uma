@@ -353,5 +353,6 @@ module.exports = {
   getPerformanceLogs,
   logPerformanceMetric,
   generateSitemapXml,
-  generateNewsSitemapXml
+  generateNewsSitemapXml,
+  getGlobalSeoSettingsInternal
 };
