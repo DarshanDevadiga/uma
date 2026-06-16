@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Award, Calendar, Users, Briefcase, ChevronRight, Eye, ShieldCheck, Zap } from 'lucide-react';
-import ThreeGlobe from '../components/ThreeGlobe';
 import GlassCard from '../components/GlassCard';
 import api from '../services/api';
+
+const ThreeGlobe = lazy(() => import('../components/ThreeGlobe'));
 
 const MotionLink = motion(Link);
 
@@ -141,7 +142,14 @@ const Home = () => {
             transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
             className="w-full h-full flex justify-center items-center"
           >
-            <ThreeGlobe />
+            <Suspense fallback={
+              <div className="flex flex-col items-center justify-center gap-2">
+                <div className="w-8 h-8 rounded-full border-t-2 border-brand-primary animate-spin" />
+                <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Loading interactive environment...</span>
+              </div>
+            }>
+              <ThreeGlobe />
+            </Suspense>
           </motion.div>
         </div>
 

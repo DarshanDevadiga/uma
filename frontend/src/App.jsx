@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
@@ -23,31 +23,39 @@ import Contact from './pages/Contact';
 
 // Admin Pages
 import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
 
-// Admin Modules
-import {
-  AdminMembers,
-  AdminEvents,
-  AdminBearers,
-  AdminCommittees,
-  AdminAwards,
-  AdminPublications,
-  AdminGallery,
-  AdminNews,
-  AdminContacts,
-  AdminTraining,
-  AdminSettings,
-  AdminEventRegistrations,
-  AdminActivities,
-  AdminSeo
-} from './pages/AdminModules';
+// Lazy loaded admin views
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+
+// Lazy loaded admin submodules from AdminModules
+const AdminMembers = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminMembers })));
+const AdminEvents = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminEvents })));
+const AdminBearers = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminBearers })));
+const AdminCommittees = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminCommittees })));
+const AdminAwards = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminAwards })));
+const AdminPublications = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminPublications })));
+const AdminGallery = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminGallery })));
+const AdminNews = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminNews })));
+const AdminContacts = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminContacts })));
+const AdminTraining = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminTraining })));
+const AdminSettings = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminSettings })));
+const AdminEventRegistrations = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminEventRegistrations })));
+const AdminActivities = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminActivities })));
+const AdminSeo = lazy(() => import('./pages/AdminModules').then(m => ({ default: m.AdminSeo })));
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
+        <Suspense fallback={
+          <div className="min-h-screen bg-dark flex items-center justify-center text-white">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 rounded-full border-t-2 border-brand-primary animate-spin" />
+              <span className="text-gray-400 text-sm tracking-widest font-mono">LOADING UMA...</span>
+            </div>
+          </div>
+        }>
+          <Routes>
           {/* ==========================================
               PUBLIC ROUTES (Wrapped in MainLayout)
              ========================================== */}
@@ -91,7 +99,8 @@ function App() {
 
           {/* Fallback wildcard redirect to Home */}
           <Route path="*" element={<MainLayout><Home /></MainLayout>} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </Router>
     </AuthProvider>
   );
